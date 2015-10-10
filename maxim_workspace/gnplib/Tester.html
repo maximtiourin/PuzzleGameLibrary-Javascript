@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tester</title>
+    <link rel="stylesheet" type="text/css" href="tempstyle.css">
+    <script type="text/javascript" src="lib/gnplib.js" defer></script>
+    <script>
+        function init() {
+            stage = new createjs.Stage("gameCanvas");
+
+            circle = new createjs.Shape();
+            circle.graphics.beginFill("red").drawCircle(0, 0, 40);
+            circle.x = circle.y = 50;
+
+            square = new createjs.Shape();
+            square.graphics.beginFill("blue").drawRect(0, 0, 60, 60);
+            square.x = square.y = 200;
+
+            //Add test link redirect when clicking on circle, and test http redirect when clicking on square
+            circle.addEventListener("click", function(event) {
+                gnplib.window.redirect("http://www.google.com", true);
+            });
+            square.addEventListener("click", function(event) {
+                gnplib.window.redirect("http://www.reddit.com", false);
+            });
+
+            stage.addChild(circle);
+            stage.addChild(square);
+
+            stage.update();
+        }
+    </script>
+</head>
+<body onload="init();">
+<canvas id="gameCanvas" width="600" height="400">Your browser does not support "canvas".</canvas>
+</body>
+</html>
