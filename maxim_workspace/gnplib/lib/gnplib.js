@@ -31,6 +31,8 @@ var gnplib = {
     window: {
         /*
          * Redirects the header to the given url
+         *
+         * url = ...
          * Absolute redirect ex: "http://www.myurl.com/test.html"
          * Relative redirect in current directory ex: "/test2.html"
          * Relative redirect in directory one level above ex: "../test3.html"
@@ -43,7 +45,8 @@ var gnplib = {
                 window.location.href = url;
             }
             else {
-                window.location.replace = url;
+                window.location.replace(url);
+                return false; //Necessary to trigger the actual redirection for replace()
             }
         }
     },
