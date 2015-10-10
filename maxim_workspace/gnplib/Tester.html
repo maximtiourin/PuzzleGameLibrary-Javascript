@@ -9,6 +9,8 @@
         function init() {
             stage = new createjs.Stage("gameCanvas");
 
+            stage.enableMouseOver(20);
+
             circle = new createjs.Shape();
             circle.graphics.beginFill("red").drawCircle(0, 0, 40);
             circle.x = circle.y = 50;
@@ -25,8 +27,15 @@
                 gnplib.window.redirect("http://www.reddit.com", false);
             });
 
+            tbutton = gnplib.ui.createButtonSimple(stage, "testbtn", "red", "blue", "white", 120, 40, function(event) {
+                //Do Nothing then update stage (stage needs to be update anytime an element is changed)
+                stage.update();
+            });
+            tbutton.x = tbutton.y = 125;
+
             stage.addChild(circle);
             stage.addChild(square);
+            stage.addChild(tbutton);
 
             stage.update();
         }
