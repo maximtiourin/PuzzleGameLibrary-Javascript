@@ -1,4 +1,4 @@
-/*!
+/**
  * @license EaselJS
  * Visit http://createjs.com/ for documentation, updates and examples.
  *
@@ -17,7 +17,7 @@ this.createjs=this.createjs||{},createjs.extend=function(a,b){"use strict";funct
 /**
  * Team GNP Library
  *
- * Includes the min version of the EaselJS Library (easeljs-0.8.1.min), and adds additional helpful functionality for
+ * Includes the min version of the EaselJS Library v0.8.1 (easeljs-0.8.1.min) in the header, and adds additional helpful functionality for
  * the Green Ninja Puzzle Project.
  *
  * Reasoning for including the EaselJS library in the same file is to make loading the
@@ -26,7 +26,7 @@ this.createjs=this.createjs||{},createjs.extend=function(a,b){"use strict";funct
  * @Author - Maxim Tiourin
  */
 var gnplib = {
-    /*
+    /**
      * Browser window utility functions
      */
     window: {
@@ -39,7 +39,7 @@ var gnplib = {
          *
          * @param {string} url absolute or relative url string to redirect to
          * @param {boolean} isLink boolean value, true to simulate the user clicking on a link, false to simulate an http redirect
-         * @returns {boolean} returns the passed value of isLink
+         * @returns {boolean} the passed value of isLink
          */
         redirect: function(url, isLink) {
             if (isLink) {
@@ -48,14 +48,22 @@ var gnplib = {
             }
             else {
                 window.location.replace(url);
-                return false; //Necessary to trigger the actual redirection for replace()
+                return false; //A return is necessary to trigger the actual redirection for replace()
             }
         }
     },
-    /*
+    /**
      * User Interface utility functions
      */
     ui: {
+        /**
+         * Dev Helper functions for the clean creation of ui elements
+         */
+        helper: {
+            drawButton: function(graphics, color, width, height, radius) {
+                return graphics.beginFill(color).drawRoundRect(0, 0, width, height, radius);
+            }
+        },
         /**
          * Creates and returns a simple easeljs button object.
          * @param stage
@@ -65,61 +73,78 @@ var gnplib = {
          * @param clickColor
          * @param width
          * @param height
-         * @param clickfunc
+         * @param isRound
+         * @param clickFunc
          * @returns button object
          */
-        createButtonSimple: function(stage, text, baseColor, highlightColor, clickColor, width, height, clickfunc) {
-            defaultRadius = 15;
-            rollover = false;
+        createButtonSimple: function(stage, text, baseColor, highlightColor, clickColor, width, height, isRound, clickFunc) {
+            //Defaults
+            var defaultRadius = 15; //Sets the default radius of the simple button
+
+            //Init
+            var radius = (isRound) ? (defaultRadius) : (0); //Sets the current radius to default, or otherwise to 0.
+            var rollover = false; //Button is initially not rolled over
 
             //Create initial button
-            btn = new createjs.Shape();
-            btn.graphics.beginFill(baseColor).drawRoundRect(0, 0, width, height, defaultRadius);
+            var btn = new createjs.Shape();
+            var g = btn.graphics;
+            gnplib.ui.helper.drawButton(g, baseColor, width, height, radius);
 
-            //Add highlight enable color function
+            //Add highlight enable color event
             btn.addEventListener("rollover", function(event) {
                 rollover = true;
-                btn.graphics.clear().beginFill(highlightColor).drawRoundRect(0, 0, width, height, defaultRadius);
+                g.clear();
+                gnplib.ui.helper.drawButton(g, highlightColor, width, height, radius);
                 stage.update();
             });
 
-            //Add highlight disable color function
+            //Add highlight disable color event
             btn.addEventListener("rollout", function(event) {
                 rollover = false;
-                btn.graphics.clear().beginFill(baseColor).drawRoundRect(0, 0, width, height, defaultRadius);
+                g.clear();
+                gnplib.ui.helper.drawButton(g, baseColor, width, height, radius);
                 stage.update();
             });
 
-            //Add click enable color function
+            //Add click enable color event
             btn.addEventListener("mousedown", function(event) {
-                btn.graphics.clear().beginFill(clickColor).drawRoundRect(0, 0, width, height, defaultRadius);
+                g.clear();
+                gnplib.ui.helper.drawButton(g, clickColor, width, height, radius);
                 stage.update();
             });
 
-            //Add click disable color function
+            //Add click disable event
             btn.addEventListener("pressup", function(event) {
+                g.clear();
                 if (rollover) {
-                    btn.graphics.clear().beginFill(highlightColor).drawRoundRect(0, 0, width, height, defaultRadius);
+                    gnplib.ui.helper.drawButton(g, highlightColor, width, height, radius);
                 }
                 else {
-                    btn.graphics.clear().beginFill(baseColor).drawRoundRect(0, 0, width, height, defaultRadius);
+                    gnplib.ui.helper.drawButton(g, baseColor, width, height, radius);
                 }
                 stage.update();
             });
 
-            //Add the passed click function
-            btn.addEventListener("click", clickfunc);
+            //Add click animation function
+            /*createjs.Ticker.addEventListener("tick", function(event) {
+               if (!event.paused) {
+
+               }
+            });*/
+
+            //Add the passed click event function
+            btn.addEventListener("click", clickFunc);
 
             return btn;
         }
     },
-    /*
+    /**
      * String utility functions
      */
     string: {
 
     },
-    /*
+    /**
      * Math utility functions
      */
     math: {
