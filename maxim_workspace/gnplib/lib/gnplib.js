@@ -16,38 +16,101 @@ this.createjs=this.createjs||{},createjs.extend=function(a,b){"use strict";funct
 
 /**
  * Team GNP Library
+ *
  * Includes the min version of the EaselJS Library (easeljs-0.8.1.min), and adds additional helpful functionality for
- * the Green Ninja Puzzle Project. Reasoning for including the EaselJS library in the same file is to make loading the
+ * the Green Ninja Puzzle Project.
+ *
+ * Reasoning for including the EaselJS library in the same file is to make loading the
  * scripts in an HTML file simple, while ensuring everything is done in the correct order.
- * Author(s) - Maxim Tiourin,
- * Creation Date - 10/10/2015
+ *
+ * @Author - Maxim Tiourin
  */
-
-//Root Namespace for the Team GNP library
 var gnplib = {
     /*
      * Browser window utility functions
      */
     window: {
-        /*
+        /**
          * Redirects the header to the given url
          *
-         * url = ...
          * Absolute redirect ex: "http://www.myurl.com/test.html"
          * Relative redirect in current directory ex: "/test2.html"
          * Relative redirect in directory one level above ex: "../test3.html"
          *
-         * isLink = true, when you want to simulate the user clicking on a link, generating browser history
-         * isLink = false, when you want to simulate an http redirect, therefore not generating a history item
+         * @param {string} url absolute or relative url string to redirect to
+         * @param {boolean} isLink boolean value, true to simulate the user clicking on a link, false to simulate an http redirect
+         * @returns {boolean} returns the passed value of isLink
          */
         redirect: function(url, isLink) {
             if (isLink) {
                 window.location.href = url;
+                return true;
             }
             else {
                 window.location.replace(url);
                 return false; //Necessary to trigger the actual redirection for replace()
             }
+        }
+    },
+    /*
+     * User Interface utility functions
+     */
+    ui: {
+        /**
+         * Creates and returns a simple easeljs button object.
+         * @param stage
+         * @param text
+         * @param baseColor
+         * @param highlightColor
+         * @param clickColor
+         * @param width
+         * @param height
+         * @param clickfunc
+         * @returns button object
+         */
+        createButtonSimple: function(stage, text, baseColor, highlightColor, clickColor, width, height, clickfunc) {
+            defaultRadius = 15;
+            rollover = false;
+
+            //Create initial button
+            btn = new createjs.Shape();
+            btn.graphics.beginFill(baseColor).drawRoundRect(0, 0, width, height, defaultRadius);
+
+            //Add highlight enable color function
+            btn.addEventListener("rollover", function(event) {
+                rollover = true;
+                btn.graphics.clear().beginFill(highlightColor).drawRoundRect(0, 0, width, height, defaultRadius);
+                stage.update();
+            });
+
+            //Add highlight disable color function
+            btn.addEventListener("rollout", function(event) {
+                rollover = false;
+                btn.graphics.clear().beginFill(baseColor).drawRoundRect(0, 0, width, height, defaultRadius);
+                stage.update();
+            });
+
+            //Add click enable color function
+            btn.addEventListener("mousedown", function(event) {
+                btn.graphics.clear().beginFill(clickColor).drawRoundRect(0, 0, width, height, defaultRadius);
+                stage.update();
+            });
+
+            //Add click disable color function
+            btn.addEventListener("pressup", function(event) {
+                if (rollover) {
+                    btn.graphics.clear().beginFill(highlightColor).drawRoundRect(0, 0, width, height, defaultRadius);
+                }
+                else {
+                    btn.graphics.clear().beginFill(baseColor).drawRoundRect(0, 0, width, height, defaultRadius);
+                }
+                stage.update();
+            });
+
+            //Add the passed click function
+            btn.addEventListener("click", clickfunc);
+
+            return btn;
         }
     },
     /*
