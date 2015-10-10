@@ -7,15 +7,16 @@
     <script type="text/javascript" src="lib/gnplib.js" defer></script>
     <script>
         function init() {
-            stage = new createjs.Stage("gameCanvas");
+            var stage = new createjs.Stage("gameCanvas");
 
-            stage.enableMouseOver(20);
+            //Ticker.framerate = 30;
+            stage.enableMouseOver(20); //Required to enable mouse overs in stage to start any actual polling
 
-            circle = new createjs.Shape();
+            var circle = new createjs.Shape();
             circle.graphics.beginFill("red").drawCircle(0, 0, 40);
             circle.x = circle.y = 50;
 
-            square = new createjs.Shape();
+            var square = new createjs.Shape();
             square.graphics.beginFill("blue").drawRect(0, 0, 60, 60);
             square.x = square.y = 200;
 
@@ -27,8 +28,8 @@
                 gnplib.window.redirect("http://www.reddit.com", false);
             });
 
-            tbutton = gnplib.ui.createButtonSimple(stage, "testbtn", "red", "blue", "white", 120, 40, function(event) {
-                //Do Nothing then update stage (stage needs to be update anytime an element is changed)
+            var tbutton = gnplib.ui.createButtonSimple(stage, "testbtn", "red", "blue", "white", 120, 40, true, function(event) {
+                //Do Nothing then update stage (stage needs to be updated anytime an element is changed)
                 stage.update();
             });
             tbutton.x = tbutton.y = 125;
