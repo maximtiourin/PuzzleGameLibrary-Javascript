@@ -53,89 +53,191 @@ var gnplib = {
         }
     },
     /**
-     * User Interface utility functions
+     * User Interface utility functions and classes
      */
     ui: {
         /**
-         * Dev Helper functions for the clean creation of ui elements
+         * Contains helper functions for the creation of ui elements, used by functions in gnplib.ui
          */
         helper: {
-            drawButton: function(graphics, color, width, height, radius) {
-                return graphics.beginFill(color).drawRoundRect(0, 0, width, height, radius);
+            /**
+             * Used to create buttons of varying configurations by createButton functions in gnplib.ui
+             * The x and y origin point of the button is at its center
+             * @param {createjs.Stage} stage the easeljs Stage context
+             * @param {createjs.Text} textObj the easeljs Text object to display, or null if no text to display
+             * @param {String} baseColor the normal background color of the button
+             * @param {String} highlightColor the background color of the button when it is highlighted
+             * @param {String} clickColor the background color of the button when it is clicked
+             * @param {Number} width the width of the button
+             * @param {Number} height the height of the button
+             * @param {Number} radius 0 for normal rectangle, greater than 0 for a rounded rectangle
+             * @param {String} shapeType the type of button shape to create {"circle", "ellipse", "rectangle", "roundrectangle"}
+             * @param {Function} clickFunc the function that should be executed when the button is clicked
+             * @returns {createjs.Container} the container object that holds all of the button elements
+             */
+            createButtonSimple: function(stage, textObj, baseColor, highlightColor, clickColor, width, height, radius, shapeType, clickFunc) {
+                //Defaults
+                var defaultXScale = 1.0; //Default xscale of button container
+                var defaultYScale = 1.0; //Default yscale of button container
+                var defaultScaleShrinkAmount = .10; //How much to change the scale of the button container on mouseclick
+
+                //Init
+                var btn = new createjs.Container(); //Create the container for the button
+                var shape = new createjs.Shape(); //Create the initial shape for the button
+                var g = shape.graphics; //The graphics context for the button shape
+                var rollover = false; //Button is initially not rolled over
+                var pressed = false; //Button is initially not pressed
+                var color = baseColor; //Initial color to draw
+
+                //Add Children to container
+                btn.addChild(shape);
+                if (textObj !== null) {
+                    btn.addChild(textObj);
+                }
+
+                //Set the container's registration point in center, and Position Text in center of container
+                var cwh = width / 2;
+                var chh = height / 2;
+                btn.regX = cwh;
+                btn.regY = chh;
+                if (textObj !== null) {
+                    textObj.textAlign = "center"; //Make the text align horizontally to its center point
+                    textObj.textBaseline = "middle"; //Make the text vertically align to its middle point
+                    textObj.set({x: cwh, y: chh}); //Set the text's center point the center of the container
+                }
+
+                //Create Redraw Function
+                var redraw = function() {
+                    g.clear();
+                    if (shapeType === "circle") {
+                        g.beginFill(color).drawCircle(btn.regX, btn.regY, radius);
+                    }
+                    else if (shapeType === "ellipse") {
+                        g.beginFill(color).drawEllipse(0, 0, width, height);
+                    }
+                    else if (shapeType === "rectangle") {
+                        g.beginFill(color).drawRect(0, 0, width, height);
+                    }
+                    else if (shapeType === "roundrectangle") {
+                        g.beginFill(color).drawRoundRect(0, 0, width, height, radius);
+                    }
+                    stage.update();
+                }
+
+                //Draw initial button
+                redraw();
+
+                //Add highlight enable color event
+                btn.addEventListener("rollover", function(event) {
+                    rollover = true;
+                    color = (pressed) ? (clickColor) : (highlightColor);
+                    redraw();
+                });
+
+                //Add highlight disable color event
+                btn.addEventListener("rollout", function(event) {
+                    rollover = false;
+                    color = (pressed) ? (clickColor) : (baseColor);
+                    redraw();
+                });
+
+                //Add click enable color event
+                btn.addEventListener("mousedown", function(event) {
+                    color = clickColor;
+                    pressed = true;
+                    btn.scaleX = defaultXScale - defaultScaleShrinkAmount; //Shrink xscale of button container
+                    btn.scaleY = defaultYScale - defaultScaleShrinkAmount; //Shrink yscale of button container
+                    redraw();
+                });
+
+                //Add click disable color event
+                btn.addEventListener("pressup", function(event) {
+                    pressed = false;
+                    if (rollover) {
+                        color = highlightColor;
+                    }
+                    else {
+                        color = baseColor;
+                    }
+                    btn.scaleX = defaultXScale; //Reset xscale of button container
+                    btn.scaleY = defaultYScale; //Reset yscale of button container
+                    redraw();
+                });
+
+                //Add the passed click event function
+                btn.addEventListener("click", clickFunc);
+
+                return btn;
             }
         },
         /**
-         * Creates and returns a simple easeljs button object.
-         * @param stage
-         * @param text
-         * @param baseColor
-         * @param highlightColor
-         * @param clickColor
-         * @param width
-         * @param height
-         * @param isRound
-         * @param clickFunc
-         * @returns button object
+         * Creates and returns a simple easeljs Container object that contains the elements of a circular button.
+         * The x and y origin point of the button is at its center
+         * @param {createjs.Stage} stage the easeljs Stage context
+         * @param {createjs.Text} textObj the easeljs Text object to display
+         * @param {String} baseColor the normal background color of the button
+         * @param {String} highlightColor the background color of the button when it is highlighted
+         * @param {String} clickColor the background color of the button when it is clicked
+         * @param {Number} radius the radius of the circle
+         * @param {Function} clickFunc the function that should be executed when the button is clicked
+         * @returns {createjs.Container} the container object that holds all of the button elements
          */
-        createButtonSimple: function(stage, text, baseColor, highlightColor, clickColor, width, height, isRound, clickFunc) {
-            //Defaults
-            var defaultRadius = 15; //Sets the default radius of the simple button
-
-            //Init
-            var radius = (isRound) ? (defaultRadius) : (0); //Sets the current radius to default, or otherwise to 0.
-            var rollover = false; //Button is initially not rolled over
-
-            //Create initial button
-            var btn = new createjs.Shape();
-            var g = btn.graphics;
-            gnplib.ui.helper.drawButton(g, baseColor, width, height, radius);
-
-            //Add highlight enable color event
-            btn.addEventListener("rollover", function(event) {
-                rollover = true;
-                g.clear();
-                gnplib.ui.helper.drawButton(g, highlightColor, width, height, radius);
-                stage.update();
-            });
-
-            //Add highlight disable color event
-            btn.addEventListener("rollout", function(event) {
-                rollover = false;
-                g.clear();
-                gnplib.ui.helper.drawButton(g, baseColor, width, height, radius);
-                stage.update();
-            });
-
-            //Add click enable color event
-            btn.addEventListener("mousedown", function(event) {
-                g.clear();
-                gnplib.ui.helper.drawButton(g, clickColor, width, height, radius);
-                stage.update();
-            });
-
-            //Add click disable event
-            btn.addEventListener("pressup", function(event) {
-                g.clear();
-                if (rollover) {
-                    gnplib.ui.helper.drawButton(g, highlightColor, width, height, radius);
-                }
-                else {
-                    gnplib.ui.helper.drawButton(g, baseColor, width, height, radius);
-                }
-                stage.update();
-            });
-
-            //Add click animation function
-            /*createjs.Ticker.addEventListener("tick", function(event) {
-               if (!event.paused) {
-
-               }
-            });*/
-
-            //Add the passed click event function
-            btn.addEventListener("click", clickFunc);
-
-            return btn;
+        createButtonCircle: function(stage, textObj, baseColor, highlightColor, clickColor, radius, clickFunc) {
+            return gnplib.ui.helper.createButtonSimple(stage, textObj, baseColor, highlightColor, clickColor,
+                radius * 2, radius * 2, radius, "circle", clickFunc);
+        },
+        /**
+         * Creates and returns a simple easeljs Container object that contains the elements of an elliptical button.
+         * The x and y origin point of the button is at its center
+         * @param {createjs.Stage} stage the easeljs Stage context
+         * @param {createjs.Text} textObj the easeljs Text object to display
+         * @param {String} baseColor the normal background color of the button
+         * @param {String} highlightColor the background color of the button when it is highlighted
+         * @param {String} clickColor the background color of the button when it is clicked
+         * @param {Number} width the width of the button
+         * @param {Number} height the height of the button
+         * @param {Function} clickFunc the function that should be executed when the button is clicked
+         * @returns {createjs.Container} the container object that holds all of the button elements
+         */
+        createButtonEllipse: function(stage, textObj, baseColor, highlightColor, clickColor, width, height, clickFunc) {
+            return gnplib.ui.helper.createButtonSimple(stage, textObj, baseColor, highlightColor, clickColor, width, height,
+                0, "ellipse", clickFunc);
+        },
+        /**
+         * Creates and returns a simple easeljs Container object that contains the elements of a rectangular button.
+         * The x and y origin point of the button is at its center
+         * @param {createjs.Stage} stage the easeljs Stage context
+         * @param {createjs.Text} textObj the easeljs Text object to display
+         * @param {String} baseColor the normal background color of the button
+         * @param {String} highlightColor the background color of the button when it is highlighted
+         * @param {String} clickColor the background color of the button when it is clicked
+         * @param {Number} width the width of the button
+         * @param {Number} height the height of the button
+         * @param {Function} clickFunc the function that should be executed when the button is clicked
+         * @returns {createjs.Container} the container object that holds all of the button elements
+         */
+        createButtonRectangle: function(stage, textObj, baseColor, highlightColor, clickColor, width, height, clickFunc) {
+            return gnplib.ui.helper.createButtonSimple(stage, textObj, baseColor, highlightColor, clickColor, width, height,
+                0, "rectangle", clickFunc);
+        },
+        /**
+         * Creates and returns a simple easeljs Container object that contains the elements of a round rectangular button.
+         * The x and y origin point of the button is at its center
+         * @param {createjs.Stage} stage the easeljs Stage context
+         * @param {createjs.Text} textObj the easeljs Text object to display
+         * @param {String} baseColor the normal background color of the button
+         * @param {String} highlightColor the background color of the button when it is highlighted
+         * @param {String} clickColor the background color of the button when it is clicked
+         * @param {Number} width the width of the button
+         * @param {Number} height the height of the button
+         * @param {Number} radius the radius of the rounded corners of the rectangle
+         * @param {Function} clickFunc the function that should be executed when the button is clicked
+         * @returns {createjs.Container} the container object that holds all of the button elements
+         */
+        createButtonRoundRectangle: function(stage, textObj, baseColor, highlightColor, clickColor, width, height,
+                                             radius, clickFunc) {
+            return gnplib.ui.helper.createButtonSimple(stage, textObj, baseColor, highlightColor, clickColor, width, height,
+                radius, "roundrectangle", clickFunc);
         }
     },
     /**
