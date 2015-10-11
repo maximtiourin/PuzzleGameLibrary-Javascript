@@ -7,37 +7,55 @@
     <script type="text/javascript" src="lib/gnplib.js" defer></script>
     <script>
         function init() {
+            //Create Stage
             var stage = new createjs.Stage("gameCanvas");
 
-            //Ticker.framerate = 30;
-            stage.enableMouseOver(20); //Required to enable mouse overs in stage to start any actual polling
+            createjs.Ticker.framerate = 30; //Set the tick rate of the stage to a target of 30 times per second
+            stage.enableMouseOver(20); //Enables mouse over events for the stage at a rate of 20 times per second
 
-            var circle = new createjs.Shape();
-            circle.graphics.beginFill("red").drawCircle(0, 0, 40);
-            circle.x = circle.y = 50;
+            //Text test
+            var text = new createjs.Text("Test Text", "16px Arial", "#000000");
+            text.set({x: 140, y: 60});
+            text.textBaseline = "alphabetic";
+            stage.addChild(text);
 
-            var square = new createjs.Shape();
-            square.graphics.beginFill("blue").drawRect(0, 0, 60, 60);
-            square.x = square.y = 200;
-
-            //Add test link redirect when clicking on circle, and test http redirect when clicking on square
-            circle.addEventListener("click", function(event) {
-                gnplib.window.redirect("http://www.google.com", true);
-            });
-            square.addEventListener("click", function(event) {
-                gnplib.window.redirect("http://www.reddit.com", false);
-            });
-
-            var tbutton = gnplib.ui.createButtonSimple(stage, "testbtn", "red", "blue", "white", 120, 40, true, function(event) {
-                //Do Nothing then update stage (stage needs to be updated anytime an element is changed)
+            //createButtonRectangle Test
+            var tbutton1 = gnplib.ui.createButtonRectangle(stage, new createjs.Text("Test Button", "bold 16px Arial", "#000000"),
+                    "#1b2ec2", "#5662c1", "#0e1864", 120, 40, function(event) {
+                //This is where the actions of clicking the button go.
+                //For now, Do Nothing then call update stage (stage needs to be updated anytime an element is changed)
                 stage.update();
             });
-            tbutton.x = tbutton.y = 125;
+            tbutton1.set({x: 185, y: 125});
+            stage.addChild(tbutton1);
 
-            stage.addChild(circle);
-            stage.addChild(square);
-            stage.addChild(tbutton);
+            //createButtonRoundRectangle Test
+            var tbutton2 = gnplib.ui.createButtonRoundRectangle(stage, new createjs.Text("Test Button 2", "bold 10px Arial", "#ffffff"),
+                    "#eb531e", "#e87851", "#7c2d11", 80, 30, 8, function(event) {
+                        //This is where the actions of clicking the button go.
+                        //For now, Do Nothing then call update stage (stage needs to be updated anytime an element is changed)
+                        stage.update();
+                    });
+            tbutton2.set({x: 320, y: 125});
+            stage.addChild(tbutton2);
 
+            //createButtonCircle + URL Redirect Test
+            var tbutton3 = gnplib.ui.createButtonCircle(stage, new createjs.Text("URL Button", "bold 14px Arial", "#ff0000"),
+                    "#ffea00", "#fff584", "#ffae00", 46, function(event) {
+                        gnplib.window.redirect("http://www.google.com", true);
+                    });
+            tbutton3.set({x: 70, y: 60});
+            stage.addChild(tbutton3);
+
+            //createButtonEllipse + HTTP Redirect Test
+            var tbutton3 = gnplib.ui.createButtonEllipse(stage, new createjs.Text("HTTP Button", "bold 14px Arial", "#00ff00"),
+                    "#671695", "#733994", "#34025e", 120, 60, function(event) {
+                        gnplib.window.redirect("http://www.google.com", false);
+                    });
+            tbutton3.set({x: 400, y: 200});
+            stage.addChild(tbutton3);
+
+            //Update Initial Stage
             stage.update();
         }
     </script>
