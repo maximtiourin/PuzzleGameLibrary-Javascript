@@ -17,7 +17,7 @@
 
             //Create asset manifest and load queue
             var manifest = [
-                {src: "testimage.jpg", id: "testimage"} //The testimage
+                {src: "testimage.jpg", id: "testimage"}
             ];
 
             loader = new createjs.LoadQueue(true);
@@ -79,7 +79,7 @@
             //Tests setWidth and setHeight by creating a shape with the correct bounds for comparison
             var timagetester = new createjs.Shape();
             timagetester.graphics.beginFill("red").drawRect(0, 0, 250, 50);
-            timagetester.set({x: 40, y: 251});
+            timagetester.set({x: 40, y: 255});
             stage.addChild(timagetester);
 
             //Update Initial Stage
@@ -88,6 +88,6 @@
     </script>
 </head>
 <body onload="init();">
-<canvas id="gameCanvas" width="600" height="400">Your browser does not support "canvas".</canvas>
+<canvas id="gameCanvas" width="600" height="400">Your browser does not support the HTML5 "Canvas" Element.</canvas>
 </body>
 </html>
