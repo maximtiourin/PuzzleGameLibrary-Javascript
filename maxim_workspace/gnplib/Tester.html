@@ -55,6 +55,18 @@
             tbutton4.set({x: 400, y: 200});
             stage.addChild(tbutton4);
 
+            //Bitmap Image Test + setWidth / setHeight Test
+            var timage1 = new createjs.Bitmap("testimage.jpg");
+            timage1.set({x: 40, y: 200});
+            gnplib.ui.setWidth(timage1, 250);
+            gnplib.ui.setHeight(timage1, 50);
+            stage.addChild(timage1);
+                //Tests setWidth and setHeight by creating a shape with the correct bounds for comparison
+            var timagetester = new createjs.Shape();
+            timagetester.graphics.beginFill("red").drawRect(0, 0, 250, 50);
+            timagetester.set({x: 40, y: 251});
+            stage.addChild(timagetester);
+
             //Update Initial Stage
             stage.update();
         }
