@@ -240,28 +240,44 @@ var gnplib = {
                 radius, "roundrectangle", clickFunc);
         },
         /**
+         * Returns the current pixel width of the DisplayObject by taking its current scaleX and multiplying by
+         * its default pixel width.
+         * @param {createjs.DisplayObject} displayObj The DisplayObject to get the width of
+         * @returns {Number} the width of the DisplayObject
+         */
+        getWidth: function(displayObj) {
+            var defaultWidth = displayObj.getBounds().width;
+            return displayObj.scaleX * defaultWidth;
+        },
+        /**
+         * Returns the current pixel height of the DisplayObject by taking its current scaleY and multiplying by
+         * its default pixel height.
+         * @param {createjs.DisplayObject} displayObj The DisplayObject to get the height of
+         * @returns {Number} the height of the DisplayObject
+         */
+        getHeight: function(displayObj) {
+            var defaultHeight = displayObj.getBounds().height;
+            return displayObj.scaleY * defaultHeight;
+        },
+        /**
          * Takes a width in pixels, and sets the display objects scaleX property to correctly scale to that width.
          * @param {createjs.DisplayObject} displayObj The DisplayObject to set the width of
          * @param {Number} width the pixel width amount to set to
-         * @returns {createjs.DisplayObject} returns the given DisplayObject to enable easy chaining of commands
          */
         setWidth: function(displayObj, width) {
-            var defaultWidth = obj.getBounds().width;
+            var defaultWidth = displayObj.getBounds().width;
             var newScale = width / defaultWidth;
             displayObj.scaleX = newScale;
-            return displayObj;
         },
         /**
          * Takes a height in pixels, and sets the display objects scaleY property to correctly scale to that height.
          * @param {createjs.DisplayObject} displayObj The DisplayObject to set the height of
          * @param {Number} height the pixel height amount to set to
-         * @returns {createjs.DisplayObject} returns the given DisplayObject to enable easy chaining of commands
          */
         setHeight: function(displayObj, height) {
-            var defaultHeight = obj.getBounds().height;
+            var defaultHeight = displayObj.getBounds().height;
             var newScale = height / defaultHeight;
             displayObj.scaleY = newScale;
-            return displayObj;
         }
     },
     /**
