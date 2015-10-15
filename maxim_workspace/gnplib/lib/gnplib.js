@@ -27,30 +27,16 @@ this.createjs=this.createjs||{},createjs.extend=function(a,b){"use strict";funct
  */
 var gnplib = {
     /**
-     * Browser window utility functions
+     * Math utility functions
      */
-    window: {
-        /**
-         * Redirects the header to the given url
-         *
-         * Absolute redirect ex: "http://www.myurl.com/test.html"
-         * Relative redirect in current directory ex: "/test2.html"
-         * Relative redirect in directory one level above ex: "../test3.html"
-         *
-         * @param {string} url absolute or relative url string to redirect to
-         * @param {boolean} isLink boolean value, true to simulate the user clicking on a link, false to simulate an http redirect
-         * @returns {boolean} the passed value of isLink
-         */
-        redirect: function(url, isLink) {
-            if (isLink) {
-                window.location.href = url;
-                return true;
-            }
-            else {
-                window.location.replace(url);
-                return false; //A return is necessary to trigger the actual redirection for replace()
-            }
-        }
+    math: {
+
+    },
+    /**
+     * String utility functions
+     */
+    string: {
+
     },
     /**
      * User Interface utility functions and classes
@@ -281,15 +267,29 @@ var gnplib = {
         }
     },
     /**
-     * String utility functions
+     * Browser window utility functions
      */
-    string: {
-
-    },
-    /**
-     * Math utility functions
-     */
-    math: {
-
+    window: {
+        /**
+         * Redirects the header to the given url
+         *
+         * Absolute redirect ex: "http://www.myurl.com/test.html"
+         * Relative redirect in current directory ex: "/test2.html"
+         * Relative redirect in directory one level above ex: "../test3.html"
+         *
+         * @param {string} url absolute or relative url string to redirect to
+         * @param {boolean} isLink boolean value, true to simulate the user clicking on a link, false to simulate an http redirect
+         * @returns {boolean} the passed value of isLink
+         */
+        redirect: function(url, isLink) {
+            if (isLink) {
+                window.location.href = url;
+                return true;
+            }
+            else {
+                window.location.replace(url);
+                return false; //A return is necessary to trigger the actual redirection for replace()
+            }
+        }
     }
 };
