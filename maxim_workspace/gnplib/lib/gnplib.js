@@ -238,6 +238,30 @@ var gnplib = {
                                              radius, clickFunc) {
             return gnplib.ui.helper.createButtonSimple(stage, textObj, baseColor, highlightColor, clickColor, width, height,
                 radius, "roundrectangle", clickFunc);
+        },
+        /**
+         * Takes a width in pixels, and sets the display objects scaleX property to correctly scale to that width.
+         * @param {createjs.DisplayObject} displayObj The DisplayObject to set the width of
+         * @param {Number} width the pixel width amount to set to
+         * @returns {createjs.DisplayObject} returns the given DisplayObject to enable easy chaining of commands
+         */
+        setWidth: function(displayObj, width) {
+            var defaultWidth = obj.getBounds().width;
+            var newScale = width / defaultWidth;
+            displayObj.scaleX = newScale;
+            return displayObj;
+        },
+        /**
+         * Takes a height in pixels, and sets the display objects scaleY property to correctly scale to that height.
+         * @param {createjs.DisplayObject} displayObj The DisplayObject to set the height of
+         * @param {Number} height the pixel height amount to set to
+         * @returns {createjs.DisplayObject} returns the given DisplayObject to enable easy chaining of commands
+         */
+        setHeight: function(displayObj, height) {
+            var defaultHeight = obj.getBounds().height;
+            var newScale = height / defaultHeight;
+            displayObj.scaleY = newScale;
+            return displayObj;
         }
     },
     /**
