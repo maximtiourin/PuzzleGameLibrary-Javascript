@@ -244,6 +244,89 @@ var gnplib = {
                 radius, "roundrectangle", clickFunc);
         },
         /**
+         * A LockDial class that simulates a lock dial by allowing a user to rotate it by dragging. It then can
+         * return a value based on its rotation, taking into account how many ticks are supposed to be in a full
+         * rotation. A dials value is 0 at the 90 degree position (top of dial), and increases in value in the clockwise
+         * direction, rolling over back to 0 when it reaches 90 degrees again.
+         * @param {createjs.Stage} stage the easeljs Stage context
+         * @param {createjs.Bitmap} bitmapImage the easeljs Bitmap object
+         * @param {Number} ticksInFullRotation how many ticks are in a full 360 degree rotation of the dial.
+         * @param {Function} eventFunc function that will execute whenever the dial's value is updated, it will be passed the value of the dial for the first parameter
+         * @constructor
+         */
+        LockDial: function(stage, bitmapImage, ticksInFullRotation, eventFunc) {
+            eventFunc = eventFunc || null; //Set default value of eventFunc if it was not passed
+
+            var thislock = this;
+            this.ROTATION_TO_TICKS = Math.PI / 2; //The amount to adjust rotation by to get the correct value of ticks
+            this.bitmap = bitmapImage; //The bitmap image to draw as the representation of the lock dial
+            this.hasUpdate = false; //Performance helper variable that makes sure the lock dial is updated only when it needs to be.
+            this.fullTicks = ticksInFullRotation; //How many ticks are contained inside of a full rotation of the dial.
+            this.tick = 0; //The current tick, with 0 being located at 90 degrees, and increasing in a clockwise direction
+            this.value = 0; //The value of the dial, this is a representation of the number at the 90 degree (or top) position of the lock dial
+            this.rotation = 0; //The current rotation in radians of the lock;
+            this.lock = new createjs.Container(); //The lock dial, defined as a container
+
+            //Add the lock image to the lock container, and Define the origin points for the lock
+            thislock.lock.addChild(thislock.bitmap);
+            thislock.lock.regX = thislock.lock.getBounds().width / 2;
+            thislock.lock.regY = thislock.lock.getBounds().height / 2;
+
+            //Define redraw function
+            thislock.redraw = function() {
+                stage.update();
+            }
+
+            thislock.update = function() {
+                //Determine how many degrees per tick and rotate
+                var degreesPerTick = 360 / thislock.fullTicks; //Determine how many degrees there are per tick
+                var degrees = thislock.tick * degreesPerTick; //Determine how many degrees we have to rotate, in tick increments
+                thislock.lock.rotation = degrees; //Rotate the lock
+
+                thislock.value = thislock.fullTicks - thislock.tick; //Set the value of the dial
+                //Rollover the value of the dial if it has reached fullTicks
+                if (thislock.value === thislock.fullTicks) {
+                    thislock.value = 0;
+                }
+
+                //Call eventFunc
+                if (eventFunc !== null) {
+                    eventFunc(thislock.value);
+                }
+
+                //Redraw
+                thislock.redraw();
+            }
+
+            //Add mouse drag listener
+            thislock.lock.addEventListener("pressmove", function(event) {
+                var FR = 2 * Math.PI;
+                var centerx = thislock.lock.x; //The center x of the dial in stage coordinates
+                var centery = thislock.lock.y; //The center y of the dial in stage coordinates
+                var mousex = event.stageX; //The mouse x in stage coordinates
+                var mousey = event.stageY; //The mouse y in stage coordinates
+                var angleToMouseRadians = Math.atan2(mousey - centery, mousex - centerx); //The angle in radians from the center point to the mouse on range [-(PI), (PI)]
+                var positiveRotationRadians = (angleToMouseRadians + (FR)) % FR; //The angle in radians of mouse converted to be on range [0, 2 * PI)
+                var correctRotationRadians = FR - positiveRotationRadians; //The correct unit circle rotation where 0 radians is the positive x axis, and PI is the negative x axis.
+                var adjustedRotationRadians = (positiveRotationRadians + thislock.ROTATION_TO_TICKS) % FR; //The adjusted angle to account for ticks on range [0, 2 * PI)
+                var rotationRatio = adjustedRotationRadians / FR; //The rotation ratio of the adjusted angle, used to determine tick value, on range [0, 1.00)
+                thislock.rotation = adjustedRotationRadians; //Set the intended rotation in radians of the dial for reference
+                thislock.tick = Math.floor(rotationRatio * thislock.fullTicks); //Set the tick by applying the rotation ratio to the full tick value, range is [0, fullTicks)
+
+                thislock.hasUpdate = true;
+            });
+
+            //Add tick listener to only update the dial according to the stage's framerate, for performance reasons
+            createjs.Ticker.addEventListener("tick", function(event) {
+                if (!event.paused) {
+                    if (thislock.hasUpdate) {
+                        thislock.update();
+                        thislock.hasUpdate = false;
+                    }
+                }
+            });
+        },
+        /**
          * Returns the current pixel height of the DisplayObject by taking its current scaleY and multiplying by
          * its default pixel height.
          * @param {createjs.DisplayObject} displayObj The DisplayObject to get the height of
