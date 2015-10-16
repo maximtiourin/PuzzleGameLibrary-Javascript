@@ -260,6 +260,7 @@ var gnplib = {
             var thislock = this;
             this.ROTATION_TO_TICKS = Math.PI / 2; //The amount to adjust rotation by to get the correct value of ticks
             this.bitmap = bitmapImage; //The bitmap image to draw as the representation of the lock dial
+            this.func = eventFunc; //The function to be executed everytime the value of the dial is changed, is passed the value as the first parameter
             this.hasUpdate = false; //Performance helper variable that makes sure the lock dial is updated only when it needs to be.
             this.fullTicks = ticksInFullRotation; //How many ticks are contained inside of a full rotation of the dial.
             this.tick = 0; //The current tick, with 0 being located at 90 degrees, and increasing in a clockwise direction
@@ -291,8 +292,8 @@ var gnplib = {
                 }
 
                 //Call eventFunc
-                if (eventFunc !== null) {
-                    eventFunc(thislock.value);
+                if (thislock.func !== null) {
+                    thislock.func(thislock.value);
                 }
 
                 //Redraw
