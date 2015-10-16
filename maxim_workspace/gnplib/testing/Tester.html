@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Tester</title>
     <link rel="stylesheet" type="text/css" href="tempstyle.css">
-    <script type="text/javascript" src="lib/gnplib.js" defer></script>
+    <script type="text/javascript" src="../lib/gnplib.js" defer></script>
     <script>
         var stage; //The canvas stage
         var loader; //The asset loader
@@ -170,6 +170,8 @@
     </script>
 </head>
 <body onload="init();">
-<canvas id="gameCanvas" width="600" height="400">Your browser does not support the HTML5 "Canvas" Element.</canvas>
+<div id="canvas-container">
+    <canvas id="gameCanvas" width="600" height="400">Your browser does not support the HTML5 "Canvas" Element.</canvas>
+</div>
 </body>
 </html>
