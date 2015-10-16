@@ -277,6 +277,7 @@ var gnplib = {
                 stage.update();
             }
 
+            //Define update function
             thislock.update = function() {
                 //Determine how many degrees per tick and rotate
                 var degreesPerTick = 360 / thislock.fullTicks; //Determine how many degrees there are per tick
