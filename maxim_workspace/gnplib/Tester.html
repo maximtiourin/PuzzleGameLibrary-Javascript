@@ -12,12 +12,14 @@
         function init() {
             //Create Stage
             stage = new createjs.Stage("gameCanvas");
+            stage.mouseMoveOutside = true; //Allow the mouse to be dragged outside of the canvas during mouse events
             createjs.Ticker.framerate = 30; //Set the tick rate of the stage to a target of 30 times per second
             stage.enableMouseOver(20); //Enables mouse over events for the stage at a rate of 20 times per second
 
             //Create asset manifest and load queue
             var manifest = [
-                {src: "testimage.jpg", id: "testimage"}
+                {src: "testimage.jpg", id: "testimage"},
+                {src: "testlockimage.png", id: "testlockimage"}
             ];
 
             loader = new createjs.LoadQueue(true);
@@ -26,13 +28,17 @@
         }
 
         function loaded() {
+            /////////////////////////////////////////////////
             //Text test
+            /////////////////////////////////////////////////
             var text = new createjs.Text("Test Text", "16px Arial", "#000000");
             text.set({x: 140, y: 60});
             text.textBaseline = "alphabetic";
             stage.addChild(text);
 
+            /////////////////////////////////////////////////
             //createButtonRectangle Test
+            /////////////////////////////////////////////////
             var tbutton1 = gnplib.ui.createButtonRectangle(stage, new createjs.Text("Test Button", "bold 16px Arial", "#000000"),
                     "#1b2ec2", "#5662c1", "#0e1864", 120, 40, function(event) {
                         //This is where the actions of clicking the button go.
@@ -42,7 +48,9 @@
             tbutton1.set({x: 185, y: 125});
             stage.addChild(tbutton1);
 
+            /////////////////////////////////////////////////
             //createButtonRoundRectangle Test
+            /////////////////////////////////////////////////
             var tbutton2 = gnplib.ui.createButtonRoundRectangle(stage, new createjs.Text("Test Button 2", "bold 10px Arial", "#ffffff"),
                     "#eb531e", "#e87851", "#7c2d11", 80, 30, 8, function(event) {
                         //This is where the actions of clicking the button go.
@@ -52,7 +60,9 @@
             tbutton2.set({x: 320, y: 125});
             stage.addChild(tbutton2);
 
+            /////////////////////////////////////////////////
             //createButtonCircle + URL Redirect Test
+            /////////////////////////////////////////////////
             var tbutton3 = gnplib.ui.createButtonCircle(stage, new createjs.Text("URL Button", "bold 14px Arial", "#ff0000"),
                     "#ffea00", "#fff584", "#ffae00", 46, function(event) {
                         gnplib.window.redirect("http://www.google.com", true);
@@ -60,7 +70,9 @@
             tbutton3.set({x: 70, y: 60});
             stage.addChild(tbutton3);
 
+            /////////////////////////////////////////////////
             //createButtonEllipse + HTTP Redirect Test
+            /////////////////////////////////////////////////
             var tbutton4 = gnplib.ui.createButtonEllipse(stage, new createjs.Text("HTTP Button", "bold 14px Arial", "#00ff00"),
                     "#671695", "#733994", "#34025e", 120, 60, function(event) {
                         gnplib.window.redirect("http://www.google.com", false);
@@ -68,7 +80,9 @@
             tbutton4.set({x: 400, y: 200});
             stage.addChild(tbutton4);
 
+            /////////////////////////////////////////////////
             //Bitmap Image Test + setWidth / setHeight Test
+            /////////////////////////////////////////////////
             var timage1 = new createjs.Bitmap(loader.getResult("testimage"));
             timage1.set({x: 40, y: 200});
             gnplib.ui.setWidth(timage1, 250);
@@ -76,13 +90,81 @@
             stage.addChild(timage1);
             console.log("test image default dimensions [" + timage1.getBounds().width + ", " + timage1.getBounds().height + "]");
             console.log("test image current dimensions [" + gnplib.ui.getWidth(timage1) + ", " + gnplib.ui.getHeight(timage1) + "]");
-            //Tests setWidth and setHeight by creating a shape with the correct bounds for comparison
+            //      Tests setWidth and setHeight by creating a shape with the correct bounds for comparison
             var timagetester = new createjs.Shape();
             timagetester.graphics.beginFill("red").drawRect(0, 0, 250, 50);
             timagetester.set({x: 40, y: 255});
             stage.addChild(timagetester);
 
+            /////////////////////////////////////////////////
+            //Lock Dial Gameplay Mechanic Test 1
+            /////////////////////////////////////////////////
+            var tlockimage = new createjs.Bitmap(loader.getResult("testlockimage"));
+            tlockimage.scaleX = .44;
+            tlockimage.scaleY = .44;
+            var tlock = new gnplib.ui.LockDial(stage, tlockimage, 100);
+            tlock.lock.set({x: 500, y: 80});
+            stage.addChild(tlock.lock);
+            //      Tests lock center by displaying green square in center of lock dial
+            var tlocktester = new createjs.Shape();
+            tlocktester.graphics.beginFill("green").drawRect(0, 0, 10, 10);
+            tlocktester.set({x: 495, y: 75});
+            stage.addChild(tlocktester);
+            //      Tests lock value by display text in center of lock dial
+            var tlocktext = new createjs.Text(tlock.value, "bold 16px Arial", "#ffffff");
+            tlocktext.set({x: 500, y: 80});
+            tlocktext.shadow = new createjs.Shadow("#000000", 2, 2, 5);
+            createjs.Ticker.addEventListener("tick", function(event) {
+               if (!event.paused) {
+                   tlocktext.text = tlock.value;
+               }
+            });
+            stage.addChild(tlocktext);
+
+            /////////////////////////////////////////////////
+            //Lock Dial Gameplay Mechanic Test 2 + quick and dirty UNLOCKED state test
+            /////////////////////////////////////////////////
+            var tlockimage2 = new createjs.Bitmap(loader.getResult("testlockimage"));
+            tlockimage2.scaleX = .32;
+            tlockimage2.scaleY = .32;
+            var tlock2unlocked = false;
+            var tlock2 = new gnplib.ui.LockDial(stage, tlockimage2, 10, function(value) {
+                if (value === 6) {
+                    tlock2unlocked = true;
+                    tlocktext2.text = "6 - UNLOCKED!";
+                    tlocktext2.font = "bold 10px Arial";
+                    tlocktext2.color = "#00ff00";
+                }
+                else if (tlock2unlocked && value !== 6) {
+                    tlock2unlocked = false;
+                    tlocktext2.text = value;
+                    tlocktext2.font = "bold 16px Arial";
+                    tlocktext2.color = "#ffffff";
+                }
+            });
+            tlock2.lock.set({x: 530, y: 220});
+            stage.addChild(tlock2.lock);
+            //      Tests lock center by displaying green square in center of lock dial
+            var tlocktester2 = new createjs.Shape();
+            tlocktester2.graphics.beginFill("green").drawRect(0, 0, 10, 10);
+            tlocktester2.set({x: 525, y: 215});
+            stage.addChild(tlocktester2);
+            //      Tests lock value by display text in center of lock dial
+            var tlocktext2 = new createjs.Text(tlock2.value, "bold 16px Arial", "#ffffff");
+            tlocktext2.set({x: 530, y: 220});
+            tlocktext2.shadow = new createjs.Shadow("#000000", 2, 2, 5);
+            createjs.Ticker.addEventListener("tick", function(event) {
+                if (!event.paused) {
+                    if (!tlock2unlocked) {
+                        tlocktext2.text = tlock2.value;
+                    }
+                }
+            });
+            stage.addChild(tlocktext2);
+
+            /////////////////////////////////////////////////
             //Update Initial Stage
+            /////////////////////////////////////////////////
             stage.update();
         }
     </script>
