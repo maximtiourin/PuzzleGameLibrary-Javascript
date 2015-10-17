@@ -17,22 +17,43 @@
             stage.enableMouseOver(20); //Enables mouse over events for the stage at a rate of 20 times per second
 
             //Create asset manifest and load queue
-            /*var manifest = [
-                {src: "testimage.jpg", id: "testimage"},
-                {src: "testlockimage.png", id: "testlockimage"}
+            var manifest = [
+                {src: "../assets/images/testbg.png", id: "testbg"},
+                {src: "../assets/images/testimage2.png", id: "testimage2"}
             ];
 
             loader = new createjs.LoadQueue(true);
             loader.on("complete", loaded);
-            loader.loadManifest(manifest, true);*/
+            loader.loadManifest(manifest, true);
         }
 
         function loaded() {
+            /////////////////////////////////////////////////
+            //Create background image
+            /////////////////////////////////////////////////
+            var bgimage = new createjs.Bitmap(loader.getResult("testbg"));
+            bgimage.set({x: 0, y: 0});
+            gnplib.ui.setWidth(bgimage, 800);
+            gnplib.ui.setHeight(bgimage, 400);
+            stage.addChild(bgimage);
 
+            /////////////////////////////////////////////////
+            //Create test image to move fast across the screen
+            /////////////////////////////////////////////////
+            var timage = new createjs.Bitmap(loader.getResult("testimage2"));
+            timage.set({x: -150, y:50});
+            timage.alpha = .2;
+            stage.addChild(timage);
+            //      Add permanently looping tween to timage
+            createjs.Tween.get(timage, {loop: true})
+                    .to({x: 400}, 180, createjs.Ease.linear)
+                    .to({x: 950}, 180, createjs.Ease.linear);
 
             /////////////////////////////////////////////////
             //Update Initial Stage
             /////////////////////////////////////////////////
+            //Since we have tween animations, stage needs to be updated every frame, instead of ui event driven updates
+            createjs.Ticker.addEventListener("tick", stage);
             stage.update();
         }
     </script>
