@@ -46,9 +46,10 @@ this.createjs=this.createjs||{},createjs.extend=function(a,b){"use strict";funct
 /**
  * Team GNP Library
  *
- * Includes the min version of the EaselJS Library v0.8.1 (easeljs-0.8.1.min) and the min version of the
- * PreloadJS Library v0.6.1 (preloadjs-0.6.1.min) in the header. This library adds additional helpful functionality for
- * the Green Ninja Puzzle Project.
+ * Includes the min version of the EaselJS Library v0.8.1 (easeljs-0.8.1.min), the min version of the
+ * PreloadJS Library v0.6.1 (preloadjs-0.6.1.min), and the min version of the TweenJs Library v0.6.1
+ * (tweenjs-0.6.1.min) in the header. This library adds additional helpful functionality for the Green Ninja
+ * Puzzle Project.
  *
  * Reasoning for including the EaselJS and PreloadJS libraries in the same file is to make loading the
  * scripts in an HTML file simple, while ensuring everything is done in the correct order.
