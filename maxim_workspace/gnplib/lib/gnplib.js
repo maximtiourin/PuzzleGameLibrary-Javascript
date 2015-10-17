@@ -279,6 +279,7 @@ var gnplib = {
             this.tick = 0; //The current tick, with 0 being located at 90 degrees, and increasing in a clockwise direction
             this.value = 0; //The value of the dial, this is a representation of the number at the 90 degree (or top) position of the lock dial
             this.rotation = 0; //The current rotation in radians of the lock;
+            this.pressRotation = 0; //The rotational offset to use to determine where to rotate based on where the mouse was clicked down
             this.lock = new createjs.Container(); //The lock dial, defined as a container
 
             //Add the lock image to the lock container, and Define the origin points for the lock
@@ -313,6 +314,18 @@ var gnplib = {
                 thislock.redraw();
             }
 
+            //Add mouse down listener
+            thislock.lock.addEventListener("mousedown", function(event) {
+                var FR = 2 * Math.PI;
+                var centerx = thislock.lock.x; //The center x of the dial in stage coordinates
+                var centery = thislock.lock.y; //The center y of the dial in stage coordinates
+                var mousex = event.stageX; //The mouse x in stage coordinates
+                var mousey = event.stageY; //The mouse y in stage coordinates
+                var angleToMouseRadians = Math.atan2(mousey - centery, mousex - centerx); //The angle in radians from the center point to the mouse on range [-(PI), (PI)]
+                var correctRotationRadians = (-angleToMouseRadians + (FR)) % FR; //mouse converted to be on range [0, 2 * PI), where pos y axis is 90 degrees, neg y axis is 270 degrees, pos x is 0 degrees
+                thislock.pressRotation = correctRotationRadians + thislock.rotation; //Set the press rotation to where the mouse is down, offset by the current rotation
+            });
+
             //Add mouse drag listener
             thislock.lock.addEventListener("pressmove", function(event) {
                 var FR = 2 * Math.PI;
@@ -322,8 +335,7 @@ var gnplib = {
                 var mousey = event.stageY; //The mouse y in stage coordinates
                 var angleToMouseRadians = Math.atan2(mousey - centery, mousex - centerx); //The angle in radians from the center point to the mouse on range [-(PI), (PI)]
                 var positiveRotationRadians = (angleToMouseRadians + (FR)) % FR; //The angle in radians of mouse converted to be on range [0, 2 * PI)
-                var correctRotationRadians = FR - positiveRotationRadians; //The correct unit circle rotation where 0 radians is the positive x axis, and PI is the negative x axis.
-                var adjustedRotationRadians = (positiveRotationRadians + thislock.ROTATION_TO_TICKS) % FR; //The adjusted angle to account for ticks on range [0, 2 * PI)
+                var adjustedRotationRadians = (positiveRotationRadians + thislock.pressRotation) % FR; //The adjusted angle to account for ticks on range [0, 2 * PI)
                 var rotationRatio = adjustedRotationRadians / FR; //The rotation ratio of the adjusted angle, used to determine tick value, on range [0, 1.00)
                 thislock.rotation = adjustedRotationRadians; //Set the intended rotation in radians of the dial for reference
                 thislock.tick = Math.floor(rotationRatio * thislock.fullTicks); //Set the tick by applying the rotation ratio to the full tick value, range is [0, fullTicks)
