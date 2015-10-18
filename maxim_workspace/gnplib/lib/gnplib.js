@@ -271,7 +271,6 @@ var gnplib = {
             eventFunc = eventFunc || null; //Set default value of eventFunc if it was not passed
 
             var thislock = this;
-            this.ROTATION_TO_TICKS = Math.PI / 2; //The amount to adjust rotation by to get the correct value of ticks
             this.bitmap = bitmapImage; //The bitmap image to draw as the representation of the lock dial
             this.func = eventFunc; //The function to be executed everytime the value of the dial is changed, is passed the value as the first parameter
             this.hasUpdate = false; //Performance helper variable that makes sure the lock dial is updated only when it needs to be.
