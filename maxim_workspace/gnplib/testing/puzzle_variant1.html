@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Puzzle 1 Variant</title>
-    <link rel="stylesheet" type="text/css" href="../tempstyle.css">
-    <script type="text/javascript" src="../../lib/gnplib.js" defer></script>
+    <link rel="stylesheet" type="text/css" href="tempstyle.css">
+    <script type="text/javascript" src="../lib/gnplib.js" defer></script>
     <script>
         var stage; //The canvas stage
         var loader; //The asset loader
@@ -18,8 +18,8 @@
 
             //Create asset manifest and load queue
             var manifest = [
-                {src: "../assets/images/testbg.png", id: "testbg"},
-                {src: "../assets/images/testimage2.png", id: "testimage2"}
+                {src: "assets/images/testbg.png", id: "testbg"},
+                {src: "assets/images/testimage2.png", id: "testimage2"}
             ];
 
             loader = new createjs.LoadQueue(true);
