@@ -50,6 +50,23 @@
                     .to({x: 950}, 180, createjs.Ease.linear);
 
             /////////////////////////////////////////////////
+            //Hint Box with Hint Button
+            /////////////////////////////////////////////////
+            var hintbox = new gnplib.ui.HintBox(stage, 300);
+            hintbox.textColor = "#ffffff";
+            hintbox.textFont = "16px Arial";
+            hintbox.bgColor = "#5d8ec5";
+            hintbox.cornerRadius = 15;
+            hintbox.setText("There must be a 'right' way to view this puzzle as a still image...");
+            hintbox.centerOnPoint(400, 200);
+            var hintbutton = gnplib.ui.createButtonRoundRectangle(stage, new createjs.Text("Show Hint", "bold 16px Arial", "#ffffff"),
+                    "#403093", "#5e558e", "#22194d", 100, 44, 8, function(event) {
+                        hintbox.showDialog(true);
+                    });
+            hintbutton.set({x: 70, y: 360});
+            stage.addChild(hintbutton);
+
+            /////////////////////////////////////////////////
             //Update Initial Stage
             /////////////////////////////////////////////////
             //Since we have tween animations, stage needs to be updated every frame, instead of ui event driven updates
