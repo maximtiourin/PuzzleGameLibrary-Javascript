@@ -330,11 +330,8 @@ var gnplib = {
                 var degrees = thislock.tick * degreesPerTick; //Determine how many degrees we have to rotate, in tick increments
                 thislock.lock.rotation = degrees; //Rotate the lock
 
-                thislock.value = thislock.fullTicks - thislock.tick; //Set the value of the dial
-                //Rollover the value of the dial if it has reached fullTicks
-                if (thislock.value === thislock.fullTicks) {
-                    thislock.value = 0;
-                }
+                //Set the value of the dial, rollover if it has reached past fullTicks
+                thislock.value = (thislock.fullTicks - thislock.tick) % thislock.fullTicks;
 
                 //Call eventFunc
                 if (thislock.func !== null) {
