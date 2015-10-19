@@ -163,6 +163,26 @@
             stage.addChild(tlocktext2);
 
             /////////////////////////////////////////////////
+            //Hint Box with Hint Button Test
+            /////////////////////////////////////////////////
+            var thintbox = new gnplib.ui.HintBox(stage, 300);
+            thintbox.box.set({x: 50, y: 50});
+            thintbox.textColor = "#ffffff";
+            thintbox.textFont = "18px Arial";
+            thintbox.bgColor = "#0000ff";
+            thintbox.cornerRadius = 15;
+            thintbox.setText("This is a test hint for the Green Ninja Puzzle Project. This hint should steer you in the" +
+                    " right direction to enable you to solve this current puzzle. Hopefully this hint text wraps correctly" +
+                    " around the Hint Box, so that this test of the Hint Box is a success!");
+            var thintbutton = gnplib.ui.createButtonRoundRectangle(stage, new createjs.Text("Show Hint", "bold 16px Arial", "#ffffff"),
+                    "#ff0072", "#ff87bd", "#750034", 100, 44, 8, function(event) {
+                        thintbox.showDialog(true);
+                    });
+            thintbutton.set({x: 420, y: 310});
+            stage.addChild(thintbutton);
+
+
+            /////////////////////////////////////////////////
             //Update Initial Stage
             /////////////////////////////////////////////////
             stage.update();
