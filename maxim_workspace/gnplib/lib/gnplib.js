@@ -202,15 +202,15 @@ var gnplib = {
          * Applies drag and drop functionality to the createjs.DisplayObject, which allows the user to drag and drop a DisplayObject
          * while optionally executing passed functions during the start of a drag, the continuation of a drag, and the end of a drag.
          * @param {createjs.DisplayObject} displayObject the DisplayObject to apply the drag and drop functionality to
-         * @param {Function} startDragFunc the function to execute when a drag is initiated on the display object
-         * @param {Function} dragFunc the function to execute when the display object is dragged, changing its position
-         * @param {Function} stopDragFunc the function to execute when a dragged display object is dropped
+         * @param {Function} startDragFunc (optional) the function to execute when a drag is initiated on the display object
+         * @param {Function} dragFunc (optional) the function to execute when the display object is dragged, changing its position
+         * @param {Function} stopDragFunc (optional)the function to execute when a dragged display object is dropped
          */
         addDragAndDropToObject: function(displayObject, startDragFunc, dragFunc, stopDragFunc) {
             var obj = displayObject;
-            var startDrag = startDragFunc || null;
-            var doDrag = dragFunc || null;
-            var stopDrag = stopDragFunc || null;
+            var startDrag = startDragFunc || null; // (optional)
+            var doDrag = dragFunc || null; // (optional)
+            var stopDrag = stopDragFunc || null; // (optional)
             var mousexoff = 0; //The x offset between the mouse down and the origin of the object
             var mouseyoff = 0; //The y offset between the mouse down and the origin of the object
             var targetx = obj.x; //The most recent x position the obj should update to
