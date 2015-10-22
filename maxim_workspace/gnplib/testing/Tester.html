@@ -81,7 +81,7 @@
             stage.addChild(tbutton4);
 
             /////////////////////////////////////////////////
-            //Bitmap Image Test + setWidth / setHeight Test
+            //Bitmap Image Test + setWidth / setHeight Test + DragDrop Test
             /////////////////////////////////////////////////
             var timage1 = new createjs.Bitmap(loader.getResult("testimage"));
             timage1.set({x: 40, y: 200});
@@ -95,6 +95,8 @@
             timagetester.graphics.beginFill("red").drawRect(0, 0, 250, 50);
             timagetester.set({x: 40, y: 255});
             stage.addChild(timagetester);
+            //      Tests addDragAndDropToObject
+            gnplib.ui.addDragAndDropToObject(timage1);
 
             /////////////////////////////////////////////////
             //Lock Dial Gameplay Mechanic Test 1
