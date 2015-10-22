@@ -199,6 +199,89 @@ var gnplib = {
             }
         },
         /**
+         * Applies drag and drop functionality to the createjs.DisplayObject, which allows the user to drag and drop a DisplayObject
+         * while optionally executing passed functions during the start of a drag, the continuation of a drag, and the end of a drag.
+         * @param {createjs.DisplayObject} displayObject the DisplayObject to apply the drag and drop functionality to
+         * @param {Function} startDragFunc the function to execute when a drag is initiated on the display object
+         * @param {Function} dragFunc the function to execute when the display object is dragged, changing its position
+         * @param {Function} stopDragFunc the function to execute when a dragged display object is dropped
+         */
+        addDragAndDropToObject: function(displayObject, startDragFunc, dragFunc, stopDragFunc) {
+            var obj = displayObject;
+            var startDrag = startDragFunc || null;
+            var doDrag = dragFunc || null;
+            var stopDrag = stopDragFunc || null;
+            var mousexoff = 0; //The x offset between the mouse down and the origin of the object
+            var mouseyoff = 0; //The y offset between the mouse down and the origin of the object
+            var targetx = obj.x; //The most recent x position the obj should update to
+            var targety = obj.y; //The most recent y position the obj should update to
+            var hasUpdate = false; //Flag that tells whether or not the obj should be updated, for performance reasons.
+
+            //Add draw function
+            var redraw = function() {
+                if (obj.stage !== null) {
+                    obj.stage.update();
+                }
+            }
+
+            //Add update function
+            var update = function() {
+                obj.x = targetx;
+                obj.y = targety;
+
+                redraw();
+
+                hasUpdate = false;
+            }
+
+            //Add mouse down listener
+            obj.addEventListener("mousedown", function(event) {
+                mousexoff = event.stageX - obj.x;
+                mouseyoff = event.stageY - obj.y;
+
+                //Make sure the obj appears above all others after dragging by swapping it to be the last child in the stage's object list
+                if (obj.stage !== null) {
+                    obj.stage.setChildIndex(obj, obj.stage.numChildren - 1);
+                }
+
+                if (startDrag !== null) {
+                    startDrag();
+                }
+
+                hasUpdate = true;
+            });
+
+            //Add press move listener
+            obj.addEventListener("pressmove", function(event) {
+                targetx = event.stageX - mousexoff;
+                targety = event.stageY - mouseyoff;
+
+                if (doDrag !== null) {
+                    doDrag();
+                }
+
+                hasUpdate = true;
+            });
+
+            //Add press up listener
+            obj.addEventListener("pressup", function(event) {
+                if (stopDrag !== null) {
+                    stopDrag();
+                }
+
+                hasUpdate = true;
+            });
+
+            //Add ticker listener
+            createjs.Ticker.addEventListener("tick", function(event) {
+               if (!event.paused) {
+                   if (hasUpdate) {
+                       update();
+                   }
+               }
+            });
+        },
+        /**
          * Creates and returns a simple easeljs Container object that contains the elements of a circular button.
          * The x and y origin point of the button is at its center
          * @param {createjs.Stage} stage the easeljs Stage context
