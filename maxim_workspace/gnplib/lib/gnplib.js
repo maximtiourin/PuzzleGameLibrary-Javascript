@@ -399,6 +399,8 @@ var gnplib = {
                 var c3x4 = c1x2 + c1x4; //  3/4 of the scaled radius curve
                 var c5x8 = c1x1 + c1x4; //  5/8 of the scaled radius curve
 
+                var g = pieceGraphics;
+
                 g.moveTo(0, 0); //Move drawing point to top left corner
                 /////////////////////////////////////////////////
                 // Top Side
