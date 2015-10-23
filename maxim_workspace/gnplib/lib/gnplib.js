@@ -377,7 +377,6 @@ var gnplib = {
 
             //Piece Measurement helper variables
             var cratio = 0.32; //How much % long of the min(sourcePieceWidth, sourcePieceHeight) the piece connector diameter should be;
-            var ccurve = 1; //Scalar value of how much to increase the depth of the connector curve
             var cdiameter = Math.min(sourcePieceWidth, sourcePieceHeight) * cratio; //The diameter of the connector
             var cradius = cdiameter / 2; //The radius of the connector
             var midx = sourcePieceWidth / 2; //The x midpoint of the piece
