@@ -350,7 +350,23 @@ var gnplib = {
             return gnplib.ui.helper.createButtonSimple(stage, textObj, baseColor, highlightColor, clickColor, width, height,
                 radius, "roundrectangle", clickFunc);
         },
-        generatePuzzlePiecesFromImage: function(stage, loadedImage, x, y, width, height, columns, rows) {
+        /**
+         * Generates draggable puzzles piece elements from a given image, then adds them as children to the given stage
+         * and returns a two dimensional array of the pieces, which are represented as createjs.Shape objects.
+         * @param {createjs.Stage} stage the stage context to add the puzzle pieces to as children
+         * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} loadedImage
+         * @param {Number} x the x position of where the top left most puzzle piece should be positioned by default
+         * @param {Number} y the y position of where the top left most puzzle piece should be positioned by default
+         * @param {Number} width the total width of the puzzle, to which the puzzle piece widths will add up to, overall image will be scaled to this width
+         * @param {Number} height the total height of the puzzle, to which the puzzle piece heights will add up to, overall image will be scaled to this height
+         * @param {Number} columns how many columns of puzzle pieces to have in the puzzle
+         * @param {Number} rows how many rows of puzzle pieces to have in the puzzle
+         * @param {Number} borderOutlineAlpha value on range [0.00, 1.00] that determines the alpha value of the outline border of the puzzle pieces.
+         * @returns {Array} two dimensional array containing all of the puzzle pieces, first dimension is rows, second dimension is columns, ex: arrayid[row][column] = puzzle piece at row and column index
+         */
+        generatePuzzlePiecesFromImage: function(stage, loadedImage, x, y, width, height, columns, rows, borderOutlineAlpha) {
+            var borderAlpha = borderOutlineAlpha || .4; //The alpha value of the border outline of the puzzle pieces
+
             var image = loadedImage;
             var imageWidth = image.width; //Get the default width of the image
             var imageHeight = image.height; //Get the default height of the image
@@ -360,7 +376,8 @@ var gnplib = {
             var pieceHeight = height / rows; //The height of an individual puzzle piece
 
             //Piece Measurement helper variables
-            var cratio = 0.4; //How much % long of the min(sourcePieceWidth, sourcePieceHeight) the piece connector diameter should be;
+            var cratio = 0.32; //How much % long of the min(sourcePieceWidth, sourcePieceHeight) the piece connector diameter should be;
+            var ccurve = 1; //Scalar value of how much to increase the depth of the connector curve
             var cdiameter = Math.min(sourcePieceWidth, sourcePieceHeight) * cratio; //The diameter of the connector
             var cradius = cdiameter / 2; //The radius of the connector
             var midx = sourcePieceWidth / 2; //The x midpoint of the piece
@@ -374,21 +391,34 @@ var gnplib = {
                 pieceShapes[r] = new Array(columns);
             }
 
-            //Define puzzle shape generation function
+            //Define private puzzle shape generation function
             var generatePuzzleShape = function(pieceGraphics, r, c) {
+                var c2x1 = cdiameter; // 2/1 of the scaled radius curve
+                var c1x1 = cradius; // 1/1 of the scaled radius curve
+                var c1x2 = c1x1 / 2; //   1/2 of the scaled radius curve
+                var c1x4 = c1x2 / 2; //  1/4 of the scaled radius curve
+                var c3x4 = c1x2 + c1x4; //  3/4 of the scaled radius curve
+                var c5x8 = c1x1 + c1x4; //  5/8 of the scaled radius curve
+
                 g.moveTo(0, 0); //Move drawing point to top left corner
                 /////////////////////////////////////////////////
                 // Top Side
                 /////////////////////////////////////////////////
                 if (r > 0) {
                     // Not Edge Side
-                    g.lineTo(midx - cradius, 0); // Left Point of Connector
+                    g.lineTo(midx - c1x1, 0); // Left Point of Connector
                     // Determine Shape of Connector
                     if (r % 2 == 0) {
-                        g.quadraticCurveTo(midx, -cradius, midx + cradius, 0); // Outie Right Point of Connector
+                        //Outie
+                        g.bezierCurveTo(midx, -c1x4, midx - c2x1, -c3x4, midx - c1x1, -c1x1);
+                        g.bezierCurveTo(midx - c1x2, -c5x8, midx + c1x2, -c5x8, midx + c1x1, -c1x1);
+                        g.bezierCurveTo(midx + c2x1, -c3x4, midx, -c1x4, midx + c1x1, 0);
                     }
                     else {
-                        g.quadraticCurveTo(midx, cradius, midx + cradius, 0); // Innie Right Point of Connector
+                        //Innie
+                        g.bezierCurveTo(midx, c1x4, midx - c2x1, c3x4, midx - c1x1, c1x1);
+                        g.bezierCurveTo(midx - c1x2, c5x8, midx + c1x2, c5x8, midx + c1x1, c1x1);
+                        g.bezierCurveTo(midx + c2x1, c3x4, midx, c1x4, midx + c1x1, 0);
                     }
                 }
                 g.lineTo(spw, 0); // End Side
@@ -397,13 +427,19 @@ var gnplib = {
                 /////////////////////////////////////////////////
                 if (c < columns - 1) {
                     // Not Edge Side
-                    g.lineTo(spw, midy - cradius); // Top Point of Connector
+                    g.lineTo(spw, midy - c1x1); // Top Point of Connector
                     // Determine Shape of Connector
                     if (c % 2 == 0) {
-                        g.quadraticCurveTo(spw + cradius, midy, spw, midy + cradius); //Outie Bot Point of Connector
+                        //Outie
+                        g.bezierCurveTo(spw + c1x4, midy, spw + c3x4, midy - c2x1, spw + c1x1, midy - c1x1);
+                        g.bezierCurveTo(spw + c5x8, midy - c1x2, spw + c5x8, midy + c1x2, spw + c1x1, midy + c1x1);
+                        g.bezierCurveTo(spw + c3x4, midy + c2x1, spw + c1x4, midy, spw, midy + c1x1);
                     }
                     else {
-                        g.quadraticCurveTo(spw - cradius, midy, spw, midy + cradius); //Innie Bot Point of Connector
+                        //Innie
+                        g.bezierCurveTo(spw - c1x4, midy, spw - c3x4, midy - c2x1, spw - c1x1, midy - c1x1);
+                        g.bezierCurveTo(spw - c5x8, midy - c1x2, spw - c5x8, midy + c1x2, spw - c1x1, midy + c1x1);
+                        g.bezierCurveTo(spw - c3x4, midy + c2x1, spw - c1x4, midy, spw, midy + c1x1);
                     }
                 }
                 g.lineTo(spw, sph); // End Side
@@ -412,13 +448,19 @@ var gnplib = {
                 /////////////////////////////////////////////////
                 if (r < rows - 1) {
                     // Not Edge Side
-                    g.lineTo(midx + cradius, sph); // Right Point of Connector
+                    g.lineTo(midx + c1x1, sph); // Right Point of Connector
                     // Determine Shape of Connector
                     if (r % 2 == 0) {
-                        g.quadraticCurveTo(midx, sph + cradius, midx - cradius, sph); //Outie Left Point of Connector
+                        //Outie
+                        g.bezierCurveTo(midx, sph + c1x4, midx + c2x1, sph + c3x4, midx + c1x1, sph + c1x1);
+                        g.bezierCurveTo(midx + c1x2, sph + c5x8, midx - c1x2, sph + c5x8, midx - c1x1, sph + c1x1);
+                        g.bezierCurveTo(midx - c2x1, sph + c3x4, midx, sph + c1x4, midx - c1x1, sph);
                     }
                     else {
-                        g.quadraticCurveTo(midx, sph - cradius, midx - cradius, sph); //Innie Left Point of Connector
+                        //Innie
+                        g.bezierCurveTo(midx, sph - c1x4, midx + c2x1, sph - c3x4, midx + c1x1, sph - c1x1);
+                        g.bezierCurveTo(midx + c1x2, sph - c5x8, midx - c1x2, sph - c5x8, midx - c1x1, sph - c1x1);
+                        g.bezierCurveTo(midx - c2x1, sph - c3x4, midx, sph - c1x4, midx - c1x1, sph);
                     }
                 }
                 g.lineTo(0, sph); // End Side
@@ -427,13 +469,19 @@ var gnplib = {
                 /////////////////////////////////////////////////
                 if (c > 0) {
                     // Not Edge Side
-                    g.lineTo(0, midy + cradius); // Bot Point of Connector
+                    g.lineTo(0, midy + c1x1); // Bot Point of Connector
                     // Determine Shape of Connector
                     if (c % 2 == 0) {
-                        g.quadraticCurveTo(-cradius, midy, 0, midy - cradius); //Outie Top Point of Connector
+                        //Outie
+                        g.bezierCurveTo(-c1x4, midy, -c3x4, midy + c2x1, -c1x1, midy + c1x1);
+                        g.bezierCurveTo(-c5x8, midy + c1x2, -c5x8, midy - c1x2, -c1x1, midy - c1x1);
+                        g.bezierCurveTo(-c3x4, midy - c2x1, -c1x4, midy, 0, midy - c1x1);
                     }
                     else {
-                        g.quadraticCurveTo(cradius, midy, 0, midy - cradius); //Innie Top Point of Connector
+                        //Innie
+                        g.bezierCurveTo(c1x4, midy, c3x4, midy + c2x1, c1x1, midy + c1x1);
+                        g.bezierCurveTo(c5x8, midy + c1x2, c5x8, midy - c1x2, c1x1, midy - c1x1);
+                        g.bezierCurveTo(c3x4, midy - c2x1, c1x4, midy, 0, midy - c1x1);
                     }
                 }
                 g.lineTo(0, 0);
@@ -457,12 +505,13 @@ var gnplib = {
                     g.endFill();
 
                     //Create outline for the piece
-                    g.beginStroke("black");
+                    g.beginStroke("rgba(0, 0, 0, " + borderAlpha + ")");
                     generatePuzzleShape(g, r, c);
                     g.endStroke();
 
                     //Cache shape
-                    piece.cache(-cradius, -cradius, sourcePieceWidth + cdiameter, sourcePieceHeight + cdiameter);
+                    piece.cache(-cdiameter, -cdiameter,
+                        sourcePieceWidth + (2 * cdiameter), sourcePieceHeight + (2 * cdiameter));
 
                     //Scale the piece properly by converting from sourcePiece Dimensions to desired Piece dimensions taking into account current scaling
                     gnplib.ui.setWidth(piece, gnplib.ui.getWidth(piece) * (pieceWidth / spw));
