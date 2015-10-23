@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tester 2</title>
+    <link rel="stylesheet" type="text/css" href="tempstyle.css">
+    <script type="text/javascript" src="../lib/gnplib.js" defer></script>
+    <script>
+        var stage; //The canvas stage
+        var loader; //The asset loader
+
+        function init() {
+            //Create Stage
+            stage = new createjs.Stage("gameCanvas");
+            stage.mouseMoveOutside = true; //Allow the mouse to be dragged outside of the canvas during mouse events
+            createjs.Ticker.framerate = 30; //Set the tick rate of the stage to a target of 30 times per second
+            stage.enableMouseOver(20); //Enables mouse over events for the stage at a rate of 20 times per second
+
+            //Create asset manifest and load queue
+            var manifest = [
+                {src: "assets/images/testimage.jpg", id: "testimage"}
+            ];
+
+            loader = new createjs.LoadQueue(true);
+            loader.on("complete", loaded);
+            loader.loadManifest(manifest, true);
+        }
+
+        function loaded() {
+            /////////////////////////////////////////////////
+            //Puzzle Automatic Generation tests
+            /////////////////////////////////////////////////
+            var timage = loader.getResult("testimage");
+            var puzzlePieces1 = gnplib.ui.generatePuzzlePiecesFromImage(stage, timage, 25, 25, 255, 257, 4, 4);
+            var puzzlePieces2 = gnplib.ui.generatePuzzlePiecesFromImage(stage, timage, 375, 340, 400, 240, 3, 3);
+            var puzzlePieces3 = gnplib.ui.generatePuzzlePiecesFromImage(stage, timage, 375, 10, 400, 300, 8, 8, .28);
+            var puzzlePieces4 = gnplib.ui.generatePuzzlePiecesFromImage(stage, timage, 25, 320, 255, 257, 14, 14, .24);
+
+            /////////////////////////////////////////////////
+            //Update Initial Stage
+            /////////////////////////////////////////////////
+            stage.update();
+        }
+    </script>
+</head>
+<body onload="init();">
+<div id="canvas-container">
+    <canvas id="gameCanvas" width="800" height="600">Your browser does not support the HTML5 "Canvas" Element.</canvas>
+</div>
+</body>
+</html>
