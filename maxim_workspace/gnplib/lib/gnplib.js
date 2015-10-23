@@ -351,10 +351,10 @@ var gnplib = {
                 radius, "roundrectangle", clickFunc);
         },
         /**
-         * Generates draggable puzzles piece elements from a given image, then adds them as children to the given stage
+         * Generates draggable puzzle piece elements from a given image, then adds them as children to the given stage
          * and returns a two dimensional array of the pieces, which are represented as createjs.Shape objects.
          * @param {createjs.Stage} stage the stage context to add the puzzle pieces to as children
-         * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} loadedImage
+         * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} loadedImage the loaded image object to create puzzle pieces from
          * @param {Number} x the x position of where the top left most puzzle piece should be positioned by default
          * @param {Number} y the y position of where the top left most puzzle piece should be positioned by default
          * @param {Number} width the total width of the puzzle, to which the puzzle piece widths will add up to, overall image will be scaled to this width
