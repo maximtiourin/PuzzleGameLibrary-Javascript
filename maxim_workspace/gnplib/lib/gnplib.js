@@ -350,6 +350,137 @@ var gnplib = {
             return gnplib.ui.helper.createButtonSimple(stage, textObj, baseColor, highlightColor, clickColor, width, height,
                 radius, "roundrectangle", clickFunc);
         },
+        generatePuzzlePiecesFromImage: function(stage, loadedImage, x, y, width, height, columns, rows) {
+            var image = loadedImage;
+            var imageWidth = image.width; //Get the default width of the image
+            var imageHeight = image.height; //Get the default height of the image
+            var sourcePieceWidth = imageWidth / columns; //The width of a piece's source area from the image
+            var sourcePieceHeight = imageHeight / rows; //The height of a piece's source area from the image
+            var pieceWidth = width / columns; //The width of an individual puzzle piece
+            var pieceHeight = height / rows; //The height of an individual puzzle piece
+
+            //Piece Measurement helper variables
+            var cratio = 0.4; //How much % long of the min(sourcePieceWidth, sourcePieceHeight) the piece connector diameter should be;
+            var cdiameter = Math.min(sourcePieceWidth, sourcePieceHeight) * cratio; //The diameter of the connector
+            var cradius = cdiameter / 2; //The radius of the connector
+            var midx = sourcePieceWidth / 2; //The x midpoint of the piece
+            var midy = sourcePieceHeight / 2; //The y midpoint of the piece
+            var spw = sourcePieceWidth; //Short Version of sourcePieceWidth
+            var sph = sourcePieceHeight; //Short Version of sourcePieceHeight
+
+            //Define piece shape two dimensional array
+            var pieceShapes = new Array(rows);
+            for (r = 0; r < rows; r++) {
+                pieceShapes[r] = new Array(columns);
+            }
+
+            //Define puzzle shape generation function
+            var generatePuzzleShape = function(pieceGraphics, r, c) {
+                g.moveTo(0, 0); //Move drawing point to top left corner
+                /////////////////////////////////////////////////
+                // Top Side
+                /////////////////////////////////////////////////
+                if (r > 0) {
+                    // Not Edge Side
+                    g.lineTo(midx - cradius, 0); // Left Point of Connector
+                    // Determine Shape of Connector
+                    if (r % 2 == 0) {
+                        g.quadraticCurveTo(midx, -cradius, midx + cradius, 0); // Outie Right Point of Connector
+                    }
+                    else {
+                        g.quadraticCurveTo(midx, cradius, midx + cradius, 0); // Innie Right Point of Connector
+                    }
+                }
+                g.lineTo(spw, 0); // End Side
+                /////////////////////////////////////////////////
+                // Right Side
+                /////////////////////////////////////////////////
+                if (c < columns - 1) {
+                    // Not Edge Side
+                    g.lineTo(spw, midy - cradius); // Top Point of Connector
+                    // Determine Shape of Connector
+                    if (c % 2 == 0) {
+                        g.quadraticCurveTo(spw + cradius, midy, spw, midy + cradius); //Outie Bot Point of Connector
+                    }
+                    else {
+                        g.quadraticCurveTo(spw - cradius, midy, spw, midy + cradius); //Innie Bot Point of Connector
+                    }
+                }
+                g.lineTo(spw, sph); // End Side
+                /////////////////////////////////////////////////
+                // Bot Side
+                /////////////////////////////////////////////////
+                if (r < rows - 1) {
+                    // Not Edge Side
+                    g.lineTo(midx + cradius, sph); // Right Point of Connector
+                    // Determine Shape of Connector
+                    if (r % 2 == 0) {
+                        g.quadraticCurveTo(midx, sph + cradius, midx - cradius, sph); //Outie Left Point of Connector
+                    }
+                    else {
+                        g.quadraticCurveTo(midx, sph - cradius, midx - cradius, sph); //Innie Left Point of Connector
+                    }
+                }
+                g.lineTo(0, sph); // End Side
+                /////////////////////////////////////////////////
+                // Left Side
+                /////////////////////////////////////////////////
+                if (c > 0) {
+                    // Not Edge Side
+                    g.lineTo(0, midy + cradius); // Bot Point of Connector
+                    // Determine Shape of Connector
+                    if (c % 2 == 0) {
+                        g.quadraticCurveTo(-cradius, midy, 0, midy - cradius); //Outie Top Point of Connector
+                    }
+                    else {
+                        g.quadraticCurveTo(cradius, midy, 0, midy - cradius); //Innie Top Point of Connector
+                    }
+                }
+                g.lineTo(0, 0);
+            }
+
+            //Generate Puzzle Piece shapes
+            for (r = 0; r < rows; r++) {
+                for (c = 0; c < columns; c++) {
+                    //Create initial shape
+                    pieceShapes[r][c] = new createjs.Shape();
+                    var piece = pieceShapes[r][c];
+                    var g = piece.graphics;
+
+                    //2D Transformation Matrix to offset the area the puzzle piece should draw from
+                    var matrix = new createjs.Matrix2D();
+                    matrix.translate(-(c * spw), -(r * sph));
+
+                    //Fill shape with the puzzle piece of the image
+                    g.beginBitmapFill(image, "no-repeat", matrix); //Start filling
+                    generatePuzzleShape(g, r, c);
+                    g.endFill();
+
+                    //Create outline for the piece
+                    g.beginStroke("black");
+                    generatePuzzleShape(g, r, c);
+                    g.endStroke();
+
+                    //Cache shape
+                    piece.cache(-cradius, -cradius, sourcePieceWidth + cdiameter, sourcePieceHeight + cdiameter);
+
+                    //Scale the piece properly by converting from sourcePiece Dimensions to desired Piece dimensions taking into account current scaling
+                    gnplib.ui.setWidth(piece, gnplib.ui.getWidth(piece) * (pieceWidth / spw));
+                    gnplib.ui.setHeight(piece, gnplib.ui.getHeight(piece) * (pieceHeight / sph));
+
+                    //Position the piece properly
+                    piece.x = x + (c * pieceWidth);
+                    piece.y = y + (r * pieceHeight);
+
+                    //Make piece drag and droppable
+                    gnplib.ui.addDragAndDropToObject(piece);
+
+                    stage.addChild(piece);
+                }
+            }
+
+            return pieceShapes;
+        },
         /**
          * Returns the current pixel height of the DisplayObject by taking its current scaleY and multiplying by
          * its default pixel height.
@@ -369,6 +500,116 @@ var gnplib = {
         getWidth: function(displayObj) {
             var defaultWidth = displayObj.getBounds().width;
             return displayObj.scaleX * defaultWidth;
+        },
+        /**
+         * Displays a smart hint box with a given maxWidth, that shows a createjs.Text object that wraps to fit.
+         * @class HintBox
+         * @param {createjs.Stage} stage the createjs.Stage context to display the hint box in
+         * @param {Number} maxWidth the maximum width of the hint box
+         * @constructor
+         */
+        HintBox: function(stage, maxWidth) {
+            var t = this;
+            t.HORIZONTAL_PADDING = 10; //padding to use left and right of the Hintbox between the edge and the elements within
+            t.VERTICAL_PADDING = 10; //padding to use top and bottom of the hintbox, between the edge and the elements within
+            t.stage = stage; //The createjs.Stage context
+            t.box = new createjs.Container(); //The container object that holds all of the elements of the dialog box. Access this property to move hint box, scale it, etc.
+            t.shape = new createjs.Shape(); //The Shape object to draw any primitive graphics to
+            t.bitmap = null; //Bitmap image to use as the dialog box's background, scaled to fit the bounds of the box. Has to be set by HintBox.setBackgroundImage()
+            t.width = maxWidth - (2 * t.HORIZONTAL_PADDING); //The width of the non padding content of the container (use ui.GetWidth() on box to figure out actual width)
+            t.height = 0; //The height of the non padding content of the container (use ui.GetHeight() on box to figure out actual height)
+            t.textObject = null; //The text object that will be drawn in the hint box. Has to be set by HintBox.setText()
+            t.text = ""; //The text string value of the hint box, READ-ONLY
+            t.textColor = "#000000"; //The text color as a string, can be set through property
+            t.textFont = "12px Arial"; //The text font as a string, can be set through property
+            t.bgColor = null; //The bg color as a string, can be set through property.
+            t.cornerRadius = 0; //The corner radius of the bg rectangle, can be set through property, should only be set when there is no background image.
+            t.isDisplayed = false; //Flag value that tells if the dialog box is currently displayed
+
+            //Add shape to box
+            t.box.addChild(t.shape);
+
+            //Draw function
+            t.redraw = function() {
+                var g = t.shape.graphics;
+
+                g.clear();
+                if (t.textObject !== null) {
+                    if (t.bgColor !== null) {
+                        //Draw Background color
+                        if (t.cornerRadius > 0) {
+                            g.beginFill(t.bgColor).drawRoundRect(0, 0, t.width + (2 * t.HORIZONTAL_PADDING), t.height + (2 * t.VERTICAL_PADDING), t.cornerRadius);
+                        }
+                        else {
+                            g.beginFill(t.bgColor).drawRect(0, 0, t.width + (2 * t.HORIZONTAL_PADDING), t.height + (2 * t.VERTICAL_PADDING));
+                        }
+                    }
+                }
+
+                t.stage.update();
+            }
+
+            //Sets the value of the hint box's display text, and correctly sets it to wrap inside of the dialog box.
+            t.setText = function(text) {
+                if (t.textObject !== null) {
+                    t.box.removeChild(t.textObject);
+                }
+
+                t.text = text;
+                t.textObject = new createjs.Text(t.text, t.textFont, t.textColor);
+                t.textObject.lineWidth = t.width;
+                t.height = t.textObject.getMeasuredHeight();
+
+                t.textObject.set({x: t.HORIZONTAL_PADDING, y: t.VERTICAL_PADDING});
+                t.box.addChild(t.textObject);
+
+                t.redraw();
+            }
+
+            //Sets the background image of the hint box, adding and removing appropriate children to the box container
+            t.setBackgroundImage = function(bitmap) {
+                if (bitmap !== null) {
+                    if (t.bitmap !== null) {
+                        t.box.removeChild(t.bitmap);
+                    }
+
+                    t.bitmap = bitmap;
+                    t.box.addChild(t.bitmap);
+                }
+                else {
+                    if (t.bitmap !== null) {
+                        t.box.removeChild(t.bitmap);
+                    }
+
+                    t.bitmap = null;
+                }
+            }
+
+            //Function to either display the dialog box, or disable it
+            t.showDialog = function(isVisible) {
+                if (isVisible) {
+                    t.stage.addChild(t.box);
+                    t.isDisplayed = true;
+                }
+                else {
+                    t.stage.removeChild(t.box);
+                    t.isDisplayed = false;
+                }
+                t.stage.update();
+            }
+
+            //Centers this hint box on the given point
+            t.centerOnPoint = function(cx, cy) {
+                var hw = (t.width + (2 * t.HORIZONTAL_PADDING)) / 2;
+                var hh = (t.height + (2 * t.VERTICAL_PADDING)) / 2;
+
+                t.box.set({x: cx - hw, y: cy - hh});
+            }
+
+            //Add mouse click listener to close hint box
+            t.box.addEventListener("click", function() {
+                t.showDialog(false);
+            });
         },
         /**
          * A LockDial class that simulates a lock dial by allowing a user to rotate it by dragging. It then can
@@ -483,116 +724,6 @@ var gnplib = {
             var defaultWidth = displayObj.getBounds().width;
             var newScale = width / defaultWidth;
             displayObj.scaleX = newScale;
-        },
-        /**
-         * Displays a smart hint box with a given maxWidth, that shows a createjs.Text object that wraps to fit.
-         * @class HintBox
-         * @param {createjs.Stage} stage the createjs.Stage context to display the hint box in
-         * @param {Number} maxWidth the maximum width of the hint box
-         * @constructor
-         */
-        HintBox: function(stage, maxWidth) {
-            var t = this;
-            t.HORIZONTAL_PADDING = 10; //padding to use left and right of the Hintbox between the edge and the elements within
-            t.VERTICAL_PADDING = 10; //padding to use top and bottom of the hintbox, between the edge and the elements within
-            t.stage = stage; //The createjs.Stage context
-            t.box = new createjs.Container(); //The container object that holds all of the elements of the dialog box. Access this property to move hint box, scale it, etc.
-            t.shape = new createjs.Shape(); //The Shape object to draw any primitive graphics to
-            t.bitmap = null; //Bitmap image to use as the dialog box's background, scaled to fit the bounds of the box. Has to be set by HintBox.setBackgroundImage()
-            t.width = maxWidth - (2 * t.HORIZONTAL_PADDING); //The width of the non padding content of the container (use ui.GetWidth() on box to figure out actual width)
-            t.height = 0; //The height of the non padding content of the container (use ui.GetHeight() on box to figure out actual height)
-            t.textObject = null; //The text object that will be drawn in the hint box. Has to be set by HintBox.setText()
-            t.text = ""; //The text string value of the hint box, READ-ONLY
-            t.textColor = "#000000"; //The text color as a string, can be set through property
-            t.textFont = "12px Arial"; //The text font as a string, can be set through property
-            t.bgColor = null; //The bg color as a string, can be set through property.
-            t.cornerRadius = 0; //The corner radius of the bg rectangle, can be set through property, should only be set when there is no background image.
-            t.isDisplayed = false; //Flag value that tells if the dialog box is currently displayed
-
-            //Add shape to box
-            t.box.addChild(t.shape);
-
-            //Draw function
-            t.redraw = function() {
-                var g = t.shape.graphics;
-
-                g.clear();
-                if (t.textObject !== null) {
-                    if (t.bgColor !== null) {
-                        //Draw Background color
-                        if (t.cornerRadius > 0) {
-                            g.beginFill(t.bgColor).drawRoundRect(0, 0, t.width + (2 * t.HORIZONTAL_PADDING), t.height + (2 * t.VERTICAL_PADDING), t.cornerRadius);
-                        }
-                        else {
-                            g.beginFill(t.bgColor).drawRect(0, 0, t.width + (2 * t.HORIZONTAL_PADDING), t.height + (2 * t.VERTICAL_PADDING));
-                        }
-                    }
-                }
-
-                t.stage.update();
-            }
-
-            //Sets the value of the hint box's display text, and correctly sets it to wrap inside of the dialog box.
-            t.setText = function(text) {
-                if (t.textObject !== null) {
-                    t.box.removeChild(t.textObject);
-                }
-
-                t.text = text;
-                t.textObject = new createjs.Text(t.text, t.textFont, t.textColor);
-                t.textObject.lineWidth = t.width;
-                t.height = t.textObject.getMeasuredHeight();
-
-                t.textObject.set({x: t.HORIZONTAL_PADDING, y: t.VERTICAL_PADDING});
-                t.box.addChild(t.textObject);
-
-                t.redraw();
-            }
-
-            //Sets the background image of the hint box, adding and removing appropriate children to the box container
-            t.setBackgroundImage = function(bitmap) {
-                if (bitmap !== null) {
-                    if (t.bitmap !== null) {
-                        t.box.removeChild(t.bitmap);
-                    }
-
-                    t.bitmap = bitmap;
-                    t.box.addChild(t.bitmap);
-                }
-                else {
-                    if (t.bitmap !== null) {
-                        t.box.removeChild(t.bitmap);
-                    }
-
-                    t.bitmap = null;
-                }
-            }
-
-            //Function to either display the dialog box, or disable it
-            t.showDialog = function(isVisible) {
-                if (isVisible) {
-                    t.stage.addChild(t.box);
-                    t.isDisplayed = true;
-                }
-                else {
-                    t.stage.removeChild(t.box);
-                    t.isDisplayed = false;
-                }
-                t.stage.update();
-            }
-
-            //Centers this hint box on the given point
-            t.centerOnPoint = function(cx, cy) {
-                var hw = (t.width + (2 * t.HORIZONTAL_PADDING)) / 2;
-                var hh = (t.height + (2 * t.VERTICAL_PADDING)) / 2;
-
-                t.box.set({x: cx - hw, y: cy - hh});
-            }
-
-            //Add mouse click listener to close hint box
-            t.box.addEventListener("click", function() {
-                t.showDialog(false);
-            });
         }
     },
     /**
