@@ -504,8 +504,8 @@ var gnplib = {
         },
         /**
          * Generates draggable puzzle piece elements from a given image, then adds them as children to the given stage
-         * and returns a two dimensional array of the pieces, which are represented as createjs.Shape objects.
-         * @param {createjs.Stage} stage the stage context to add the puzzle pieces to as children
+         * and returns a two dimensional array of the pieces, which are represented as gnplib.ui.helper.PuzzlePiece objects.
+         * @param {createjs.Stage} stage (optional) the stage context to add the puzzle pieces to as children, if stage is null, pieces will not be added as children, and will need to be manually displayed
          * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} loadedImage the loaded image object to create puzzle pieces from
          * @param {Number} x the x position of where the top left most puzzle piece should be positioned by default
          * @param {Number} y the y position of where the top left most puzzle piece should be positioned by default
@@ -520,6 +520,7 @@ var gnplib = {
          *                  first dimension is rows, second dimension is columns, ex: arrayid[row][column] = puzzle piece at row and column index
          */
         generatePuzzlePiecesFromImage: function(stage, loadedImage, x, y, width, height, columns, rows, borderOutlineAlpha, shouldSnapToPosition, puzzleCompleteFunc) {
+            var puzzleStage = stage || null;
             var borderAlpha = borderOutlineAlpha || .4; //The alpha value of the border outline of the puzzle pieces
             var doesSnap = shouldSnapToPosition || false; //Whether or not the puzzle pieces should snap into position when dragged.
             var puzzleComplete = puzzleCompleteFunc || null; //The function to execute when all pieces of this puzzle are snapped into their correct place. Requires snapping to be enabled.
@@ -722,7 +723,9 @@ var gnplib = {
                         gnplib.ui.addDragAndDropToObject(shape);
                     }
 
-                    stage.addChild(shape);
+                    if (puzzleStage !== null) {
+                        puzzleStage.addChild(shape);
+                    }
                 }
             }
 
