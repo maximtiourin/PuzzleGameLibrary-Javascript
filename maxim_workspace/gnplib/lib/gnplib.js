@@ -759,6 +759,7 @@ var gnplib = {
             var t = this;
             t.HORIZONTAL_PADDING = 10; //padding to use left and right of the Hintbox between the edge and the elements within
             t.VERTICAL_PADDING = 10; //padding to use top and bottom of the hintbox, between the edge and the elements within
+            t.LINE_PADDING = 4; //padding to use between each line.
             t.stage = stage; //The createjs.Stage context
             t.box = new createjs.Container(); //The container object that holds all of the elements of the dialog box. Access this property to move hint box, scale it, etc.
             t.shape = new createjs.Shape(); //The Shape object to draw any primitive graphics to
@@ -804,6 +805,7 @@ var gnplib = {
 
                 t.text = text;
                 t.textObject = new createjs.Text(t.text, t.textFont, t.textColor);
+                t.textObject.lineHeight = t.textObject.getMeasuredLineHeight() + t.LINE_PADDING;
                 t.textObject.lineWidth = t.width;
                 t.height = t.textObject.getMeasuredHeight();
 
