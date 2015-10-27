@@ -30,11 +30,34 @@
             /////////////////////////////////////////////////
             //Puzzle Automatic Generation tests
             /////////////////////////////////////////////////
-            var timage = loader.getResult("testimage");
-            var puzzlePieces1 = gnplib.ui.generatePuzzlePiecesFromImage(stage, timage, 25, 25, 255, 257, 4, 4);
-            var puzzlePieces2 = gnplib.ui.generatePuzzlePiecesFromImage(stage, timage, 375, 340, 400, 240, 3, 3);
-            var puzzlePieces3 = gnplib.ui.generatePuzzlePiecesFromImage(stage, timage, 375, 10, 400, 300, 8, 8, .28);
-            var puzzlePieces4 = gnplib.ui.generatePuzzlePiecesFromImage(stage, timage, 25, 320, 255, 257, 14, 14, .24);
+            var timage = loader.getResult("testimage"); //A test image that the puzzles can use as their graphic
+
+            /* Test Puzzle Completion */
+            //Create hint box that shows when the puzzle is complete
+            var pHint = new gnplib.ui.HintBox(stage, 200);
+            pHint.textColor = "#ffffff";
+            pHint.bgColor = "rgb(0, 127, 186)";
+            pHint.cornerRadius = 15;
+            pHint.setText("You completed the puzzle! This is an example of things happening when the puzzle is correctly completed!");
+            pHint.centerOnPoint(400, 300);
+            //Create black background that helps to visualize the puzzle completion area
+            var pBg = new createjs.Shape();
+            var bgoff = 2; //How many pixels to offset the bg, to create a border effect
+            pBg.graphics.beginFill("black").drawRect(25 - bgoff, 25 - bgoff, 255 + (bgoff * 2), 257 + (bgoff * 2));
+            stage.addChild(pBg);
+            //Generate the puzzle pieces
+            var puzzlePieces1 = gnplib.ui.generatePuzzlePiecesFromImage(stage, timage, 25, 25, 255, 257, 4, 4, .40, true, function() {
+                pHint.showDialog(true);
+            });
+            //Set the testing piece to the bottom right piece of puzzlePieces1
+            var tPiece = puzzlePieces1[3][3]; //Puzzle piece located in the 4th row and 4th column of puzzlePieces1
+            tPiece.shape.x = tPiece.shape.x + 50; //using the shape.x property instead of piece.x() method because we do not want snapping to occur here
+            tPiece.shape.y = tPiece.shape.y + 50; //using the shape.y property instead of piece.y() method because we do not want snapping to occur here
+
+            /* Test Additional Puzzle Snapping/No Snapping, Dimensions and Scaling */
+            var puzzlePieces2 = gnplib.ui.generatePuzzlePiecesFromImage(stage, timage, 375, 340, 400, 240, 3, 3, 1, true); //Snapping, border alpha at 1
+            var puzzlePieces3 = gnplib.ui.generatePuzzlePiecesFromImage(stage, timage, 375, 10, 400, 300, 8, 8, .28); //No Snapping, border alpha at .28
+            var puzzlePieces4 = gnplib.ui.generatePuzzlePiecesFromImage(stage, timage, 25, 320, 255, 257, 14, 14, .24, true); //Snapping, border alpha at .24
 
             /////////////////////////////////////////////////
             //Update Initial Stage
