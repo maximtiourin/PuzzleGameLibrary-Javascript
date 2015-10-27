@@ -83,7 +83,8 @@ var gnplib = {
      */
     ui: {
         /**
-         * Contains helper functions for the creation of ui elements, used by functions in gnplib.ui
+         * Contains helper functions for the creation of ui elements, used by functions found in gnplib.ui
+         * [Advanced Use Only]
          */
         helper: {
             /**
@@ -196,6 +197,119 @@ var gnplib = {
                 });
 
                 return btn;
+            },
+            /**
+             * A Puzzle Piece class that contains useful information about a puzzle piece ui element, used by gnplib.ui.generatePuzzlePiecesFromImage()
+             * to create interactive puzzle pieces. Generally should not be used on its own.
+             * [Advanced Use Only]
+             * @param {createjs.Shape} the Shape Object to create the puzzle piece with
+             * @constructor
+             */
+            PuzzlePiece: function(shapeObject) {
+                var t = this;
+                t.id = "Anonymous Puzzle Piece"; //String id for the piece, can be used for debugging
+                t.shape = shapeObject; //The createjs.Shape object representing this puzzle piece
+                t.doesSnap = false; //Whether or not this puzzle piece snaps to position
+                t.snapX = 0; //The x position to snap to
+                t.snapY = 0; //The y position to snap to
+                t.snapDistance = 0; //The distance at which this piece will snap into place
+                t.stopDragCalcFunc = null; //The function to execute whenever the piece is done being dragged.
+                t.isSnapped = false; //Whether or not the piece is currently snapped in place
+
+                /**
+                 * Checks whether or not the piece can snap into place, updating all snapping state information, and
+                 * returning true if is now snapped, false if not. Requires snapping to be enabled.
+                 * @returns {Boolean} true if piece is currently snapped in place, false if not
+                 */
+                t.checkSnapping = function() {
+                    if (!t.doesSnap) {
+                        //Easy flag case
+                        return false;
+                    }
+                    else if (t.shape.x === t.snapX && t.shape.y === t.snapY) {
+                        //Easy position case
+                        return true;
+                    }
+                    else {
+                        //Find the distance between the current piece position and the original piece position
+                        var distance = Math.sqrt(Math.pow(t.shape.x - t.snapX, 2) + Math.pow(t.shape.y - t.snapY, 2));
+
+                        //If distance is under snap distance, snap the piece
+                        if (distance < t.snapDistance) {
+                            t.shape.x = t.snapX;
+                            t.shape.y = t.snapY;
+
+                            t.isSnapped = true;
+
+                            return true;
+                        }
+                        else {
+                            t.isSnapped = false;
+
+                            return false;
+                        }
+                    }
+                }
+
+                /**
+                 * The function that should execute when this piece is done dragging, to aid in checking for snaps.
+                 * If stopDragCalcFunc is set to something other than null, it will also be executed.
+                 * This is passed to functions like gnplib.ui.addDragAndDropToObject when puzzle pieces are created,
+                 * and is used by functions such as gnplib.ui.generatePuzzlePiecesFromImage to determine when a puzzle is completed.
+                 * [Advanced Use Only]
+                 * @returns {Boolean}
+                 */
+                t.stopDrag = function() {
+                    var check = t.checkSnapping();
+
+                    if (t.stopDragCalcFunc !== null) {
+                        t.stopDragCalcFunc();
+                    }
+
+                    return check;
+                }
+
+                /**
+                 * Sets or Gets the x position of the puzzle piece (the x position of the puzzle piece's shape object)
+                 * If snapping is enabled, setting the x position using this method will also update snapping state information, therefore
+                 * use this when moving finalized puzzle pieces around through code.
+                 * @param {Number} newx (optional) if set, sets the puzzle piece's shape's x coordinate to this value
+                 * @returns {Number} x position of the puzzle piece
+                 */
+                t.x = function(newx) {
+                    var nx = newx || null;
+
+                    if (nx !== null) {
+                        t.shape.x = nx;
+
+                        if (t.doesSnap) {
+                            t.checkSnapping();
+                        }
+                    }
+
+                    return t.shape.x;
+                }
+
+                /**
+                 * Sets or Gets the y position of the puzzle piece (the y position of the puzzle piece's shape object)
+                 * If snapping is enabled, setting the x position using this method will also update snapping state information, therefore
+                 * use this when moving finalized puzzle pieces around through code.
+                 * @param {Number} newy (optional) if set, sets the puzzle piece's shape's y coordinate to this value
+                 * @returns {Number} y position of the puzzle piece
+                 */
+                t.y = function(newy) {
+                    var ny = newy || null;
+
+                    if (ny !== null) {
+                        t.shape.y = ny;
+
+                        if (t.doesSnap) {
+                            t.checkSnapping();
+                        }
+                    }
+
+                    return t.shape.y;
+                }
             }
         },
         /**
@@ -205,17 +319,24 @@ var gnplib = {
          * @param {Function} startDragFunc (optional) the function to execute when a drag is initiated on the display object
          * @param {Function} dragFunc (optional) the function to execute when the display object is dragged, changing its position
          * @param {Function} stopDragFunc (optional)the function to execute when a dragged display object is dropped
+         * @param {Object} snappingObject (optional) [Advanced use only] an object that has special x() and y() method functions that uniquely set the x and y position
+         *                                 of the display object. If this argument is supplied, the drag and drop functionality will change how it assigns
+         *                                 x and y positions to make use of this snapping functionality. An example of a valid snappingObject is a gnplib.ui.helper.PuzzlePiece.
+         *                                 A Stop drag func should always be supplied and should return true whenever the snapping has modified the x or y position
+         *                                 of the object.
          */
-        addDragAndDropToObject: function(displayObject, startDragFunc, dragFunc, stopDragFunc) {
+        addDragAndDropToObject: function(displayObject, startDragFunc, dragFunc, stopDragFunc, snappingObject) {
             var obj = displayObject;
             var startDrag = startDragFunc || null; // (optional)
             var doDrag = dragFunc || null; // (optional)
             var stopDrag = stopDragFunc || null; // (optional)
+            var snapObject = snappingObject || null;
             var mousexoff = 0; //The x offset between the mouse down and the origin of the object
             var mouseyoff = 0; //The y offset between the mouse down and the origin of the object
             var targetx = obj.x; //The most recent x position the obj should update to
             var targety = obj.y; //The most recent y position the obj should update to
             var hasUpdate = false; //Flag that tells whether or not the obj should be updated, for performance reasons.
+            var hasPressUpUpdate = false; //Special snapping update flag
 
             //Add draw function
             var redraw = function() {
@@ -226,8 +347,25 @@ var gnplib = {
 
             //Add update function
             var update = function() {
-                obj.x = targetx;
-                obj.y = targety;
+                if (snapObject === null) {
+                    //Has No Snapping Functionality attached
+                    obj.x = targetx;
+                    obj.y = targety;
+                }
+                else {
+                    //Has Snapping Functionality attached
+                    if (!hasPressUpUpdate) {
+                        //No snap occured, update drag position as normal
+                        obj.x = targetx;
+                        obj.y = targety;
+                    }
+                    else {
+                        //Snap occured, do not update drag position, let the piece remain in its snapped position, but update targets
+                        targetx = obj.x;
+                        targety = obj.y;
+                        hasPressUpUpdate = false;
+                    }
+                }
 
                 redraw();
 
@@ -266,7 +404,12 @@ var gnplib = {
             //Add press up listener
             obj.addEventListener("pressup", function(event) {
                 if (stopDrag !== null) {
-                    stopDrag();
+                    if (snapObject === null) {
+                        stopDrag();
+                    }
+                    else {
+                        hasPressUpUpdate = stopDrag();
+                    }
                 }
 
                 hasUpdate = true;
@@ -361,11 +504,16 @@ var gnplib = {
          * @param {Number} height the total height of the puzzle, to which the puzzle piece heights will add up to, overall image will be scaled to this height
          * @param {Number} columns how many columns of puzzle pieces to have in the puzzle
          * @param {Number} rows how many rows of puzzle pieces to have in the puzzle
-         * @param {Number} borderOutlineAlpha value on range [0.00, 1.00] that determines the alpha value of the outline border of the puzzle pieces.
-         * @returns {Array} two dimensional array containing all of the puzzle pieces, first dimension is rows, second dimension is columns, ex: arrayid[row][column] = puzzle piece at row and column index
+         * @param {Number} borderOutlineAlpha (optional) value on range [0.00, 1.00] that determines the alpha value of the outline border of the puzzle pieces.
+         * @param {Boolean} shouldSnapToPosition (optional) whether or not to enable puzzle pieces to snap into their original position when dragged near it;
+         * @param {Function} puzzleCompleteFunc (optional) a function to run when all of the puzzle pieces are snapped into position after a puzzle piece has been dragged. Requires snapping to be enabled.
+         * @returns {Array} two dimensional array containing all of the puzzle pieces as gnplib.ui.helper.PuzzlePiece objects,
+         *                  first dimension is rows, second dimension is columns, ex: arrayid[row][column] = puzzle piece at row and column index
          */
-        generatePuzzlePiecesFromImage: function(stage, loadedImage, x, y, width, height, columns, rows, borderOutlineAlpha) {
+        generatePuzzlePiecesFromImage: function(stage, loadedImage, x, y, width, height, columns, rows, borderOutlineAlpha, shouldSnapToPosition, puzzleCompleteFunc) {
             var borderAlpha = borderOutlineAlpha || .4; //The alpha value of the border outline of the puzzle pieces
+            var doesSnap = shouldSnapToPosition || false; //Whether or not the puzzle pieces should snap into position when dragged.
+            var puzzleComplete = puzzleCompleteFunc || null; //The function to execute when all pieces of this puzzle are snapped into their correct place. Requires snapping to be enabled.
 
             var image = loadedImage;
             var imageWidth = image.width; //Get the default width of the image
@@ -374,6 +522,8 @@ var gnplib = {
             var sourcePieceHeight = imageHeight / rows; //The height of a piece's source area from the image
             var pieceWidth = width / columns; //The width of an individual puzzle piece
             var pieceHeight = height / rows; //The height of an individual puzzle piece
+            var snapDistanceRatio = 0.25; //The distance to snap back into position for a piece, as a ratio on range [0.00, 1.00] of the min(pieceWidth, pieceHeight);
+            var snapDistance = Math.min(pieceWidth, pieceHeight) * snapDistanceRatio; //The distance at which a piece should snap into position
 
             //Piece Measurement helper variables
             var cratio = 0.32; //How much % long of the min(sourcePieceWidth, sourcePieceHeight) the piece connector diameter should be;
@@ -385,9 +535,28 @@ var gnplib = {
             var sph = sourcePieceHeight; //Short Version of sourcePieceHeight
 
             //Define piece shape two dimensional array
-            var pieceShapes = new Array(rows);
+            var pieces = new Array(rows);
             for (r = 0; r < rows; r++) {
-                pieceShapes[r] = new Array(columns);
+                pieces[r] = new Array(columns);
+            }
+
+            //Define private Puzzle Completion Checking Func
+            var puzzleCompleteCheckFunc = function() {
+                if (puzzleComplete !== null) {
+                    //Check all pieces to see if puzzle is complete
+                    var complete = true;
+                    for (rr = 0; rr < rows; rr++) {
+                        for (cc = 0; cc < columns; cc++) {
+                            if (pieces[rr][cc] === null || !pieces[rr][cc].isSnapped) {
+                                complete = false;
+                            }
+                        }
+                    }
+                    if (complete) {
+                        //Notify the puzzle complete function that all puzzle pieces are snapped together correctly.
+                        puzzleComplete();
+                    }
+                }
             }
 
             //Define private puzzle shape generation function
@@ -492,9 +661,10 @@ var gnplib = {
             for (r = 0; r < rows; r++) {
                 for (c = 0; c < columns; c++) {
                     //Create initial shape
-                    pieceShapes[r][c] = new createjs.Shape();
-                    var piece = pieceShapes[r][c];
-                    var g = piece.graphics;
+                    pieces[r][c] = new gnplib.ui.helper.PuzzlePiece(new createjs.Shape());
+                    var piece = pieces[r][c]; //The puzzle piece
+                    var shape = piece.shape; //The shape object of the puzzle piece
+                    var g = shape.graphics; //The graphics context of the shape object
 
                     //2D Transformation Matrix to offset the area the puzzle piece should draw from
                     var matrix = new createjs.Matrix2D();
@@ -511,25 +681,43 @@ var gnplib = {
                     g.endStroke();
 
                     //Cache shape
-                    piece.cache(-cdiameter, -cdiameter,
+                    shape.cache(-cdiameter, -cdiameter,
                         sourcePieceWidth + (2 * cdiameter), sourcePieceHeight + (2 * cdiameter));
 
                     //Scale the piece properly by converting from sourcePiece Dimensions to desired Piece dimensions taking into account current scaling
-                    gnplib.ui.setWidth(piece, gnplib.ui.getWidth(piece) * (pieceWidth / spw));
-                    gnplib.ui.setHeight(piece, gnplib.ui.getHeight(piece) * (pieceHeight / sph));
+                    gnplib.ui.setWidth(shape, gnplib.ui.getWidth(shape) * (pieceWidth / spw));
+                    gnplib.ui.setHeight(shape, gnplib.ui.getHeight(shape) * (pieceHeight / sph));
 
                     //Position the piece properly
-                    piece.x = x + (c * pieceWidth);
-                    piece.y = y + (r * pieceHeight);
+                    shape.x = x + (c * pieceWidth);
+                    shape.y = y + (r * pieceHeight);
 
                     //Make piece drag and droppable
-                    gnplib.ui.addDragAndDropToObject(piece);
+                    if (doesSnap) {
+                        //Snapping
+                        piece.id = "Piece[" + r + "][" + c + "]";
+                        piece.doesSnap = true;
+                        piece.isSnapped = true; //Initially, all pieces are snapped together.
+                        piece.snapX = shape.x;
+                        piece.snapY = shape.y;
+                        piece.snapDistance = snapDistance;
 
-                    stage.addChild(piece);
+                        if (puzzleComplete !== null) {
+                            piece.stopDragCalcFunc = puzzleCompleteCheckFunc;
+                        }
+
+                        gnplib.ui.addDragAndDropToObject(shape, null, null, piece.stopDrag, piece);
+                    }
+                    else {
+                        //No Snapping
+                        gnplib.ui.addDragAndDropToObject(shape);
+                    }
+
+                    stage.addChild(shape);
                 }
             }
 
-            return pieceShapes;
+            return pieces;
         },
         /**
          * Returns the current pixel height of the DisplayObject by taking its current scaleY and multiplying by
