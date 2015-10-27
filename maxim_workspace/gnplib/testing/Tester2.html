@@ -51,8 +51,8 @@
             });
             //Set the testing piece to the bottom right piece of puzzlePieces1
             var tPiece = puzzlePieces1[3][3]; //Puzzle piece located in the 4th row and 4th column of puzzlePieces1
-            tPiece.shape.x = tPiece.shape.x + 50; //using the shape.x property instead of piece.x() method because we do not want snapping to occur here
-            tPiece.shape.y = tPiece.shape.y + 50; //using the shape.y property instead of piece.y() method because we do not want snapping to occur here
+            tPiece.x(tPiece.x() + 50); //Must use piece.x() method to manually translate pieces, because it updates snapping state information when appropriate
+            tPiece.y(tPiece.y() + 50); //Must use piece.y() method to manually translate pieces, because it updates snapping state information when appropriate
 
             /* Test Additional Puzzle Snapping/No Snapping, Dimensions and Scaling */
             var puzzlePieces2 = gnplib.ui.generatePuzzlePiecesFromImage(stage, timage, 375, 340, 400, 240, 3, 3, 1, true); //Snapping, border alpha at 1
