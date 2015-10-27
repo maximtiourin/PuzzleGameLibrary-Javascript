@@ -337,6 +337,7 @@ var gnplib = {
             var targety = obj.y; //The most recent y position the obj should update to
             var hasUpdate = false; //Flag that tells whether or not the obj should be updated, for performance reasons.
             var hasPressUpUpdate = false; //Special snapping update flag
+            var hasPressMoveUpdate = false; //Special snapping update flag
 
             //Add draw function
             var redraw = function() {
@@ -355,9 +356,13 @@ var gnplib = {
                 else {
                     //Has Snapping Functionality attached
                     if (!hasPressUpUpdate) {
-                        //No snap occured, update drag position as normal
-                        obj.x = targetx;
-                        obj.y = targety;
+                        //No snap occured, update drag position as normal if press move has occured
+                        if (hasPressMoveUpdate) {
+                            obj.x = targetx;
+                            obj.y = targety;
+
+                            hasPressMoveUpdate = false;
+                        }
                     }
                     else {
                         //Snap occured, do not update drag position, let the piece remain in its snapped position, but update targets
@@ -396,6 +401,10 @@ var gnplib = {
 
                 if (doDrag !== null) {
                     doDrag();
+                }
+
+                if (snapObject !== null) {
+                    hasPressMoveUpdate = true;
                 }
 
                 hasUpdate = true;
