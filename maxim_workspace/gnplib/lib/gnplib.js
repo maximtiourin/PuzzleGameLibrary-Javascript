@@ -92,6 +92,126 @@ var gnplib = {
              * The x and y origin point of the button is at its center
              * @param {createjs.Stage} stage the easeljs Stage context
              * @param {createjs.Text} textObj the easeljs Text object to display, or null if no text to display
+             * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} baseImage the normal background image of the button
+             * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} highlightImage the background image of the button when it is highlighted
+             * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} clickImage the background image of the button when it is clicked
+             * @param {Number} width the width of the button
+             * @param {Number} height the height of the button
+             * @param {Function} clickFunc the function that should be executed when the button is
+             * @param {Number} shrinkScale (optional) how much to shrink the button by when it is clicked, given as scalar value
+             * @returns {createjs.Container} the container object that holds all of the button elements
+             */
+            createButtonImage: function(stage, textObj, baseImage, highlightImage, clickImage, width, height, clickFunc, shrinkScale) {
+                //Defaults
+                var defaultXScale = 1.0; //Default xscale of button container
+                var defaultYScale = 1.0; //Default yscale of button container
+                var defaultScaleShrinkAmount = shrinkScale || .10; //How much to change the scale of the button container on mouseclick
+
+                //Init
+                var btn = new createjs.Container(); //Create the container for the button
+                var base = new createjs.Bitmap(baseImage);
+                var highlight = new createjs.Bitmap(highlightImage);
+                var click = new createjs.Bitmap(clickImage);
+                var rollover = false; //Button is initially not rolled over
+                var pressed = false; //Button is initially not pressed
+
+                //Scale bitmaps correctly
+                gnplib.ui.setWidth(base, width);
+                gnplib.ui.setHeight(base, height);
+                gnplib.ui.setWidth(highlight, width);
+                gnplib.ui.setHeight(highlight, height);
+                gnplib.ui.setWidth(click, width);
+                gnplib.ui.setHeight(click, height);
+
+                //Add Children to container and set initial visibility
+                btn.addChild(base);
+                btn.addChild(highlight);
+                btn.addChild(click);
+                if (textObj !== null) {
+                    btn.addChild(textObj);
+                }
+
+                highlight.visible = false;
+                click.visible = false;
+
+                //Set the container's registration point in center, and Position Text in center of container
+                var cwh = width / 2;
+                var chh = height / 2;
+                btn.regX = cwh;
+                btn.regY = chh;
+                if (textObj !== null) {
+                    textObj.textAlign = "center"; //Make the text align horizontally to its center point
+                    textObj.textBaseline = "middle"; //Make the text vertically align to its middle point
+                    textObj.set({x: cwh, y: chh}); //Set the text's center point the center of the container
+                }
+
+                //Create Redraw Function
+                var redraw = function() {
+                    if (pressed) {
+                        //Button is pressed down
+                        base.visible = false;
+                        highlight.visible = false;
+                        click.visible = true;
+                    }
+                    else if (rollover) {
+                        //Button is highlighted but not pressed
+                        base.visible = false;
+                        highlight.visible = true;
+                        click.visible = false;
+                    }
+                    else {
+                        //Button in default state
+                        base.visible = true;
+                        highlight.visible = false;
+                        click.visible = false;
+                    }
+
+                    stage.update();
+                }
+
+                //Draw initial button
+                redraw();
+
+                //Add highlight enable color event
+                btn.addEventListener("rollover", function(event) {
+                    rollover = true;
+                    redraw();
+                });
+
+                //Add highlight disable color event
+                btn.addEventListener("rollout", function(event) {
+                    rollover = false;
+                    redraw();
+                });
+
+                //Add click enable color event
+                btn.addEventListener("mousedown", function(event) {
+                    pressed = true;
+                    btn.scaleX = defaultXScale - defaultScaleShrinkAmount; //Shrink xscale of button container
+                    btn.scaleY = defaultYScale - defaultScaleShrinkAmount; //Shrink yscale of button container
+                    redraw();
+                });
+
+                //Add click disable color event
+                btn.addEventListener("pressup", function(event) {
+                    pressed = false;
+                    btn.scaleX = defaultXScale; //Reset xscale of button container
+                    btn.scaleY = defaultYScale; //Reset yscale of button container
+                    redraw();
+
+                    //Execute the click function if mouse is still rolled over
+                    if (rollover) {
+                        clickFunc(event);
+                    }
+                });
+
+                return btn;
+            },
+            /**
+             * Used to create buttons of varying configurations by createButton functions in gnplib.ui
+             * The x and y origin point of the button is at its center
+             * @param {createjs.Stage} stage the easeljs Stage context
+             * @param {createjs.Text} textObj the easeljs Text object to display, or null if no text to display
              * @param {String} baseColor the normal background color of the button
              * @param {String} highlightColor the background color of the button when it is highlighted
              * @param {String} clickColor the background color of the button when it is clicked
@@ -465,6 +585,37 @@ var gnplib = {
         createButtonEllipse: function(stage, textObj, baseColor, highlightColor, clickColor, width, height, clickFunc) {
             return gnplib.ui.helper.createButtonSimple(stage, textObj, baseColor, highlightColor, clickColor, width, height,
                 0, "ellipse", clickFunc);
+        },
+        /**
+         * Creates and returns a simple easeljs Container object that contains the elements of a button with a background image.
+         * The x and y origin point of the button is at its center
+         * @param {createjs.Stage} stage the easeljs Stage context
+         * @param {createjs.Text} textObj the easeljs Text object to display, or null if no text to display
+         * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} baseImage the normal background image of the button
+         * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} highlightImage the highlighted background image of the button
+         * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} clickImage the clicked background image of the button
+         * @param {Number} width the width of the button
+         * @param {Number} height the height of the button
+         * @param {Function} clickFunc the function that should be executed when the button is clicked
+         * @param {Number} shrinkScale (optional) how much to shrink the button by when it is clicked, given as scalar value
+         * @returns {createjs.Container} the container object that holds all of the button elements
+         */
+        createButtonImageComplex: function(stage, textObj, baseImage, highlightImage, clickImage, width, height, clickFunc, shrinkScale) {
+            return gnplib.ui.helper.createButtonImage(stage, textObj, baseImage, highlightImage, clickImage, width, height, clickFunc, shrinkScale);
+        },
+        /**
+         * Creates and returns a simple easeljs Container object that contains the elements of a button with a background image.
+         * The x and y origin point of the button is at its center
+         * @param {createjs.Stage} stage the easeljs Stage context
+         * @param {createjs.Text} textObj the easeljs Text object to display, or null if no text to display
+         * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} baseImage the normal background image of the button
+         * @param {Number} width the width of the button
+         * @param {Number} height the height of the button
+         * @param {Function} clickFunc the function that should be executed when the button is clicked
+         * @returns {createjs.Container} the container object that holds all of the button elements
+         */
+        createButtonImageSimple: function(stage, textObj, baseImage, width, height, clickFunc) {
+            return gnplib.ui.helper.createButtonImage(stage, textObj, baseImage, baseImage, baseImage, width, height, clickFunc);
         },
         /**
          * Creates and returns a simple easeljs Container object that contains the elements of a rectangular button.
