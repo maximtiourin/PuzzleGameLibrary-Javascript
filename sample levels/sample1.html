@@ -62,20 +62,22 @@ display: block;  /* No floating content on sides */
 			
 			var button2 = new createjs.Container();
 			button2.name = "btn";
-			button2.x = window.innerWidth/1.2;
-			button2.y = window.innerHeight/1.2;
+			button2.x = window.innerWidth/1.3;
+			button2.y = window.innerHeight/1.3;
 			button2.addChild(background2, label3);
 			stage.addChild(button2);
-			button2.on("click", rightClick, null, false, null, false);
-			button2.on("pressmove",function(evt) {
+			
+			button2.on("",function(evt) {
+				
 				evt.currentTarget.x = evt.stageX;
 				evt.currentTarget.y = evt.stageY;
 				stage.update();   
 			}, null, false, null, false);
+			button2.on("click", rightClick, null, false, null, false);
 			
 			// Makes the draggable background that covers the buttons.
 			var rect = new createjs.Shape();
-			rect.graphics.beginFill("white").drawRect(-100, -100, window.innerWidth*2, window.innerHeight*2);
+			rect.graphics.beginFill("red").drawRect(-100, -100, window.innerWidth*2, window.innerHeight*2);
 			
 			var label = new createjs.Text("hello world", "bold 14px Arial", "#FFFFFF");
 			label.textAlign = "center";
@@ -105,10 +107,6 @@ display: block;  /* No floating content on sides */
 				alert("redirect to next level");
 				// correct button event
 				// could probably be an anonymous function
-		}
-		
-		function testtest(evt){
-		
 		}
 	</script>
 </head>
