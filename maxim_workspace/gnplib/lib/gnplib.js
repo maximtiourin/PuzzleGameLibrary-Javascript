@@ -76,6 +76,16 @@ var gnplib = {
      * }
      * foo(myCallback);
      */
+    /**
+     * This callback function is passed to other functions when an action needs to occur after a function specific event fires. It is not passed any parameters.
+     * @callback EmptyCallback
+     * @example
+     * //Create a callback function and pass it to a function that can use it
+     * var myCallback = function() {
+     *      //Do stuff
+     * }
+     * foo(myCallback);
+     */
 
     /* Define typedefs */
     /**
@@ -102,7 +112,40 @@ var gnplib = {
      * @memberof gnplib
      */
     math: {
-
+        /**
+         * Returns a value n, where n = (high + low - value) / 2
+         * @param {!Number} value - The value to center within the range
+         * @param {!Number} low - The inclusive lower end of the range
+         * @param {!Number} high - The inclusive higher end of the range
+         * @returns {Number} A value n, where n = (high + low - value) / 2
+         * @example
+         * //If you wanted to center something of width=100 between the x=200 and x=400 positions on the x-axis,
+         * gnplib.math.balance(100, 200, 400) = 250; //You must position that something at x=250 for it to be centered
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
+         */
+        center: function(value, low, high) {
+            return (((high - low) - value) / 2) + low;
+        },
+        /**
+         * Clamps the given value to be on the range [low, high]
+         * @param {!Number} value - The value to clamp to be on given range
+         * @param {!Number} low - The inclusive lower end of the range
+         * @param {!Number} high - The inclusive higher end of the range
+         * @returns {Number} A value on the range [low, high]
+         * @example
+         * //value = 25, low = 0, high = 50
+         * gnplib.math.clamp(25, 0, 50) = 25;
+         * @example
+         * //value = 75, low = 0, high = 50
+         * gnplib.math.clamp(75, 0, 50) = 50;
+         * @example
+         * //value = -5, low = 0, high = 50
+         * gnplib.math.clamp(-5, 0, 50) = 0;
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
+         */
+        clamp: function(value, low, high) {
+            return Math.min(high, Math.max(0, value));
+        }
     },
     /**
      * String utility functions
@@ -151,6 +194,8 @@ var gnplib = {
          * }
          *
          * gnplib.ui.addDragAndDropToObject(myDisplayObject, startDrag, doDrag, stopDrag);
+         *
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         addDragAndDropToObject: function(displayObject, startDragFunc, dragFunc, stopDragFunc, snappingObject) {
             var obj = displayObject;
@@ -274,6 +319,7 @@ var gnplib = {
          * @example
          * //Create a button circle with red base color, blue highlightColor, green clickColor, and a radius of 50
          * var button = gnplib.createButtonCircle(myStage, myText, "#ff0000", "#0000ff", "#00ff00", 50, myClickFunc);
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         createButtonCircle: function(stage, textObj, baseColor, highlightColor, clickColor, radius, clickFunc) {
             return gnplib.ui.createButtonShape(stage, textObj, baseColor, highlightColor, clickColor,
@@ -294,6 +340,7 @@ var gnplib = {
          * @example
          * //Create a button ellipse with red base color, blue highlightColor, green clickColor, major axis diameter of 100, and minor axis diameter of 50
          * var button = gnplib.createButtonEllipse(myStage, myText, "#ff0000", "#0000ff", "#00ff00", 100, 50, myClickFunc);
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         createButtonEllipse: function(stage, textObj, baseColor, highlightColor, clickColor, width, height, clickFunc) {
             return gnplib.ui.createButtonShape(stage, textObj, baseColor, highlightColor, clickColor, width, height,
@@ -431,6 +478,7 @@ var gnplib = {
          * @param {!Number} height - The height of the button
          * @param {!MouseCallback} clickFunc - The function that should be executed when the button is clicked
          * @returns {createjs.Container} The {@link http://www.createjs.com/docs/easeljs/classes/Container.html createjs.Container} object that holds all of the button elements created by this function
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         createButtonImageSimple: function(stage, textObj, baseImage, width, height, clickFunc) {
             return gnplib.ui.createButtonImage(stage, textObj, baseImage, baseImage, baseImage, width, height, clickFunc);
@@ -450,6 +498,7 @@ var gnplib = {
          * @example
          * //Create a button rectangle with red base color, blue highlightColor, green clickColor, width of 100, and height of 50
          * var button = gnplib.createButtonRectangle(myStage, myText, "#ff0000", "#0000ff", "#00ff00", 100, 50, myClickFunc);
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         createButtonRectangle: function(stage, textObj, baseColor, highlightColor, clickColor, width, height, clickFunc) {
             return gnplib.ui.createButtonShape(stage, textObj, baseColor, highlightColor, clickColor, width, height,
@@ -471,6 +520,7 @@ var gnplib = {
          * @example
          * //Create a button round rectangle with red base color, blue highlightColor, green clickColor, width of 100, height of 50, and corner radius of 15
          * var button = gnplib.createButtonRoundRectangle(myStage, myText, "#ff0000", "#0000ff", "#00ff00", 100, 50, 15, myClickFunc)
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         createButtonRoundRectangle: function(stage, textObj, baseColor, highlightColor, clickColor, width, height,
                                              radius, clickFunc) {
@@ -496,6 +546,7 @@ var gnplib = {
          * @see {@link gnplib.ui.createButtonEllipse} for easily creating a button with an ellipse shape
          * @see {@link gnplib.ui.createButtonRectangle} for easily creating a button with a rectangle shape
          * @see {@link gnplib.ui.createButtonRoundRectangle} for easily creating a button with a round rectangle shape
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         createButtonShape: function(stage, textObj, baseColor, highlightColor, clickColor, width, height, radius, shapeType, clickFunc) {
             //Defaults
@@ -594,25 +645,24 @@ var gnplib = {
             return btn;
         },
         /**
-         * Generates draggable puzzle piece elements from a given image, then adds them as children to the given stage
-         * and returns a two dimensional array of the pieces, which are represented as gnplib.ui.PuzzlePiece objects.
-         * @param {createjs.Stage} stage (optional) the stage context to add the puzzle pieces to as children, if stage is null, pieces will not be added as children, and will need to be manually displayed
-         * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} loadedImage the loaded image object to create puzzle pieces from
-         * @param {Number} x the x position of where the top left most puzzle piece should be positioned by default
-         * @param {Number} y the y position of where the top left most puzzle piece should be positioned by default
-         * @param {Number} width the total width of the puzzle, to which the puzzle piece widths will add up to, overall image will be scaled to this width
-         * @param {Number} height the total height of the puzzle, to which the puzzle piece heights will add up to, overall image will be scaled to this height
-         * @param {Number} columns how many columns of puzzle pieces to have in the puzzle
-         * @param {Number} rows how many rows of puzzle pieces to have in the puzzle
-         * @param {Number} borderOutlineAlpha (optional) value on range [0.00, 1.00] that determines the alpha value of the outline border of the puzzle pieces.
-         * @param {Boolean} shouldSnapToPosition (optional) whether or not to enable puzzle pieces to snap into their original position when dragged near it;
-         * @param {Function} puzzleCompleteFunc (optional) a function to run when all of the puzzle pieces are snapped into position after a puzzle piece has been dragged. Requires snapping to be enabled.
-         * @returns {Array} two dimensional array containing all of the puzzle pieces as gnplib.ui.PuzzlePiece objects,
-         *                  first dimension is rows, second dimension is columns, ex: arrayid[row][column] = puzzle piece at row and column index
+         * Generates drag and droppable puzzle piece shapes from an image and returns a two dimensional array of the pieces, which are represented as {@link gnplib.ui.PuzzlePiece} wrapper objects.
+         * @param {?createjs.Stage} stage - The current {@link http://www.createjs.com/docs/easeljs/classes/Stage.html createjs.Stage} context to automatically add the puzzle pieces to as children. If stage is set to null, the pieces will need to be manually added as children to a createjs.Stage object.
+         * @param {!(HTMLImageElement | HTMLCanvasElement | HTMLVideoElement)} loadedImage - The loaded image object to create the puzzle piece shapes out of
+         * @param {!Number} x - The x position of where the top left corner of the top left most puzzle piece should be positioned by default
+         * @param {!Number} y - The y position of where the top left corner of the top left most puzzle piece should be positioned by default
+         * @param {!Number} width - The total width of the puzzle, to which the widths of the individual puzzle pieces in a row will sum up to
+         * @param {!Number} height - The total height of the puzzle, to which the heights of the individual puzzle pieces in a column will sum up to
+         * @param {!Number} columns - How many columns of puzzle pieces to have in the puzzle
+         * @param {!Number} rows - How many rows of puzzle pieces to have in the puzzle
+         * @param {?Number} [borderOutlineAlpha=0.40] - A value on the range [0.00, 1.00] that determines the alpha value of the outline border of the individual puzzle pieces.
+         * @param {?Boolean} [shouldSnapToPosition=false] - Whether or not to allow puzzle pieces to snap into their original x and y position when dragged near it.
+         * @param {?EmptyCallback} [puzzleCompleteFunc=null] - A function to run when all of the puzzle pieces are snapped into position after a puzzle piece has been dragged. Requires snapping to be enabled.
+         * @returns {gnplib.ui.PuzzlePiece[][]} Two dimensional array containing all of the puzzle pieces wrapped as {@link gnplib.ui.PuzzlePiece} objects. First dimension is rows, second dimension is columns, ex: arrayid[row][column] = PuzzlePiece at row and column index
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         generatePuzzlePiecesFromImage: function(stage, loadedImage, x, y, width, height, columns, rows, borderOutlineAlpha, shouldSnapToPosition, puzzleCompleteFunc) {
             var puzzleStage = stage || null;
-            var borderAlpha = borderOutlineAlpha || .4; //The alpha value of the border outline of the puzzle pieces
+            var borderAlpha = gnplib.math.clamp(borderOutlineAlpha || .4, 0, 1.00); //The alpha value of the border outline of the puzzle pieces
             var doesSnap = shouldSnapToPosition || false; //Whether or not the puzzle pieces should snap into position when dragged.
             var puzzleComplete = puzzleCompleteFunc || null; //The function to execute when all pieces of this puzzle are snapped into their correct place. Requires snapping to be enabled.
 
@@ -827,6 +877,7 @@ var gnplib = {
          * its default pixel height.
          * @param {createjs.DisplayObject} displayObj The DisplayObject to get the height of
          * @returns {Number} the height of the DisplayObject
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         getHeight: function(displayObj) {
             var defaultHeight = displayObj.getBounds().height;
@@ -837,6 +888,7 @@ var gnplib = {
          * its default pixel width.
          * @param {createjs.DisplayObject} displayObj The DisplayObject to get the width of
          * @returns {Number} the width of the DisplayObject
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         getWidth: function(displayObj) {
             var defaultWidth = displayObj.getBounds().width;
@@ -845,9 +897,10 @@ var gnplib = {
         /**
          * Displays a smart hint box with a given maxWidth, that shows a createjs.Text object that wraps to fit.
          * @class HintBox
+         * @constructor
          * @param {createjs.Stage} stage the createjs.Stage context to display the hint box in
          * @param {Number} maxWidth the maximum width of the hint box
-         * @constructor
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         HintBox: function(stage, maxWidth) {
             var t = this;
@@ -960,11 +1013,12 @@ var gnplib = {
          * rotation. A dials value is 0 at the 90 degree position (top of dial), and increases in value in the clockwise
          * direction, rolling over back to 0 when it reaches 90 degrees again.
          * @class LockDial
+         * @constructor
          * @param {createjs.Stage} stage the easeljs Stage context
          * @param {createjs.Bitmap} bitmapImage the easeljs Bitmap object
          * @param {Number} ticksInFullRotation how many ticks are in a full 360 degree rotation of the dial.
          * @param {Function} eventFunc function that will execute whenever the dial's value is updated, it will be passed the value of the dial for the first parameter
-         * @constructor
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         LockDial: function(stage, bitmapImage, ticksInFullRotation, eventFunc) {
             eventFunc = eventFunc || null; //Set default value of eventFunc if it was not passed
@@ -1052,8 +1106,10 @@ var gnplib = {
          * [Advanced Use Only] A Puzzle Piece class that contains useful information about a puzzle piece ui element, 
          * used by gnplib.ui.generatePuzzlePiecesFromImage() to create interactive puzzle pieces. Generally should not 
          * be used on its own.
-         * @param {createjs.Shape} the Shape Object to create the puzzle piece with
+         * @class PuzzlePiece
          * @constructor
+         * @param {createjs.Shape} the Shape Object to create the puzzle piece with
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         PuzzlePiece: function(shapeObject) {
             var t = this;
@@ -1165,6 +1221,7 @@ var gnplib = {
          * Takes a height in pixels, and sets the display objects scaleY property to correctly scale to that height.
          * @param {createjs.DisplayObject} displayObj The DisplayObject to set the height of
          * @param {Number} height the pixel height amount to set to
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         setHeight: function(displayObj, height) {
             var defaultHeight = displayObj.getBounds().height;
@@ -1175,6 +1232,7 @@ var gnplib = {
          * Takes a width in pixels, and sets the display objects scaleX property to correctly scale to that width.
          * @param {createjs.DisplayObject} displayObj The DisplayObject to set the width of
          * @param {Number} width the pixel width amount to set to
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         setWidth: function(displayObj, width) {
             var defaultWidth = displayObj.getBounds().width;
@@ -1198,6 +1256,7 @@ var gnplib = {
          * @param {string} url absolute or relative url string to redirect to
          * @param {boolean} isLink boolean value, true to simulate the user clicking on a link, false to simulate an http redirect
          * @returns {boolean} the passed value of isLink
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         redirect: function(url, isLink) {
             if (isLink) {
