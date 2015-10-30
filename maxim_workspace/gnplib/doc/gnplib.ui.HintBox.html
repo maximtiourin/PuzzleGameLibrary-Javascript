@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>HintBox - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="gnplib.ui.HintBox.html">HintBox</a><ul class='methods'><li data-type='method'><a href="gnplib.ui.HintBox.html#centerOnPoint">centerOnPoint</a></li><li data-type='method'><a href="gnplib.ui.HintBox.html#setText">setText</a></li><li data-type='method'><a href="gnplib.ui.HintBox.html#showDialog">showDialog</a></li></ul></li><li><a href="gnplib.ui.LockDial.html">LockDial</a></li><li><a href="gnplib.ui.PuzzlePiece.html">PuzzlePiece</a><ul class='methods'><li data-type='method'><a href="gnplib.ui.PuzzlePiece.html#checkSnapping">checkSnapping</a></li><li data-type='method'><a href="gnplib.ui.PuzzlePiece.html#x">x</a></li><li data-type='method'><a href="gnplib.ui.PuzzlePiece.html#y">y</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="gnplib.html">gnplib</a></li><li><a href="gnplib.math.html">math</a><ul class='methods'><li data-type='method'><a href="gnplib.math.html#.center">center</a></li><li data-type='method'><a href="gnplib.math.html#.clamp">clamp</a></li></ul></li><li><a href="gnplib.string.html">string</a></li><li><a href="gnplib.ui.html">ui</a><ul class='methods'><li data-type='method'><a href="gnplib.ui.html#.addDragAndDropToObject">addDragAndDropToObject</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonCircle">createButtonCircle</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonEllipse">createButtonEllipse</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonImage">createButtonImage</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonImageSimple">createButtonImageSimple</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonRectangle">createButtonRectangle</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonRoundRectangle">createButtonRoundRectangle</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonShape">createButtonShape</a></li><li data-type='method'><a href="gnplib.ui.html#.generatePuzzlePiecesFromImage">generatePuzzlePiecesFromImage</a></li><li data-type='method'><a href="gnplib.ui.html#.getHeight">getHeight</a></li><li data-type='method'><a href="gnplib.ui.html#.getWidth">getWidth</a></li><li data-type='method'><a href="gnplib.ui.html#.setHeight">setHeight</a></li><li data-type='method'><a href="gnplib.ui.html#.setWidth">setWidth</a></li></ul></li><li><a href="gnplib.window.html">window</a><ul class='methods'><li data-type='method'><a href="gnplib.window.html#.redirect">redirect</a></li></ul></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">HintBox</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="gnplib.html">gnplib</a><a href="gnplib.ui.html">.ui</a>.</span>
+        
+        HintBox
+        </h2>
+        
+            <div class="class-description">HintBox</div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="HintBox"><span class="type-signature"></span>new HintBox<span class="signature">(stage<span class="signature-attributes">non-null</span>, maxWidth<span class="signature-attributes">opt, nullable</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    A smart HintBox class that displays a small frame with a given maxWidth and a dynamic height, that contains a <a href="http://www.createjs.com/docs/easeljs/classes/Text.html">createjs.Text</a> object which wraps inside of it. The frame is closed by clicking inside of it.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>stage</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">createjs.Stage</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The current <a href="http://www.createjs.com/docs/easeljs/classes/Stage.html">createjs.Stage</a> context to display the HintBox in</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxWidth</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                    &lt;nullable><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    200
+                
+                </td>
+            
+
+            <td class="description last">The maximum pixel width of the hint box, to which the contents will constrain to</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>stage</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">createjs.Stage</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">[READ ONLY] The <a href="http://www.createjs.com/docs/easeljs/classes/Stage.html">createjs.Stage</a> context that this HintBox belongs to</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>box</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">createjs.Container</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The <a href="http://www.createjs.com/docs/easeljs/classes/Container.html">createjs.Container</a> object that holds all of the elements of the HintBox. Access this property to move the HintBox, scale it, etc.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxWidth</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">[READ ONLY] The maximum width of the HintBox.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxHeight</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">[READ ONLY] The maximum height of the HintBox.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>width</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">[READ ONLY] The width of the HintBox that is available to display content, calculated by accounting for padding of the left and right sides of the HintBox</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>height</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">[READ ONLY] The height of the HintBox that is available to display content, calculated by accounting for padding of the top and bottom sides of the HintBox</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>text</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">[READ ONLY] The string value of the text to display inside of the HintBox</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>textColor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Color">Color</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The color to set the text of the HintBox to the next time setText() is called. Default value = "#000000"</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>textFont</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Font">Font</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The font to use for the text of the HintBox the next time setText() is called. Default value = "12px Arial"</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>bgColor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="global.html#Color">Color</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The color of the background for the HintBox. Must be set to render the HintBox. Default value = "#ffffff"</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cornerRadius</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The corner radius of the background rectangle, values greater than 0 create rounded corners. Only used when there is a background color. Default value = 0</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>isDisplayed</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">[READ ONLY] Is true if the HintBox is currently displayed, false if it is hidden</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li><a href="mailto:mixmaxtwo@gmail.com">Maxim Tiourin</a></li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="gnplib.js.html">gnplib.js</a>, <a href="gnplib.js.html#line948">line 948</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>//Creating and displaying a HintBox, centered on the point(400, 300)var hintbox = new gnplib.ui.HintBox(myStage, 200); //Create a new HintBox attached to myStage, with a maxWidth of 200hintbox.textColor = "#ff0000"; //Set text to redhintbox.textFont = "16px Arial"; //Set font to size 16 Arialhintbox.bgColor = "#0000ff"; //Set background color to bluehintbox.cornerRadius = 15; //Set the HintBox to have rounded corners of radius 15hintbox.setText("Hello! This is some text that will be contained within the HintBox..."); //Set the text of the HintBox and let it dynamically size itselfhintbox.centerOnPoint(400, 300); //Center HintBox on the point(400, 300)hintbox.showDialog(true); //Display the HintBox</code></pre>
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="centerOnPoint"><span class="type-signature"></span>centerOnPoint<span class="signature">(x, y)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Centers the HintBox on the given point inside of the current stage context
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>x</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The x coordinate of the point to center on to</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>y</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The y coordinate of the point to center on to</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="gnplib.js.html">gnplib.js</a>, <a href="gnplib.js.html#line1034">line 1034</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setText"><span class="type-signature"></span>setText<span class="signature">(text<span class="signature-attributes">non-null</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Sets the string value of the HintBox's display text, and then dynamically wraps the text around the maxWidth
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>text</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The text string value of the text to display inside of the HintBox</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="gnplib.js.html">gnplib.js</a>, <a href="gnplib.js.html#line991">line 991</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="showDialog"><span class="type-signature"></span>showDialog<span class="signature">(isVisible<span class="signature-attributes">non-null</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Sets whether or not to currently display the HintBox.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>isVisible</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">True if the HintBox should be displayed, false if it should be hidden</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="gnplib.js.html">gnplib.js</a>, <a href="gnplib.js.html#line1015">line 1015</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.3</a> on Fri Oct 30 2015 05:47:40 GMT-0700 (Pacific Daylight Time) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

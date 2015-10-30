@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>math - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="gnplib.ui.HintBox.html">HintBox</a><ul class='methods'><li data-type='method'><a href="gnplib.ui.HintBox.html#centerOnPoint">centerOnPoint</a></li><li data-type='method'><a href="gnplib.ui.HintBox.html#setText">setText</a></li><li data-type='method'><a href="gnplib.ui.HintBox.html#showDialog">showDialog</a></li></ul></li><li><a href="gnplib.ui.LockDial.html">LockDial</a></li><li><a href="gnplib.ui.PuzzlePiece.html">PuzzlePiece</a><ul class='methods'><li data-type='method'><a href="gnplib.ui.PuzzlePiece.html#checkSnapping">checkSnapping</a></li><li data-type='method'><a href="gnplib.ui.PuzzlePiece.html#x">x</a></li><li data-type='method'><a href="gnplib.ui.PuzzlePiece.html#y">y</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="gnplib.html">gnplib</a></li><li><a href="gnplib.math.html">math</a><ul class='methods'><li data-type='method'><a href="gnplib.math.html#.center">center</a></li><li data-type='method'><a href="gnplib.math.html#.clamp">clamp</a></li></ul></li><li><a href="gnplib.string.html">string</a></li><li><a href="gnplib.ui.html">ui</a><ul class='methods'><li data-type='method'><a href="gnplib.ui.html#.addDragAndDropToObject">addDragAndDropToObject</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonCircle">createButtonCircle</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonEllipse">createButtonEllipse</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonImage">createButtonImage</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonImageSimple">createButtonImageSimple</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonRectangle">createButtonRectangle</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonRoundRectangle">createButtonRoundRectangle</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonShape">createButtonShape</a></li><li data-type='method'><a href="gnplib.ui.html#.generatePuzzlePiecesFromImage">generatePuzzlePiecesFromImage</a></li><li data-type='method'><a href="gnplib.ui.html#.getHeight">getHeight</a></li><li data-type='method'><a href="gnplib.ui.html#.getWidth">getWidth</a></li><li data-type='method'><a href="gnplib.ui.html#.setHeight">setHeight</a></li><li data-type='method'><a href="gnplib.ui.html#.setWidth">setWidth</a></li></ul></li><li><a href="gnplib.window.html">window</a><ul class='methods'><li data-type='method'><a href="gnplib.window.html#.redirect">redirect</a></li></ul></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">math</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="gnplib.html">gnplib</a>.</span>
+        
+        math
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Math utility functions</div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="gnplib.js.html">gnplib.js</a>, <a href="gnplib.js.html#line130">line 130</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id=".center"><span class="type-signature">(static) </span>center<span class="signature">(value<span class="signature-attributes">non-null</span>, low<span class="signature-attributes">non-null</span>, high<span class="signature-attributes">non-null</span>)</span><span class="type-signature"> &rarr; {Number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Returns a value n, where n = (high + low - value) / 2
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The value to center within the range</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>low</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The inclusive lower end of the range</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>high</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The inclusive higher end of the range</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li><a href="mailto:mixmaxtwo@gmail.com">Maxim Tiourin</a></li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="gnplib.js.html">gnplib.js</a>, <a href="gnplib.js.html#line147">line 147</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A value n, where n = (high + low - value) / 2
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>//If you wanted to center something of width=100 between the x=200 and x=400 positions on the x-axis,gnplib.math.balance(100, 200, 400) = 250; //You must position that something at x=250 for it to be centered</code></pre>
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".clamp"><span class="type-signature">(static) </span>clamp<span class="signature">(value<span class="signature-attributes">non-null</span>, low<span class="signature-attributes">non-null</span>, high<span class="signature-attributes">non-null</span>)</span><span class="type-signature"> &rarr; {Number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Clamps the given value to be on the range [low, high]
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The value to clamp to be on given range</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>low</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The inclusive lower end of the range</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>high</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The inclusive higher end of the range</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li><a href="mailto:mixmaxtwo@gmail.com">Maxim Tiourin</a></li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="gnplib.js.html">gnplib.js</a>, <a href="gnplib.js.html#line167">line 167</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    A value on the range [low, high]
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+    <h5>Examples</h5>
+    
+    <pre class="prettyprint"><code>//value = 25, low = 0, high = 50gnplib.math.clamp(25, 0, 50) = 25;</code></pre>
+
+    <pre class="prettyprint"><code>//value = 75, low = 0, high = 50gnplib.math.clamp(75, 0, 50) = 50;</code></pre>
+
+    <pre class="prettyprint"><code>//value = -5, low = 0, high = 50gnplib.math.clamp(-5, 0, 50) = 0;</code></pre>
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.3</a> on Fri Oct 30 2015 05:47:40 GMT-0700 (Pacific Daylight Time) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
