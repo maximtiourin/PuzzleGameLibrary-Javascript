@@ -66,6 +66,16 @@ this.createjs=this.createjs||{},createjs.extend=function(a,b){"use strict";funct
 var gnplib = {
     /* Define callbacks for use with documentation */
     /**
+     * This callback function is passed to other functions when an action needs to occur after a function specific event fires. It is not passed any parameters.
+     * @callback EmptyCallback
+     * @example
+     * //Create a callback function and pass it to a function that can use it
+     * var myCallback = function() {
+     *      //Do stuff
+     * }
+     * foo(myCallback);
+     */
+    /**
      * This callback function is passed to other functions when an action needs to occur after a user mouse event fires.
      * @callback MouseCallback
      * @param {createjs.MouseEvent} event - The {@link http://www.createjs.com/docs/easeljs/classes/MouseEvent.html createjs.MouseEvent} to pass to the callback
@@ -76,20 +86,10 @@ var gnplib = {
      * }
      * foo(myCallback);
      */
-    /**
-     * This callback function is passed to other functions when an action needs to occur after a function specific event fires. It is not passed any parameters.
-     * @callback EmptyCallback
-     * @example
-     * //Create a callback function and pass it to a function that can use it
-     * var myCallback = function() {
-     *      //Do stuff
-     * }
-     * foo(myCallback);
-     */
 
     /* Define typedefs */
     /**
-     * A string representing a color
+     * A string representing a CSS color attribute
      * @typedef {String} Color
      * @example
      * //Defining a common color by its name
@@ -103,6 +103,16 @@ var gnplib = {
      * @example
      * //Defining a color by its rgba value
      * var color = "rgba(255, 0, 0, 127)"; //Red at ~50% transparency
+     */
+    /**
+     * A string representing a CSS font attribute
+     * @typedef {String} Font
+     * @example
+     * //Size 12 Arial font
+     * var font = "12px Arial";
+     * @example
+     * //Bold Size 24 Arial font
+     * var font = "bold 24px Arial";
      */
 
     /* Nested Namespaces */
@@ -876,7 +886,7 @@ var gnplib = {
          * Returns the current pixel height of the {@link http://www.createjs.com/docs/easeljs/classes/DisplayObject.html createjs.DisplayObject} by taking its current scaleY and multiplying by
          * its default pixel height.
          * @param {!createjs.DisplayObject} displayObj - The {@link http://www.createjs.com/docs/easeljs/classes/DisplayObject.html createjs.DisplayObject} to get the height of
-         * @returns {Number} The height of the createjs.DisplayObject
+         * @returns {Number} The height of the {@link http://www.createjs.com/docs/easeljs/classes/DisplayObject.html createjs.DisplayObject}
          * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         getHeight: function(displayObj) {
@@ -895,11 +905,23 @@ var gnplib = {
             return displayObj.scaleX * defaultWidth;
         },
         /**
-         * Displays a smart hint box with a given maxWidth, that shows a createjs.Text object that wraps to fit.
+         * A smart HintBox class that displays a small frame with a given maxWidth and a dynamic height, that contains a {@link http://www.createjs.com/docs/easeljs/classes/Text.html createjs.Text} object which wraps inside of it. The frame is closed by clicking inside of it.
          * @class HintBox
          * @constructor
-         * @param {createjs.Stage} stage the createjs.Stage context to display the hint box in
-         * @param {Number} maxWidth the maximum width of the hint box
+         * @param {!createjs.Stage} stage - The current {@link http://www.createjs.com/docs/easeljs/classes/Stage.html createjs.Stage} context to display the HintBox in
+         * @param {?Number} [maxWidth=200] - The maximum pixel width of the hint box, to which the contents will constrain to
+         * @property {createjs.Stage} stage - [READ ONLY] The {@link http://www.createjs.com/docs/easeljs/classes/Stage.html createjs.Stage} context that this HintBox belongs to
+         * @property {createjs.Container} box - The {@link http://www.createjs.com/docs/easeljs/classes/Container.html createjs.Container} object that holds all of the elements of the HintBox. Access this property to move the HintBox, scale it, etc.
+         * @property {Number} maxWidth - [READ ONLY] The maximum width of the HintBox.
+         * @property {Number} maxHeight - [READ ONLY] The maximum height of the HintBox.
+         * @property {Number} width - [READ ONLY] The width of the HintBox that is available to display content, calculated accounting for padding of the left and right sides of the HintBox
+         * @property {Number} height - [READ ONLY] The height of the HintBox that is available to display content, calculated by accounting for padding of the top and bottom sides of the HintBox
+         * @property {String} text - [READ ONLY] The text string value of the text to display inside of the HintBox
+         * @property {Color} textColor - The color to set the text of the HintBox to, the next time setText() is called. Default value = "#000000"
+         * @property {Font} textFont - The font to use for the text of the HintBox, the next time setText() called
+         * @property {Color} bgColor - The color of the background for the HintBox, can be null to display no background. Default value = null
+         * @property {Number} cornerRadius - The corner radius of the background rectangle, values greater than 0 create rounded corners. Only used when there is a background color. Default value = 0
+         * @property {Boolean} isDisplayed - [READ ONLY] Is true if the HintBox is currently displayed, false if it is hidden
          * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         HintBox: function(stage, maxWidth) {
@@ -910,8 +932,9 @@ var gnplib = {
             t.stage = stage; //The createjs.Stage context
             t.box = new createjs.Container(); //The container object that holds all of the elements of the dialog box. Access this property to move hint box, scale it, etc.
             t.shape = new createjs.Shape(); //The Shape object to draw any primitive graphics to
-            t.bitmap = null; //Bitmap image to use as the dialog box's background, scaled to fit the bounds of the box. Has to be set by HintBox.setBackgroundImage()
-            t.width = maxWidth - (2 * t.HORIZONTAL_PADDING); //The width of the non padding content of the container (use ui.GetWidth() on box to figure out actual width)
+            t.maxWidth = (maxWidth || 200);
+            t.maxHeight = 0;
+            t.width = t.maxWidth - (2 * t.HORIZONTAL_PADDING); //The width of the non padding content of the container (use ui.GetWidth() on box to figure out actual width)
             t.height = 0; //The height of the non padding content of the container (use ui.GetHeight() on box to figure out actual height)
             t.textObject = null; //The text object that will be drawn in the hint box. Has to be set by HintBox.setText()
             t.text = ""; //The text string value of the hint box, READ-ONLY
@@ -933,10 +956,10 @@ var gnplib = {
                     if (t.bgColor !== null) {
                         //Draw Background color
                         if (t.cornerRadius > 0) {
-                            g.beginFill(t.bgColor).drawRoundRect(0, 0, t.width + (2 * t.HORIZONTAL_PADDING), t.height + (2 * t.VERTICAL_PADDING), t.cornerRadius);
+                            g.beginFill(t.bgColor).drawRoundRect(0, 0, t.maxWidth, t.maxHeight, t.cornerRadius);
                         }
                         else {
-                            g.beginFill(t.bgColor).drawRect(0, 0, t.width + (2 * t.HORIZONTAL_PADDING), t.height + (2 * t.VERTICAL_PADDING));
+                            g.beginFill(t.bgColor).drawRect(0, 0, t.maxWidth, t.maxHeight);
                         }
                     }
                 }
@@ -944,7 +967,12 @@ var gnplib = {
                 t.stage.update();
             }
 
-            //Sets the value of the hint box's display text, and correctly sets it to wrap inside of the dialog box.
+            /**
+             * Sets the string value of the HintBox's display text, and then dynamically wraps the text around the maxWidth
+             * @function
+             * @name gnplib.ui.HintBox#setText
+             * @param {!String} text - The text string value of the text to display inside of the HintBox
+             */
             t.setText = function(text) {
                 if (t.textObject !== null) {
                     t.box.removeChild(t.textObject);
@@ -955,6 +983,7 @@ var gnplib = {
                 t.textObject.lineHeight = t.textObject.getMeasuredLineHeight() + t.LINE_PADDING;
                 t.textObject.lineWidth = t.width;
                 t.height = t.textObject.getMeasuredHeight();
+                t.maxHeight = t.height + (2 * t.VERTICAL_PADDING);
 
                 t.textObject.set({x: t.HORIZONTAL_PADDING, y: t.VERTICAL_PADDING});
                 t.box.addChild(t.textObject);
@@ -962,26 +991,12 @@ var gnplib = {
                 t.redraw();
             }
 
-            //Sets the background image of the hint box, adding and removing appropriate children to the box container
-            t.setBackgroundImage = function(bitmap) {
-                if (bitmap !== null) {
-                    if (t.bitmap !== null) {
-                        t.box.removeChild(t.bitmap);
-                    }
-
-                    t.bitmap = bitmap;
-                    t.box.addChild(t.bitmap);
-                }
-                else {
-                    if (t.bitmap !== null) {
-                        t.box.removeChild(t.bitmap);
-                    }
-
-                    t.bitmap = null;
-                }
-            }
-
-            //Function to either display the dialog box, or disable it
+            /**
+             * Sets whether or not to currently display the HintBox.
+             * @function
+             * @name gnplib.ui.HintBox#showDialog
+             * @param {!Boolean} isVisible - True if the HintBox should be displayed, false if it should be hidden
+             */
             t.showDialog = function(isVisible) {
                 if (isVisible) {
                     t.stage.addChild(t.box);
@@ -995,6 +1010,13 @@ var gnplib = {
             }
 
             //Centers this hint box on the given point
+            /**
+             * Centers the HintBox on the given point inside of the current stage context
+             * @function
+             * @name gnplib.ui.HintBox#centerOnPoint
+             * @param {Number} x - The x coordinate of the point to center on to
+             * @param {Number y - The y coordinate of the point to center on to}
+             */
             t.centerOnPoint = function(cx, cy) {
                 var hw = (t.width + (2 * t.HORIZONTAL_PADDING)) / 2;
                 var hh = (t.height + (2 * t.VERTICAL_PADDING)) / 2;
@@ -1248,7 +1270,7 @@ var gnplib = {
     window: {
         /**
          * Opens a link to the given url, either in the current window, or a new window/tab. The redirection
-         * can be made to use allow browser history by simulating a user clicking a link, or to prevent history from being written through an http redirect.
+         * can allow browser history to be written by simulating a user clicking a link, or prevent history from being written by using an http redirect.
          * <br><br>
          * Absolute redirect ex: "http://www.myurl.com/test.html"<br>
          * Relative redirect in current directory ex: "/test2.html"<br>
