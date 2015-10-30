@@ -114,11 +114,11 @@
             stage.addChild(tbutton5);
 
             /////////////////////////////////////////////////
-            //createButtonImageComplex Test
+            //createButtonImage Test
             /////////////////////////////////////////////////
             var tbutton6text = new createjs.Text("Complex Image Button", "bold 14px Arial", "#ffffff");
             tbutton6text.shadow = new createjs.Shadow("#000000", 0, 0, 10);
-            var tbutton6 = gnplib.ui.createButtonImageComplex(stage, tbutton6text,
+            var tbutton6 = gnplib.ui.createButtonImage(stage, tbutton6text,
                     loader.getResult("testimage"), loader.getResult("testimageHighlight"), loader.getResult("testimageClick"), 250, 50, function(event) {
                         //This is where the actions of clicking the button go.
                         //For now, Do Nothing then call update stage (stage needs to be updated anytime an element is changed)
