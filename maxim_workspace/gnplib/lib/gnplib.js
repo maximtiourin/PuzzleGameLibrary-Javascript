@@ -66,7 +66,7 @@ this.createjs=this.createjs||{},createjs.extend=function(a,b){"use strict";funct
 var gnplib = {
     /* Define callbacks for use with documentation */
     /**
-     * This callback function is passed to other functions when an action needs to occur after a function specific event fires. It is not passed any parameters.
+     * This callback function is passed to other functions when an action needs to occur after a function specific event fires. It is not passed any parameters
      * @callback EmptyCallback
      * @example
      * //Create a callback function and pass it to a function that can use it
@@ -83,6 +83,17 @@ var gnplib = {
      * //Create a callback function and pass it to a function that can use it
      * var myCallback = function(event) {
      *      //Do stuff, optionally using the passed in event
+     * }
+     * foo(myCallback);
+     */
+    /**
+     * This callback function is passed to other functions when a value is changed and needs to be evaluated. It is passed a single Number value
+     * @callback NumberCallback
+     * @param {Number} value - The value that needs to be evaluated
+     * @example
+     * //Create a callback function and pass it to a function that can use it
+     * var myCallback = function(value) {
+     *      //Do stuff, probably use the Number value in some way
      * }
      * foo(myCallback);
      */
@@ -914,14 +925,24 @@ var gnplib = {
          * @property {createjs.Container} box - The {@link http://www.createjs.com/docs/easeljs/classes/Container.html createjs.Container} object that holds all of the elements of the HintBox. Access this property to move the HintBox, scale it, etc.
          * @property {Number} maxWidth - [READ ONLY] The maximum width of the HintBox.
          * @property {Number} maxHeight - [READ ONLY] The maximum height of the HintBox.
-         * @property {Number} width - [READ ONLY] The width of the HintBox that is available to display content, calculated accounting for padding of the left and right sides of the HintBox
+         * @property {Number} width - [READ ONLY] The width of the HintBox that is available to display content, calculated by accounting for padding of the left and right sides of the HintBox
          * @property {Number} height - [READ ONLY] The height of the HintBox that is available to display content, calculated by accounting for padding of the top and bottom sides of the HintBox
-         * @property {String} text - [READ ONLY] The text string value of the text to display inside of the HintBox
-         * @property {Color} textColor - The color to set the text of the HintBox to, the next time setText() is called. Default value = "#000000"
-         * @property {Font} textFont - The font to use for the text of the HintBox, the next time setText() called
-         * @property {Color} bgColor - The color of the background for the HintBox, can be null to display no background. Default value = null
+         * @property {String} text - [READ ONLY] The string value of the text to display inside of the HintBox
+         * @property {Color} textColor - The color to set the text of the HintBox to the next time setText() is called. Default value = "#000000"
+         * @property {Font} textFont - The font to use for the text of the HintBox the next time setText() is called. Default value = "12px Arial"
+         * @property {Color} bgColor - The color of the background for the HintBox. Must be set to render the HintBox. Default value = "#ffffff"
          * @property {Number} cornerRadius - The corner radius of the background rectangle, values greater than 0 create rounded corners. Only used when there is a background color. Default value = 0
          * @property {Boolean} isDisplayed - [READ ONLY] Is true if the HintBox is currently displayed, false if it is hidden
+         * @example
+         * //Creating and displaying a HintBox, centered on the point(400, 300)
+         * var hintbox = new gnplib.ui.HintBox(myStage, 200); //Create a new HintBox attached to myStage, with a maxWidth of 200
+         * hintbox.textColor = "#ff0000"; //Set text to red
+         * hintbox.textFont = "16px Arial"; //Set font to size 16 Arial
+         * hintbox.bgColor = "#0000ff"; //Set background color to blue
+         * hintbox.cornerRadius = 15; //Set the HintBox to have rounded corners of radius 15
+         * hintbox.setText("Hello! This is some text that will be contained within the HintBox..."); //Set the text of the HintBox and let it dynamically size itself
+         * hintbox.centerOnPoint(400, 300); //Center HintBox on the point(400, 300)
+         * hintbox.showDialog(true); //Display the HintBox
          * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         HintBox: function(stage, maxWidth) {
@@ -940,7 +961,7 @@ var gnplib = {
             t.text = ""; //The text string value of the hint box, READ-ONLY
             t.textColor = "#000000"; //The text color as a string, can be set through property
             t.textFont = "12px Arial"; //The text font as a string, can be set through property
-            t.bgColor = null; //The bg color as a string, can be set through property.
+            t.bgColor = "#ffffff"; //The bg color as a string, can be set through property.
             t.cornerRadius = 0; //The corner radius of the bg rectangle, can be set through property, should only be set when there is no background image.
             t.isDisplayed = false; //Flag value that tells if the dialog box is currently displayed
 
@@ -1015,7 +1036,7 @@ var gnplib = {
              * @function
              * @name gnplib.ui.HintBox#centerOnPoint
              * @param {Number} x - The x coordinate of the point to center on to
-             * @param {Number y - The y coordinate of the point to center on to}
+             * @param {Number} y - The y coordinate of the point to center on to
              */
             t.centerOnPoint = function(cx, cy) {
                 var hw = (t.width + (2 * t.HORIZONTAL_PADDING)) / 2;
@@ -1032,14 +1053,22 @@ var gnplib = {
         /**
          * A LockDial class that simulates a lock dial by allowing a user to rotate it by dragging. It then can
          * return a value based on its rotation, taking into account how many ticks are supposed to be in a full
-         * rotation. A dials value is 0 at the 90 degree position (top of dial), and increases in value in the clockwise
+         * rotation. A dial's value is 0 at the 90 degree position (top of dial), and increases in value in the clockwise
          * direction, rolling over back to 0 when it reaches 90 degrees again.
          * @class LockDial
          * @constructor
-         * @param {createjs.Stage} stage the easeljs Stage context
-         * @param {createjs.Bitmap} bitmapImage the easeljs Bitmap object
-         * @param {Number} ticksInFullRotation how many ticks are in a full 360 degree rotation of the dial.
-         * @param {Function} eventFunc function that will execute whenever the dial's value is updated, it will be passed the value of the dial for the first parameter
+         * @param {!createjs.Stage} stage - The current {@link http://www.createjs.com/docs/easeljs/classes/Stage.html createjs.Stage} context to display the LockDial in
+         * @param {!createjs.Bitmap} bitmapImage - The {@link http://www.createjs.com/docs/easeljs/classes/Bitmap.html createjs.Bitmap} object to display as the visual representation of the LockDial
+         * @param {!Number} ticksInFullRotation - How many ticks are in a full 360 degree rotation of the dial
+         * @param {?NumberCallback} [eventFunc=null] - The callback function that will execute whenever the dial's value is updated, it will be passed the value of the dial as the first parameter
+         * @property {Number} fullTicks - [READ ONLY] How many ticks are contained inside of a full rotation of the LockDial
+         * @property {Number} tick - [READ ONLY] The current tick value of the LockDial, on the range [0, fullTicks)
+         * @property {createjs.Container} lock - The {@link http://www.createjs.com/docs/easeljs/classes/Container.html createjs.Container} object that contains all of the visual elements of the LockDial. Use this to move, scale, etc the LockDial
+         * @example
+         * //Creating a LockDial with 10 ticks in its rotation, and passing it a callback function for when the value changes
+         * var lockdial = new gnplib.ui.LockDial(myStage, myBitmap, 10, function(value) {
+         *              //Do stuff everytime the value is changed, optionally using the value parameter
+         * });
          * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         LockDial: function(stage, bitmapImage, ticksInFullRotation, eventFunc) {
@@ -1125,12 +1154,21 @@ var gnplib = {
             });
         },
         /**
-         * [Advanced Use Only] A Puzzle Piece class that contains useful information about a puzzle piece ui element, 
-         * used by gnplib.ui.generatePuzzlePiecesFromImage() to create interactive puzzle pieces. Generally should not 
-         * be used on its own.
+         * A PuzzlePiece class that contains useful information about a puzzle piece ui element,
+         * used primarily by {@link gnplib.ui.generatePuzzlePiecesFromImage} to create and return highly interactive puzzle pieces.
+         * All properties of the PuzzlePiece are set by {@link gnplib.ui.generatePuzzlePiecesFromImage} when it first instantiates them.
+         * Therefore, no properties should be further changed outside of any advanced applications. Contains methods
+         * to check the position of, and to safely reposition puzzle pieces who have snapping enabled.
          * @class PuzzlePiece
          * @constructor
-         * @param {createjs.Shape} the Shape Object to create the puzzle piece with
+         * @param {createjs.Shape} shapeObject - The {@link http://www.createjs.com/docs/easeljs/classes/Shape.html createjs.Shape} object to define the puzzle piece with
+         * @property {String} id - The string id for the puzzle piece, can be used for debugging. Default value = "Anonymous Puzzle Piece"
+         * @property {createjs.Shape} shape - [ADVANCED] The {@link http://www.createjs.com/docs/easeljs/classes/Shape.html createjs.Shape} object representing the visual elements of this puzzle piece.
+         * @property {Boolean} doesSnap - [ADVANCED] Whether or not this puzzle pieces snaps to its snapX and snapY position
+         * @property {Number} snapX - [ADVANCED] The snap x coordinate of where this puzzle piece should snap to
+         * @property {Number} snapY - [ADVANCED] The snap y coordinate of where this puzzle piece should snap to
+         * @property {Number} snapDistance - [ADVANCED] The distance at which this piece will snap into place
+         * @property {Boolean} isSnapped - [READ ONLY] Whether or not the puzzle piece is currently snapped into place.
          * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         PuzzlePiece: function(shapeObject) {
@@ -1145,9 +1183,11 @@ var gnplib = {
             t.isSnapped = false; //Whether or not the piece is currently snapped in place
 
             /**
-             * Checks whether or not the piece can snap into place, updating all snapping state information, and
-             * returning true if is now snapped, false if not. Requires snapping to be enabled.
-             * @returns {Boolean} true if piece is currently snapped in place, false if not
+             * Checks whether or not the piece can snap into place from its current position, updating all snapping
+             * state information, and returning true if it is now snapped, false if not. Requires snapping to be enabled.
+             * @function
+             * @name gnplib.ui.PuzzlePiece#checkSnapping
+             * @returns {Boolean} True if piece has snapped into place, false if not
              */
             t.checkSnapping = function() {
                 if (!t.doesSnap) {
@@ -1201,8 +1241,10 @@ var gnplib = {
              * Sets or Gets the x position of the puzzle piece (the x position of the puzzle piece's shape object)
              * If snapping is enabled, setting the x position using this method will also update snapping state information, therefore
              * use this when moving finalized puzzle pieces around through code.
-             * @param {Number} newx (optional) if set, sets the puzzle piece's shape's x coordinate to this value
-             * @returns {Number} x position of the puzzle piece
+             * @function
+             * @name gnplib.ui.PuzzlePiece#x
+             * @param {?Number} [newx] - If supplied, sets the puzzle piece's shape's x coordinate to this value, then performs a snapping check if snapping is enabled
+             * @returns {Number} The current x position of the puzzle piece
              */
             t.x = function(newx) {
                 var nx = newx || null;
@@ -1220,10 +1262,12 @@ var gnplib = {
 
             /**
              * Sets or Gets the y position of the puzzle piece (the y position of the puzzle piece's shape object)
-             * If snapping is enabled, setting the x position using this method will also update snapping state information, therefore
+             * If snapping is enabled, setting the y position using this method will also update snapping state information, therefore
              * use this when moving finalized puzzle pieces around through code.
-             * @param {Number} newy (optional) if set, sets the puzzle piece's shape's y coordinate to this value
-             * @returns {Number} y position of the puzzle piece
+             * @function
+             * @name gnplib.ui.PuzzlePiece#y
+             * @param {?Number} [newy] - If supplied, sets the puzzle piece's shape's y coordinate to this value, then performs a snapping check if snapping is enabled
+             * @returns {Number} The current y position of the puzzle piece
              */
             t.y = function(newy) {
                 var ny = newy || null;
