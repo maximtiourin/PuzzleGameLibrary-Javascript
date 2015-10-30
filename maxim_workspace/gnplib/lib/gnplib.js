@@ -873,10 +873,10 @@ var gnplib = {
             return pieces;
         },
         /**
-         * Returns the current pixel height of the DisplayObject by taking its current scaleY and multiplying by
+         * Returns the current pixel height of the {@link http://www.createjs.com/docs/easeljs/classes/DisplayObject.html createjs.DisplayObject} by taking its current scaleY and multiplying by
          * its default pixel height.
-         * @param {createjs.DisplayObject} displayObj The DisplayObject to get the height of
-         * @returns {Number} the height of the DisplayObject
+         * @param {!createjs.DisplayObject} displayObj - The {@link http://www.createjs.com/docs/easeljs/classes/DisplayObject.html createjs.DisplayObject} to get the height of
+         * @returns {Number} The height of the createjs.DisplayObject
          * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         getHeight: function(displayObj) {
@@ -884,10 +884,10 @@ var gnplib = {
             return displayObj.scaleY * defaultHeight;
         },
         /**
-         * Returns the current pixel width of the DisplayObject by taking its current scaleX and multiplying by
+         * Returns the current pixel width of the {@link http://www.createjs.com/docs/easeljs/classes/DisplayObject.html createjs.DisplayObject} by taking its current scaleX and multiplying by
          * its default pixel width.
-         * @param {createjs.DisplayObject} displayObj The DisplayObject to get the width of
-         * @returns {Number} the width of the DisplayObject
+         * @param {!createjs.DisplayObject} displayObj - The {@link http://www.createjs.com/docs/easeljs/classes/DisplayObject.html createjs.DisplayObject} to get the width of
+         * @returns {Number} The width of the {@link http://www.createjs.com/docs/easeljs/classes/DisplayObject.html createjs.DisplayObject}
          * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         getWidth: function(displayObj) {
@@ -1218,9 +1218,9 @@ var gnplib = {
             }
         },
         /**
-         * Takes a height in pixels, and sets the display objects scaleY property to correctly scale to that height.
-         * @param {createjs.DisplayObject} displayObj The DisplayObject to set the height of
-         * @param {Number} height the pixel height amount to set to
+         * Takes a height in pixels, and sets the scaleY property of the {@link http://www.createjs.com/docs/easeljs/classes/DisplayObject.html createjs.DisplayObject} to correctly scale to that height.
+         * @param {!createjs.DisplayObject} displayObj - The {@link http://www.createjs.com/docs/easeljs/classes/DisplayObject.html createjs.DisplayObject} to set the height of
+         * @param {!Number} height - The pixel height amount to set to
          * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         setHeight: function(displayObj, height) {
@@ -1229,9 +1229,9 @@ var gnplib = {
             displayObj.scaleY = newScale;
         },
         /**
-         * Takes a width in pixels, and sets the display objects scaleX property to correctly scale to that width.
-         * @param {createjs.DisplayObject} displayObj The DisplayObject to set the width of
-         * @param {Number} width the pixel width amount to set to
+         * Takes a width in pixels, and sets the scaleX property of the {@link http://www.createjs.com/docs/easeljs/classes/DisplayObject.html createjs.DisplayObject} to correctly scale to that width.
+         * @param {!createjs.DisplayObject} displayObj - The {@link http://www.createjs.com/docs/easeljs/classes/DisplayObject.html createjs.DisplayObject} to set the width of
+         * @param {!Number} width - The pixel width amount to set to
          * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         setWidth: function(displayObj, width) {
@@ -1247,25 +1247,36 @@ var gnplib = {
      */
     window: {
         /**
-         * Redirects the header to the given url
+         * Opens a link to the given url, either in the current window, or a new window/tab. The redirection
+         * can be made to use allow browser history by simulating a user clicking a link, or to prevent history from being written through an http redirect.
+         * <br><br>
+         * Absolute redirect ex: "http://www.myurl.com/test.html"<br>
+         * Relative redirect in current directory ex: "/test2.html"<br>
+         * Relative redirect in directory one level above ex: "../test3.html"<br>
          *
-         * Absolute redirect ex: "http://www.myurl.com/test.html"
-         * Relative redirect in current directory ex: "/test2.html"
-         * Relative redirect in directory one level above ex: "../test3.html"
-         *
-         * @param {string} url absolute or relative url string to redirect to
-         * @param {boolean} isLink boolean value, true to simulate the user clicking on a link, false to simulate an http redirect
-         * @returns {boolean} the passed value of isLink
+         * @param {!String} url - The absolute or relative url string to redirect to
+         * @param {?Boolean} [openNewWindow=false] - Whether or not to open a new window/tab when redirecting
+         * @param {?Boolean} [isLink=true] - A value that is true to simulate the user clicking on a link and storing browser history, or false to simulate an http redirect and store no browser history.
+         * @returns {Boolean} True when the redirection was simulated as a user clicking a link, false when it was simulated as an http redirect.
          * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
-        redirect: function(url, isLink) {
-            if (isLink) {
-                window.location.href = url;
+        redirect: function(url, openNewWindow, isLink) {
+            var open = openNewWindow || false;
+            var link = isLink || false;
+
+            if (open) {
+                window.open(url);
                 return true;
             }
             else {
-                window.location.replace(url);
-                return false; //A return is necessary to trigger the actual redirection for replace()
+                if (link) {
+                    window.location.href = url;
+                    return true;
+                }
+                else {
+                    window.location.replace(url);
+                    return false; //A return is necessary to trigger the actual redirection for replace()
+                }
             }
         }
     }
