@@ -1,5 +1,4 @@
 /**
- *
  * @license EaselJS
  * Visit http://createjs.com/ for documentation, updates and examples.
  *
@@ -17,7 +16,6 @@ this.createjs=this.createjs||{},createjs.extend=function(a,b){"use strict";funct
     var l=document.createElement("img");l.src=g.toDataURL("image/png"),l.width=k.width,l.height=k.height,f.push(l)}var m=b._frames,n=m.length/c;for(j=0;n>j;j++){k=m[j];var o=k.rect.clone();l=f[k.image.__tmp+i*c];var p={image:l,rect:o,regX:k.regX,regY:k.regY};d&&(o.x=l.width-o.x-o.width,p.regX=o.width-k.regX),e&&(o.y=l.height-o.y-o.height,p.regY=o.height-k.regY),m.push(p)}var q="_"+(d?"h":"")+(e?"v":""),r=b._animations,s=b._data,t=r.length/c;for(j=0;t>j;j++){var u=r[j];k=s[u];var v={name:u+q,speed:k.speed,next:k.next,frames:[]};k.next&&(v.next+=q),m=k.frames;for(var w=0,x=m.length;x>w;w++)v.frames.push(m[w]+n*c);s[v.name]=v,r.push(v.name)}},createjs.SpriteSheetUtils=a}(),this.createjs=this.createjs||{},function(){"use strict";function a(){this.EventDispatcher_constructor(),this.maxWidth=2048,this.maxHeight=2048,this.spriteSheet=null,this.scale=1,this.padding=1,this.timeSlice=.3,this.progress=-1,this._frames=[],this._animations={},this._data=null,this._nextFrameIndex=0,this._index=0,this._timerID=null,this._scale=1}var b=createjs.extend(a,createjs.EventDispatcher);a.ERR_DIMENSIONS="frame dimensions exceed max spritesheet dimensions",a.ERR_RUNNING="a build is already running",b.addFrame=function(b,c,d,e,f){if(this._data)throw a.ERR_RUNNING;var g=c||b.bounds||b.nominalBounds;return!g&&b.getBounds&&(g=b.getBounds()),g?(d=d||1,this._frames.push({source:b,sourceRect:g,scale:d,funct:e,data:f,index:this._frames.length,height:g.height*d})-1):null},b.addAnimation=function(b,c,d,e){if(this._data)throw a.ERR_RUNNING;this._animations[b]={frames:c,next:d,frequency:e}},b.addMovieClip=function(b,c,d,e,f,g){if(this._data)throw a.ERR_RUNNING;var h=b.frameBounds,i=c||b.bounds||b.nominalBounds;if(!i&&b.getBounds&&(i=b.getBounds()),i||h){var j,k,l=this._frames.length,m=b.timeline.duration;for(j=0;m>j;j++){var n=h&&h[j]?h[j]:i;this.addFrame(b,n,d,this._setupMovieClipFrame,{i:j,f:e,d:f})}var o=b.timeline._labels,p=[];for(var q in o)p.push({index:o[q],label:q});if(p.length)for(p.sort(function(a,b){return a.index-b.index}),j=0,k=p.length;k>j;j++){for(var r=p[j].label,s=l+p[j].index,t=l+(j==k-1?m:p[j+1].index),u=[],v=s;t>v;v++)u.push(v);(!g||(r=g(r,b,s,t)))&&this.addAnimation(r,u,!0)}}},b.build=function(){if(this._data)throw a.ERR_RUNNING;for(this._startBuild();this._drawNext(););return this._endBuild(),this.spriteSheet},b.buildAsync=function(b){if(this._data)throw a.ERR_RUNNING;this.timeSlice=b,this._startBuild();var c=this;this._timerID=setTimeout(function(){c._run()},50-50*Math.max(.01,Math.min(.99,this.timeSlice||.3)))},b.stopAsync=function(){clearTimeout(this._timerID),this._data=null},b.clone=function(){throw"SpriteSheetBuilder cannot be cloned."},b.toString=function(){return"[SpriteSheetBuilder]"},b._startBuild=function(){var b=this.padding||0;this.progress=0,this.spriteSheet=null,this._index=0,this._scale=this.scale;var c=[];this._data={images:[],frames:c,animations:this._animations};var d=this._frames.slice();if(d.sort(function(a,b){return a.height<=b.height?-1:1}),d[d.length-1].height+2*b>this.maxHeight)throw a.ERR_DIMENSIONS;for(var e=0,f=0,g=0;d.length;){var h=this._fillRow(d,e,g,c,b);if(h.w>f&&(f=h.w),e+=h.h,!h.h||!d.length){var i=createjs.createCanvas?createjs.createCanvas():document.createElement("canvas");i.width=this._getSize(f,this.maxWidth),i.height=this._getSize(e,this.maxHeight),this._data.images[g]=i,h.h||(f=e=0,g++)}}},b._setupMovieClipFrame=function(a,b){var c=a.actionsEnabled;a.actionsEnabled=!1,a.gotoAndStop(b.i),a.actionsEnabled=c,b.f&&b.f(a,b.d,b.i)},b._getSize=function(a,b){for(var c=4;Math.pow(2,++c)<a;);return Math.min(b,Math.pow(2,c))},b._fillRow=function(b,c,d,e,f){var g=this.maxWidth,h=this.maxHeight;c+=f;for(var i=h-c,j=f,k=0,l=b.length-1;l>=0;l--){var m=b[l],n=this._scale*m.scale,o=m.sourceRect,p=m.source,q=Math.floor(n*o.x-f),r=Math.floor(n*o.y-f),s=Math.ceil(n*o.height+2*f),t=Math.ceil(n*o.width+2*f);if(t>g)throw a.ERR_DIMENSIONS;s>i||j+t>g||(m.img=d,m.rect=new createjs.Rectangle(j,c,t,s),k=k||s,b.splice(l,1),e[m.index]=[j,c,t,s,d,Math.round(-q+n*p.regX-f),Math.round(-r+n*p.regY-f)],j+=t)}return{w:j,h:k}},b._endBuild=function(){this.spriteSheet=new createjs.SpriteSheet(this._data),this._data=null,this.progress=1,this.dispatchEvent("complete")},b._run=function(){for(var a=50*Math.max(.01,Math.min(.99,this.timeSlice||.3)),b=(new Date).getTime()+a,c=!1;b>(new Date).getTime();)if(!this._drawNext()){c=!0;break}if(c)this._endBuild();else{var d=this;this._timerID=setTimeout(function(){d._run()},50-a)}var e=this.progress=this._index/this._frames.length;if(this.hasEventListener("progress")){var f=new createjs.Event("progress");f.progress=e,this.dispatchEvent(f)}},b._drawNext=function(){var a=this._frames[this._index],b=a.scale*this._scale,c=a.rect,d=a.sourceRect,e=this._data.images[a.img],f=e.getContext("2d");return a.funct&&a.funct(a.source,a.data),f.save(),f.beginPath(),f.rect(c.x,c.y,c.width,c.height),f.clip(),f.translate(Math.ceil(c.x-d.x*b),Math.ceil(c.y-d.y*b)),f.scale(b,b),a.source.draw(f),f.restore(),++this._index<this._frames.length},createjs.SpriteSheetBuilder=createjs.promote(a,"EventDispatcher")}(),this.createjs=this.createjs||{},function(){"use strict";function a(a){this.DisplayObject_constructor(),"string"==typeof a&&(a=document.getElementById(a)),this.mouseEnabled=!1;var b=a.style;b.position="absolute",b.transformOrigin=b.WebkitTransformOrigin=b.msTransformOrigin=b.MozTransformOrigin=b.OTransformOrigin="0% 0%",this.htmlElement=a,this._oldProps=null}var b=createjs.extend(a,createjs.DisplayObject);b.isVisible=function(){return null!=this.htmlElement},b.draw=function(){return!0},b.cache=function(){},b.uncache=function(){},b.updateCache=function(){},b.hitTest=function(){},b.localToGlobal=function(){},b.globalToLocal=function(){},b.localToLocal=function(){},b.clone=function(){throw"DOMElement cannot be cloned."},b.toString=function(){return"[DOMElement (name="+this.name+")]"},b._tick=function(a){var b=this.getStage();b&&b.on("drawend",this._handleDrawEnd,this,!0),this.DisplayObject__tick(a)},b._handleDrawEnd=function(){var a=this.htmlElement;if(a){var b=a.style,c=this.getConcatenatedDisplayProps(this._props),d=c.matrix,e=c.visible?"visible":"hidden";if(e!=b.visibility&&(b.visibility=e),c.visible){var f=this._oldProps,g=f&&f.matrix,h=1e4;if(!g||!g.equals(d)){var i="matrix("+(d.a*h|0)/h+","+(d.b*h|0)/h+","+(d.c*h|0)/h+","+(d.d*h|0)/h+","+(d.tx+.5|0);b.transform=b.WebkitTransform=b.OTransform=b.msTransform=i+","+(d.ty+.5|0)+")",b.MozTransform=i+"px,"+(d.ty+.5|0)+"px)",f||(f=this._oldProps=new createjs.DisplayProps(!0,0/0)),f.matrix.copy(d)}f.alpha!=c.alpha&&(b.opacity=""+(c.alpha*h|0)/h,f.alpha=c.alpha)}}},createjs.DOMElement=createjs.promote(a,"DisplayObject")}(),this.createjs=this.createjs||{},function(){"use strict";function a(){}var b=a.prototype;b.getBounds=function(a){return a},b.applyFilter=function(a,b,c,d,e,f,g,h){f=f||a,null==g&&(g=b),null==h&&(h=c);try{var i=a.getImageData(b,c,d,e)}catch(j){return!1}return this._applyFilter(i)?(f.putImageData(i,g,h),!0):!1},b.toString=function(){return"[Filter]"},b.clone=function(){return new a},b._applyFilter=function(){return!0},createjs.Filter=a}(),this.createjs=this.createjs||{},function(){"use strict";function a(a,b,c){(isNaN(a)||0>a)&&(a=0),(isNaN(b)||0>b)&&(b=0),(isNaN(c)||1>c)&&(c=1),this.blurX=0|a,this.blurY=0|b,this.quality=0|c}var b=createjs.extend(a,createjs.Filter);a.MUL_TABLE=[1,171,205,293,57,373,79,137,241,27,391,357,41,19,283,265,497,469,443,421,25,191,365,349,335,161,155,149,9,278,269,261,505,245,475,231,449,437,213,415,405,395,193,377,369,361,353,345,169,331,325,319,313,307,301,37,145,285,281,69,271,267,263,259,509,501,493,243,479,118,465,459,113,446,55,435,429,423,209,413,51,403,199,393,97,3,379,375,371,367,363,359,355,351,347,43,85,337,333,165,327,323,5,317,157,311,77,305,303,75,297,294,73,289,287,71,141,279,277,275,68,135,67,133,33,262,260,129,511,507,503,499,495,491,61,121,481,477,237,235,467,232,115,457,227,451,7,445,221,439,218,433,215,427,425,211,419,417,207,411,409,203,202,401,399,396,197,49,389,387,385,383,95,189,47,187,93,185,23,183,91,181,45,179,89,177,11,175,87,173,345,343,341,339,337,21,167,83,331,329,327,163,81,323,321,319,159,79,315,313,39,155,309,307,153,305,303,151,75,299,149,37,295,147,73,291,145,289,287,143,285,71,141,281,35,279,139,69,275,137,273,17,271,135,269,267,133,265,33,263,131,261,130,259,129,257,1],a.SHG_TABLE=[0,9,10,11,9,12,10,11,12,9,13,13,10,9,13,13,14,14,14,14,10,13,14,14,14,13,13,13,9,14,14,14,15,14,15,14,15,15,14,15,15,15,14,15,15,15,15,15,14,15,15,15,15,15,15,12,14,15,15,13,15,15,15,15,16,16,16,15,16,14,16,16,14,16,13,16,16,16,15,16,13,16,15,16,14,9,16,16,16,16,16,16,16,16,16,13,14,16,16,15,16,16,10,16,15,16,14,16,16,14,16,16,14,16,16,14,15,16,16,16,14,15,14,15,13,16,16,15,17,17,17,17,17,17,14,15,17,17,16,16,17,16,15,17,16,17,11,17,16,17,16,17,16,17,17,16,17,17,16,17,17,16,16,17,17,17,16,14,17,17,17,17,15,16,14,16,15,16,13,16,15,16,14,16,15,16,12,16,15,16,17,17,17,17,17,13,16,15,17,17,17,16,15,17,17,17,16,15,17,17,14,16,17,17,16,17,17,16,15,17,16,14,17,16,15,17,16,17,17,16,17,15,16,17,14,17,16,15,17,16,17,13,17,16,17,17,16,17,14,17,16,17,16,17,16,17,9],b.getBounds=function(a){var b=0|this.blurX,c=0|this.blurY;if(0>=b&&0>=c)return a;var d=Math.pow(this.quality,.2);return(a||new createjs.Rectangle).pad(b*d+1,c*d+1,b*d+1,c*d+1)},b.clone=function(){return new a(this.blurX,this.blurY,this.quality)},b.toString=function(){return"[BlurFilter]"},b._applyFilter=function(b){var c=this.blurX>>1;if(isNaN(c)||0>c)return!1;var d=this.blurY>>1;if(isNaN(d)||0>d)return!1;if(0==c&&0==d)return!1;var e=this.quality;(isNaN(e)||1>e)&&(e=1),e|=0,e>3&&(e=3),1>e&&(e=1);var f=b.data,g=0,h=0,i=0,j=0,k=0,l=0,m=0,n=0,o=0,p=0,q=0,r=0,s=0,t=0,u=0,v=c+c+1|0,w=d+d+1|0,x=0|b.width,y=0|b.height,z=x-1|0,A=y-1|0,B=c+1|0,C=d+1|0,D={r:0,b:0,g:0,a:0},E=D;for(i=1;v>i;i++)E=E.n={r:0,b:0,g:0,a:0};E.n=D;var F={r:0,b:0,g:0,a:0},G=F;for(i=1;w>i;i++)G=G.n={r:0,b:0,g:0,a:0};G.n=F;for(var H=null,I=0|a.MUL_TABLE[c],J=0|a.SHG_TABLE[c],K=0|a.MUL_TABLE[d],L=0|a.SHG_TABLE[d];e-->0;){m=l=0;var M=I,N=J;for(h=y;--h>-1;){for(n=B*(r=f[0|l]),o=B*(s=f[l+1|0]),p=B*(t=f[l+2|0]),q=B*(u=f[l+3|0]),E=D,i=B;--i>-1;)E.r=r,E.g=s,E.b=t,E.a=u,E=E.n;for(i=1;B>i;i++)j=l+((i>z?z:i)<<2)|0,n+=E.r=f[j],o+=E.g=f[j+1],p+=E.b=f[j+2],q+=E.a=f[j+3],E=E.n;for(H=D,g=0;x>g;g++)f[l++]=n*M>>>N,f[l++]=o*M>>>N,f[l++]=p*M>>>N,f[l++]=q*M>>>N,j=m+((j=g+c+1)<z?j:z)<<2,n-=H.r-(H.r=f[j]),o-=H.g-(H.g=f[j+1]),p-=H.b-(H.b=f[j+2]),q-=H.a-(H.a=f[j+3]),H=H.n;m+=x}for(M=K,N=L,g=0;x>g;g++){for(l=g<<2|0,n=C*(r=f[l])|0,o=C*(s=f[l+1|0])|0,p=C*(t=f[l+2|0])|0,q=C*(u=f[l+3|0])|0,G=F,i=0;C>i;i++)G.r=r,G.g=s,G.b=t,G.a=u,G=G.n;for(k=x,i=1;d>=i;i++)l=k+g<<2,n+=G.r=f[l],o+=G.g=f[l+1],p+=G.b=f[l+2],q+=G.a=f[l+3],G=G.n,A>i&&(k+=x);if(l=g,H=F,e>0)for(h=0;y>h;h++)j=l<<2,f[j+3]=u=q*M>>>N,u>0?(f[j]=n*M>>>N,f[j+1]=o*M>>>N,f[j+2]=p*M>>>N):f[j]=f[j+1]=f[j+2]=0,j=g+((j=h+C)<A?j:A)*x<<2,n-=H.r-(H.r=f[j]),o-=H.g-(H.g=f[j+1]),p-=H.b-(H.b=f[j+2]),q-=H.a-(H.a=f[j+3]),H=H.n,l+=x;else for(h=0;y>h;h++)j=l<<2,f[j+3]=u=q*M>>>N,u>0?(u=255/u,f[j]=(n*M>>>N)*u,f[j+1]=(o*M>>>N)*u,f[j+2]=(p*M>>>N)*u):f[j]=f[j+1]=f[j+2]=0,j=g+((j=h+C)<A?j:A)*x<<2,n-=H.r-(H.r=f[j]),o-=H.g-(H.g=f[j+1]),p-=H.b-(H.b=f[j+2]),q-=H.a-(H.a=f[j+3]),H=H.n,l+=x}}return!0},createjs.BlurFilter=createjs.promote(a,"Filter")}(),this.createjs=this.createjs||{},function(){"use strict";function a(a){this.alphaMap=a,this._alphaMap=null,this._mapData=null}var b=createjs.extend(a,createjs.Filter);b.clone=function(){var b=new a(this.alphaMap);return b._alphaMap=this._alphaMap,b._mapData=this._mapData,b},b.toString=function(){return"[AlphaMapFilter]"},b._applyFilter=function(a){if(!this.alphaMap)return!0;if(!this._prepAlphaMap())return!1;for(var b=a.data,c=this._mapData,d=0,e=b.length;e>d;d+=4)b[d+3]=c[d]||0;return!0},b._prepAlphaMap=function(){if(!this.alphaMap)return!1;if(this.alphaMap==this._alphaMap&&this._mapData)return!0;this._mapData=null;var a,b=this._alphaMap=this.alphaMap,c=b;b instanceof HTMLCanvasElement?a=c.getContext("2d"):(c=createjs.createCanvas?createjs.createCanvas():document.createElement("canvas"),c.width=b.width,c.height=b.height,a=c.getContext("2d"),a.drawImage(b,0,0));try{var d=a.getImageData(0,0,b.width,b.height)}catch(e){return!1}return this._mapData=d.data,!0},createjs.AlphaMapFilter=createjs.promote(a,"Filter")}(),this.createjs=this.createjs||{},function(){"use strict";function a(a){this.mask=a}var b=createjs.extend(a,createjs.Filter);b.applyFilter=function(a,b,c,d,e,f,g,h){return this.mask?(f=f||a,null==g&&(g=b),null==h&&(h=c),f.save(),a!=f?!1:(f.globalCompositeOperation="destination-in",f.drawImage(this.mask,g,h),f.restore(),!0)):!0},b.clone=function(){return new a(this.mask)},b.toString=function(){return"[AlphaMaskFilter]"},createjs.AlphaMaskFilter=createjs.promote(a,"Filter")}(),this.createjs=this.createjs||{},function(){"use strict";function a(a,b,c,d,e,f,g,h){this.redMultiplier=null!=a?a:1,this.greenMultiplier=null!=b?b:1,this.blueMultiplier=null!=c?c:1,this.alphaMultiplier=null!=d?d:1,this.redOffset=e||0,this.greenOffset=f||0,this.blueOffset=g||0,this.alphaOffset=h||0}var b=createjs.extend(a,createjs.Filter);b.toString=function(){return"[ColorFilter]"},b.clone=function(){return new a(this.redMultiplier,this.greenMultiplier,this.blueMultiplier,this.alphaMultiplier,this.redOffset,this.greenOffset,this.blueOffset,this.alphaOffset)},b._applyFilter=function(a){for(var b=a.data,c=b.length,d=0;c>d;d+=4)b[d]=b[d]*this.redMultiplier+this.redOffset,b[d+1]=b[d+1]*this.greenMultiplier+this.greenOffset,b[d+2]=b[d+2]*this.blueMultiplier+this.blueOffset,b[d+3]=b[d+3]*this.alphaMultiplier+this.alphaOffset;return!0},createjs.ColorFilter=createjs.promote(a,"Filter")}(),this.createjs=this.createjs||{},function(){"use strict";function a(a,b,c,d){this.setColor(a,b,c,d)}var b=a.prototype;a.DELTA_INDEX=[0,.01,.02,.04,.05,.06,.07,.08,.1,.11,.12,.14,.15,.16,.17,.18,.2,.21,.22,.24,.25,.27,.28,.3,.32,.34,.36,.38,.4,.42,.44,.46,.48,.5,.53,.56,.59,.62,.65,.68,.71,.74,.77,.8,.83,.86,.89,.92,.95,.98,1,1.06,1.12,1.18,1.24,1.3,1.36,1.42,1.48,1.54,1.6,1.66,1.72,1.78,1.84,1.9,1.96,2,2.12,2.25,2.37,2.5,2.62,2.75,2.87,3,3.2,3.4,3.6,3.8,4,4.3,4.7,4.9,5,5.5,6,6.5,6.8,7,7.3,7.5,7.8,8,8.4,8.7,9,9.4,9.6,9.8,10],a.IDENTITY_MATRIX=[1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1],a.LENGTH=a.IDENTITY_MATRIX.length,b.setColor=function(a,b,c,d){return this.reset().adjustColor(a,b,c,d)},b.reset=function(){return this.copy(a.IDENTITY_MATRIX)},b.adjustColor=function(a,b,c,d){return this.adjustHue(d),this.adjustContrast(b),this.adjustBrightness(a),this.adjustSaturation(c)},b.adjustBrightness=function(a){return 0==a||isNaN(a)?this:(a=this._cleanValue(a,255),this._multiplyMatrix([1,0,0,0,a,0,1,0,0,a,0,0,1,0,a,0,0,0,1,0,0,0,0,0,1]),this)},b.adjustContrast=function(b){if(0==b||isNaN(b))return this;b=this._cleanValue(b,100);var c;return 0>b?c=127+b/100*127:(c=b%1,c=0==c?a.DELTA_INDEX[b]:a.DELTA_INDEX[b<<0]*(1-c)+a.DELTA_INDEX[(b<<0)+1]*c,c=127*c+127),this._multiplyMatrix([c/127,0,0,0,.5*(127-c),0,c/127,0,0,.5*(127-c),0,0,c/127,0,.5*(127-c),0,0,0,1,0,0,0,0,0,1]),this},b.adjustSaturation=function(a){if(0==a||isNaN(a))return this;a=this._cleanValue(a,100);var b=1+(a>0?3*a/100:a/100),c=.3086,d=.6094,e=.082;return this._multiplyMatrix([c*(1-b)+b,d*(1-b),e*(1-b),0,0,c*(1-b),d*(1-b)+b,e*(1-b),0,0,c*(1-b),d*(1-b),e*(1-b)+b,0,0,0,0,0,1,0,0,0,0,0,1]),this},b.adjustHue=function(a){if(0==a||isNaN(a))return this;a=this._cleanValue(a,180)/180*Math.PI;var b=Math.cos(a),c=Math.sin(a),d=.213,e=.715,f=.072;return this._multiplyMatrix([d+b*(1-d)+c*-d,e+b*-e+c*-e,f+b*-f+c*(1-f),0,0,d+b*-d+.143*c,e+b*(1-e)+.14*c,f+b*-f+c*-.283,0,0,d+b*-d+c*-(1-d),e+b*-e+c*e,f+b*(1-f)+c*f,0,0,0,0,0,1,0,0,0,0,0,1]),this},b.concat=function(b){return b=this._fixMatrix(b),b.length!=a.LENGTH?this:(this._multiplyMatrix(b),this)},b.clone=function(){return(new a).copy(this)},b.toArray=function(){for(var b=[],c=0,d=a.LENGTH;d>c;c++)b[c]=this[c];return b},b.copy=function(b){for(var c=a.LENGTH,d=0;c>d;d++)this[d]=b[d];return this},b.toString=function(){return"[ColorMatrix]"},b._multiplyMatrix=function(a){var b,c,d,e=[];for(b=0;5>b;b++){for(c=0;5>c;c++)e[c]=this[c+5*b];for(c=0;5>c;c++){var f=0;for(d=0;5>d;d++)f+=a[c+5*d]*e[d];this[c+5*b]=f}}},b._cleanValue=function(a,b){return Math.min(b,Math.max(-b,a))},b._fixMatrix=function(b){return b instanceof a&&(b=b.toArray()),b.length<a.LENGTH?b=b.slice(0,b.length).concat(a.IDENTITY_MATRIX.slice(b.length,a.LENGTH)):b.length>a.LENGTH&&(b=b.slice(0,a.LENGTH)),b},createjs.ColorMatrix=a}(),this.createjs=this.createjs||{},function(){"use strict";function a(a){this.matrix=a}var b=createjs.extend(a,createjs.Filter);b.toString=function(){return"[ColorMatrixFilter]"},b.clone=function(){return new a(this.matrix)},b._applyFilter=function(a){for(var b,c,d,e,f=a.data,g=f.length,h=this.matrix,i=h[0],j=h[1],k=h[2],l=h[3],m=h[4],n=h[5],o=h[6],p=h[7],q=h[8],r=h[9],s=h[10],t=h[11],u=h[12],v=h[13],w=h[14],x=h[15],y=h[16],z=h[17],A=h[18],B=h[19],C=0;g>C;C+=4)b=f[C],c=f[C+1],d=f[C+2],e=f[C+3],f[C]=b*i+c*j+d*k+e*l+m,f[C+1]=b*n+c*o+d*p+e*q+r,f[C+2]=b*s+c*t+d*u+e*v+w,f[C+3]=b*x+c*y+d*z+e*A+B;return!0},createjs.ColorMatrixFilter=createjs.promote(a,"Filter")}(),this.createjs=this.createjs||{},function(){"use strict";function a(){throw"Touch cannot be instantiated"}a.isSupported=function(){return!!("ontouchstart"in window||window.navigator.msPointerEnabled&&window.navigator.msMaxTouchPoints>0||window.navigator.pointerEnabled&&window.navigator.maxTouchPoints>0)},a.enable=function(b,c,d){return b&&b.canvas&&a.isSupported()?b.__touch?!0:(b.__touch={pointers:{},multitouch:!c,preventDefault:!d,count:0},"ontouchstart"in window?a._IOS_enable(b):(window.navigator.msPointerEnabled||window.navigator.pointerEnabled)&&a._IE_enable(b),!0):!1},a.disable=function(b){b&&("ontouchstart"in window?a._IOS_disable(b):(window.navigator.msPointerEnabled||window.navigator.pointerEnabled)&&a._IE_disable(b),delete b.__touch)},a._IOS_enable=function(b){var c=b.canvas,d=b.__touch.f=function(c){a._IOS_handleEvent(b,c)};c.addEventListener("touchstart",d,!1),c.addEventListener("touchmove",d,!1),c.addEventListener("touchend",d,!1),c.addEventListener("touchcancel",d,!1)},a._IOS_disable=function(a){var b=a.canvas;if(b){var c=a.__touch.f;b.removeEventListener("touchstart",c,!1),b.removeEventListener("touchmove",c,!1),b.removeEventListener("touchend",c,!1),b.removeEventListener("touchcancel",c,!1)}},a._IOS_handleEvent=function(a,b){if(a){a.__touch.preventDefault&&b.preventDefault&&b.preventDefault();for(var c=b.changedTouches,d=b.type,e=0,f=c.length;f>e;e++){var g=c[e],h=g.identifier;g.target==a.canvas&&("touchstart"==d?this._handleStart(a,h,b,g.pageX,g.pageY):"touchmove"==d?this._handleMove(a,h,b,g.pageX,g.pageY):("touchend"==d||"touchcancel"==d)&&this._handleEnd(a,h,b))}}},a._IE_enable=function(b){var c=b.canvas,d=b.__touch.f=function(c){a._IE_handleEvent(b,c)};void 0===window.navigator.pointerEnabled?(c.addEventListener("MSPointerDown",d,!1),window.addEventListener("MSPointerMove",d,!1),window.addEventListener("MSPointerUp",d,!1),window.addEventListener("MSPointerCancel",d,!1),b.__touch.preventDefault&&(c.style.msTouchAction="none")):(c.addEventListener("pointerdown",d,!1),window.addEventListener("pointermove",d,!1),window.addEventListener("pointerup",d,!1),window.addEventListener("pointercancel",d,!1),b.__touch.preventDefault&&(c.style.touchAction="none")),b.__touch.activeIDs={}},a._IE_disable=function(a){var b=a.__touch.f;void 0===window.navigator.pointerEnabled?(window.removeEventListener("MSPointerMove",b,!1),window.removeEventListener("MSPointerUp",b,!1),window.removeEventListener("MSPointerCancel",b,!1),a.canvas&&a.canvas.removeEventListener("MSPointerDown",b,!1)):(window.removeEventListener("pointermove",b,!1),window.removeEventListener("pointerup",b,!1),window.removeEventListener("pointercancel",b,!1),a.canvas&&a.canvas.removeEventListener("pointerdown",b,!1))},a._IE_handleEvent=function(a,b){if(a){a.__touch.preventDefault&&b.preventDefault&&b.preventDefault();var c=b.type,d=b.pointerId,e=a.__touch.activeIDs;if("MSPointerDown"==c||"pointerdown"==c){if(b.srcElement!=a.canvas)return;e[d]=!0,this._handleStart(a,d,b,b.pageX,b.pageY)}else e[d]&&("MSPointerMove"==c||"pointermove"==c?this._handleMove(a,d,b,b.pageX,b.pageY):("MSPointerUp"==c||"MSPointerCancel"==c||"pointerup"==c||"pointercancel"==c)&&(delete e[d],this._handleEnd(a,d,b)))}},a._handleStart=function(a,b,c,d,e){var f=a.__touch;if(f.multitouch||!f.count){var g=f.pointers;g[b]||(g[b]=!0,f.count++,a._handlePointerDown(b,c,d,e))}},a._handleMove=function(a,b,c,d,e){a.__touch.pointers[b]&&a._handlePointerMove(b,c,d,e)},a._handleEnd=function(a,b,c){var d=a.__touch,e=d.pointers;e[b]&&(d.count--,a._handlePointerUp(b,c,!0),delete e[b])},createjs.Touch=a}(),this.createjs=this.createjs||{},function(){"use strict";var a=createjs.EaselJS=createjs.EaselJS||{};a.version="0.8.1",a.buildDate="Thu, 21 May 2015 16:17:39 GMT"}();
 
 /**
- * @private
  * @license PreloadJS
  * Visit http://createjs.com/ for documentation, updates and examples.
  *
@@ -34,7 +32,6 @@ this.createjs=this.createjs||{},function(){"use strict";var a=createjs.PreloadJS
 }var a=createjs.extend(LoadQueue,createjs.AbstractLoader),b=LoadQueue;a.init=function(a,b,c){this.useXHR=!0,this.preferXHR=!0,this._preferXHR=!0,this.setPreferXHR(a),this._paused=!1,this._basePath=b,this._crossOrigin=c,this._loadStartWasDispatched=!1,this._currentlyLoadingScript=null,this._currentLoads=[],this._loadQueue=[],this._loadQueueBackup=[],this._loadItemsById={},this._loadItemsBySrc={},this._loadedResults={},this._loadedRawResults={},this._numItems=0,this._numItemsLoaded=0,this._scriptOrder=[],this._loadedScripts=[],this._lastProgress=0/0},b.loadTimeout=8e3,b.LOAD_TIMEOUT=0,b.BINARY=createjs.AbstractLoader.BINARY,b.CSS=createjs.AbstractLoader.CSS,b.IMAGE=createjs.AbstractLoader.IMAGE,b.JAVASCRIPT=createjs.AbstractLoader.JAVASCRIPT,b.JSON=createjs.AbstractLoader.JSON,b.JSONP=createjs.AbstractLoader.JSONP,b.MANIFEST=createjs.AbstractLoader.MANIFEST,b.SOUND=createjs.AbstractLoader.SOUND,b.VIDEO=createjs.AbstractLoader.VIDEO,b.SVG=createjs.AbstractLoader.SVG,b.TEXT=createjs.AbstractLoader.TEXT,b.XML=createjs.AbstractLoader.XML,b.POST=createjs.AbstractLoader.POST,b.GET=createjs.AbstractLoader.GET,a.registerLoader=function(a){if(!a||!a.canLoadItem)throw new Error("loader is of an incorrect type.");if(-1!=this._availableLoaders.indexOf(a))throw new Error("loader already exists.");this._availableLoaders.unshift(a)},a.unregisterLoader=function(a){var b=this._availableLoaders.indexOf(a);-1!=b&&b<this._defaultLoaderLength-1&&this._availableLoaders.splice(b,1)},a.setUseXHR=function(a){return this.setPreferXHR(a)},a.setPreferXHR=function(a){return this.preferXHR=0!=a&&null!=window.XMLHttpRequest,this.preferXHR},a.removeAll=function(){this.remove()},a.remove=function(a){var b=null;if(!a||a instanceof Array){if(a)b=a;else if(arguments.length>0)return}else b=[a];var c=!1;if(b){for(;b.length;){var d=b.pop(),e=this.getResult(d);for(f=this._loadQueue.length-1;f>=0;f--)if(g=this._loadQueue[f].getItem(),g.id==d||g.src==d){this._loadQueue.splice(f,1)[0].cancel();break}for(f=this._loadQueueBackup.length-1;f>=0;f--)if(g=this._loadQueueBackup[f].getItem(),g.id==d||g.src==d){this._loadQueueBackup.splice(f,1)[0].cancel();break}if(e)this._disposeItem(this.getItem(d));else for(var f=this._currentLoads.length-1;f>=0;f--){var g=this._currentLoads[f].getItem();if(g.id==d||g.src==d){this._currentLoads.splice(f,1)[0].cancel(),c=!0;break}}}c&&this._loadNext()}else{this.close();for(var h in this._loadItemsById)this._disposeItem(this._loadItemsById[h]);this.init(this.preferXHR,this._basePath)}},a.reset=function(){this.close();for(var a in this._loadItemsById)this._disposeItem(this._loadItemsById[a]);for(var b=[],c=0,d=this._loadQueueBackup.length;d>c;c++)b.push(this._loadQueueBackup[c].getItem());this.loadManifest(b,!1)},a.installPlugin=function(a){if(null!=a&&null!=a.getPreloadHandlers){this._plugins.push(a);var b=a.getPreloadHandlers();if(b.scope=a,null!=b.types)for(var c=0,d=b.types.length;d>c;c++)this._typeCallbacks[b.types[c]]=b;if(null!=b.extensions)for(c=0,d=b.extensions.length;d>c;c++)this._extensionCallbacks[b.extensions[c]]=b}},a.setMaxConnections=function(a){this._maxConnections=a,!this._paused&&this._loadQueue.length>0&&this._loadNext()},a.loadFile=function(a,b,c){if(null==a){var d=new createjs.ErrorEvent("PRELOAD_NO_FILE");return void this._sendError(d)}this._addItem(a,null,c),this.setPaused(b!==!1?!1:!0)},a.loadManifest=function(a,c,d){var e=null,f=null;if(a instanceof Array){if(0==a.length){var g=new createjs.ErrorEvent("PRELOAD_MANIFEST_EMPTY");return void this._sendError(g)}e=a}else if("string"==typeof a)e=[{src:a,type:b.MANIFEST}];else{if("object"!=typeof a){var g=new createjs.ErrorEvent("PRELOAD_MANIFEST_NULL");return void this._sendError(g)}if(void 0!==a.src){if(null==a.type)a.type=b.MANIFEST;else if(a.type!=b.MANIFEST){var g=new createjs.ErrorEvent("PRELOAD_MANIFEST_TYPE");this._sendError(g)}e=[a]}else void 0!==a.manifest&&(e=a.manifest,f=a.path)}for(var h=0,i=e.length;i>h;h++)this._addItem(e[h],f,d);this.setPaused(c!==!1?!1:!0)},a.load=function(){this.setPaused(!1)},a.getItem=function(a){return this._loadItemsById[a]||this._loadItemsBySrc[a]},a.getResult=function(a,b){var c=this._loadItemsById[a]||this._loadItemsBySrc[a];if(null==c)return null;var d=c.id;return b&&this._loadedRawResults[d]?this._loadedRawResults[d]:this._loadedResults[d]},a.getItems=function(a){var b=[];for(var c in this._loadItemsById){var d=this._loadItemsById[c],e=this.getResult(c);(a!==!0||null!=e)&&b.push({item:d,result:e,rawResult:this.getResult(c,!0)})}return b},a.setPaused=function(a){this._paused=a,this._paused||this._loadNext()},a.close=function(){for(;this._currentLoads.length;)this._currentLoads.pop().cancel();this._scriptOrder.length=0,this._loadedScripts.length=0,this.loadStartWasDispatched=!1,this._itemCount=0,this._lastProgress=0/0},a._addItem=function(a,b,c){var d=this._createLoadItem(a,b,c);if(null!=d){var e=this._createLoader(d);null!=e&&("plugins"in e&&(e.plugins=this._plugins),d._loader=e,this._loadQueue.push(e),this._loadQueueBackup.push(e),this._numItems++,this._updateProgress(),(this.maintainScriptOrder&&d.type==createjs.LoadQueue.JAVASCRIPT||d.maintainOrder===!0)&&(this._scriptOrder.push(d),this._loadedScripts.push(null)))}},a._createLoadItem=function(a,b,c){var d=createjs.LoadItem.create(a);if(null==d)return null;var e="",f=c||this._basePath;if(d.src instanceof Object){if(!d.type)return null;if(b){e=b;var g=createjs.RequestUtils.parseURI(b);null==f||g.absolute||g.relative||(e=f+e)}else null!=f&&(e=f)}else{var h=createjs.RequestUtils.parseURI(d.src);h.extension&&(d.ext=h.extension),null==d.type&&(d.type=createjs.RequestUtils.getTypeByExtension(d.ext));var i=d.src;if(!h.absolute&&!h.relative)if(b){e=b;var g=createjs.RequestUtils.parseURI(b);i=b+i,null==f||g.absolute||g.relative||(e=f+e)}else null!=f&&(e=f);d.src=e+d.src}d.path=e,(void 0===d.id||null===d.id||""===d.id)&&(d.id=i);var j=this._typeCallbacks[d.type]||this._extensionCallbacks[d.ext];if(j){var k=j.callback.call(j.scope,d,this);if(k===!1)return null;k===!0||null!=k&&(d._loader=k),h=createjs.RequestUtils.parseURI(d.src),null!=h.extension&&(d.ext=h.extension)}return this._loadItemsById[d.id]=d,this._loadItemsBySrc[d.src]=d,null==d.crossOrigin&&(d.crossOrigin=this._crossOrigin),d},a._createLoader=function(a){if(null!=a._loader)return a._loader;for(var b=this.preferXHR,c=0;c<this._availableLoaders.length;c++){var d=this._availableLoaders[c];if(d&&d.canLoadItem(a))return new d(a,b)}return null},a._loadNext=function(){if(!this._paused){this._loadStartWasDispatched||(this._sendLoadStart(),this._loadStartWasDispatched=!0),this._numItems==this._numItemsLoaded?(this.loaded=!0,this._sendComplete(),this.next&&this.next.load&&this.next.load()):this.loaded=!1;for(var a=0;a<this._loadQueue.length&&!(this._currentLoads.length>=this._maxConnections);a++){var b=this._loadQueue[a];this._canStartLoad(b)&&(this._loadQueue.splice(a,1),a--,this._loadItem(b))}}},a._loadItem=function(a){a.on("fileload",this._handleFileLoad,this),a.on("progress",this._handleProgress,this),a.on("complete",this._handleFileComplete,this),a.on("error",this._handleError,this),a.on("fileerror",this._handleFileError,this),this._currentLoads.push(a),this._sendFileStart(a.getItem()),a.load()},a._handleFileLoad=function(a){a.target=null,this.dispatchEvent(a)},a._handleFileError=function(a){var b=new createjs.ErrorEvent("FILE_LOAD_ERROR",null,a.item);this._sendError(b)},a._handleError=function(a){var b=a.target;this._numItemsLoaded++,this._finishOrderedItem(b,!0),this._updateProgress();var c=new createjs.ErrorEvent("FILE_LOAD_ERROR",null,b.getItem());this._sendError(c),this.stopOnError?this.setPaused(!0):(this._removeLoadItem(b),this._cleanLoadItem(b),this._loadNext())},a._handleFileComplete=function(a){var b=a.target,c=b.getItem(),d=b.getResult();this._loadedResults[c.id]=d;var e=b.getResult(!0);null!=e&&e!==d&&(this._loadedRawResults[c.id]=e),this._saveLoadedItems(b),this._removeLoadItem(b),this._finishOrderedItem(b)||this._processFinishedLoad(c,b),this._cleanLoadItem(b)},a._saveLoadedItems=function(a){var b=a.getLoadedItems();if(null!==b)for(var c=0;c<b.length;c++){var d=b[c].item;this._loadItemsBySrc[d.src]=d,this._loadItemsById[d.id]=d,this._loadedResults[d.id]=b[c].result,this._loadedRawResults[d.id]=b[c].rawResult}},a._finishOrderedItem=function(a,b){var c=a.getItem();if(this.maintainScriptOrder&&c.type==createjs.LoadQueue.JAVASCRIPT||c.maintainOrder){a instanceof createjs.JavaScriptLoader&&(this._currentlyLoadingScript=!1);var d=createjs.indexOf(this._scriptOrder,c);return-1==d?!1:(this._loadedScripts[d]=b===!0?!0:c,this._checkScriptLoadOrder(),!0)}return!1},a._checkScriptLoadOrder=function(){for(var a=this._loadedScripts.length,b=0;a>b;b++){var c=this._loadedScripts[b];if(null===c)break;if(c!==!0){var d=this._loadedResults[c.id];c.type==createjs.LoadQueue.JAVASCRIPT&&createjs.DomUtils.appendToHead(d);var e=c._loader;this._processFinishedLoad(c,e),this._loadedScripts[b]=!0}}},a._processFinishedLoad=function(a,b){this._numItemsLoaded++,this.maintainScriptOrder||a.type!=createjs.LoadQueue.JAVASCRIPT||createjs.DomUtils.appendToHead(a.result),this._updateProgress(),this._sendFileComplete(a,b),this._loadNext()},a._canStartLoad=function(a){if(!this.maintainScriptOrder||a.preferXHR)return!0;var b=a.getItem();if(b.type!=createjs.LoadQueue.JAVASCRIPT)return!0;if(this._currentlyLoadingScript)return!1;for(var c=this._scriptOrder.indexOf(b),d=0;c>d;){var e=this._loadedScripts[d];if(null==e)return!1;d++}return this._currentlyLoadingScript=!0,!0},a._removeLoadItem=function(a){for(var b=this._currentLoads.length,c=0;b>c;c++)if(this._currentLoads[c]==a){this._currentLoads.splice(c,1);break}},a._cleanLoadItem=function(a){var b=a.getItem();b&&delete b._loader},a._handleProgress=function(a){var b=a.target;this._sendFileProgress(b.getItem(),b.progress),this._updateProgress()},a._updateProgress=function(){var a=this._numItemsLoaded/this._numItems,b=this._numItems-this._numItemsLoaded;if(b>0){for(var c=0,d=0,e=this._currentLoads.length;e>d;d++)c+=this._currentLoads[d].progress;a+=c/b*(b/this._numItems)}this._lastProgress!=a&&(this._sendProgress(a),this._lastProgress=a)},a._disposeItem=function(a){delete this._loadedResults[a.id],delete this._loadedRawResults[a.id],delete this._loadItemsById[a.id],delete this._loadItemsBySrc[a.src]},a._sendFileProgress=function(a,b){if(!this._isCanceled()&&!this._paused&&this.hasEventListener("fileprogress")){var c=new createjs.Event("fileprogress");c.progress=b,c.loaded=b,c.total=1,c.item=a,this.dispatchEvent(c)}},a._sendFileComplete=function(a,b){if(!this._isCanceled()&&!this._paused){var c=new createjs.Event("fileload");c.loader=b,c.item=a,c.result=this._loadedResults[a.id],c.rawResult=this._loadedRawResults[a.id],a.completeHandler&&a.completeHandler(c),this.hasEventListener("fileload")&&this.dispatchEvent(c)}},a._sendFileStart=function(a){var b=new createjs.Event("filestart");b.item=a,this.hasEventListener("filestart")&&this.dispatchEvent(b)},a.toString=function(){return"[PreloadJS LoadQueue]"},createjs.LoadQueue=createjs.promote(LoadQueue,"AbstractLoader")}(),this.createjs=this.createjs||{},function(){"use strict";function TextLoader(a){this.AbstractLoader_constructor(a,!0,createjs.AbstractLoader.TEXT)}var a=(createjs.extend(TextLoader,createjs.AbstractLoader),TextLoader);a.canLoadItem=function(a){return a.type==createjs.AbstractLoader.TEXT},createjs.TextLoader=createjs.promote(TextLoader,"AbstractLoader")}(),this.createjs=this.createjs||{},function(){"use strict";function BinaryLoader(a){this.AbstractLoader_constructor(a,!0,createjs.AbstractLoader.BINARY),this.on("initialize",this._updateXHR,this)}var a=createjs.extend(BinaryLoader,createjs.AbstractLoader),b=BinaryLoader;b.canLoadItem=function(a){return a.type==createjs.AbstractLoader.BINARY},a._updateXHR=function(a){a.loader.setResponseType("arraybuffer")},createjs.BinaryLoader=createjs.promote(BinaryLoader,"AbstractLoader")}(),this.createjs=this.createjs||{},function(){"use strict";function CSSLoader(a,b){this.AbstractLoader_constructor(a,b,createjs.AbstractLoader.CSS),this.resultFormatter=this._formatResult,this._tagSrcAttribute="href",this._tag=document.createElement(b?"style":"link"),this._tag.rel="stylesheet",this._tag.type="text/css"}var a=createjs.extend(CSSLoader,createjs.AbstractLoader),b=CSSLoader;b.canLoadItem=function(a){return a.type==createjs.AbstractLoader.CSS},a._formatResult=function(a){if(this._preferXHR){var b=a.getTag();if(b.styleSheet)b.styleSheet.cssText=a.getResult(!0);else{var c=document.createTextNode(a.getResult(!0));b.appendChild(c)}}else b=this._tag;return createjs.DomUtils.appendToHead(b),b},createjs.CSSLoader=createjs.promote(CSSLoader,"AbstractLoader")}(),this.createjs=this.createjs||{},function(){"use strict";function ImageLoader(a,b){this.AbstractLoader_constructor(a,b,createjs.AbstractLoader.IMAGE),this.resultFormatter=this._formatResult,this._tagSrcAttribute="src",createjs.RequestUtils.isImageTag(a)?this._tag=a:createjs.RequestUtils.isImageTag(a.src)?this._tag=a.src:createjs.RequestUtils.isImageTag(a.tag)&&(this._tag=a.tag),null!=this._tag?this._preferXHR=!1:this._tag=document.createElement("img"),this.on("initialize",this._updateXHR,this)}var a=createjs.extend(ImageLoader,createjs.AbstractLoader),b=ImageLoader;b.canLoadItem=function(a){return a.type==createjs.AbstractLoader.IMAGE},a.load=function(){if(""!=this._tag.src&&this._tag.complete)return void this._sendComplete();var a=this._item.crossOrigin;1==a&&(a="Anonymous"),null==a||createjs.RequestUtils.isLocal(this._item.src)||(this._tag.crossOrigin=a),this.AbstractLoader_load()},a._updateXHR=function(a){a.loader.mimeType="text/plain; charset=x-user-defined-binary",a.loader.setResponseType&&a.loader.setResponseType("blob")},a._formatResult=function(a){var b=this;return function(c){var d=b._tag,e=window.URL||window.webkitURL;if(b._preferXHR)if(e){var f=e.createObjectURL(a.getResult(!0));d.src=f,d.onload=function(){e.revokeObjectURL(b.src)}}else d.src=a.getItem().src;else;d.complete?c(d):d.onload=function(){c(this)}}},createjs.ImageLoader=createjs.promote(ImageLoader,"AbstractLoader")}(),this.createjs=this.createjs||{},function(){"use strict";function JavaScriptLoader(a,b){this.AbstractLoader_constructor(a,b,createjs.AbstractLoader.JAVASCRIPT),this.resultFormatter=this._formatResult,this._tagSrcAttribute="src",this.setTag(document.createElement("script"))}var a=createjs.extend(JavaScriptLoader,createjs.AbstractLoader),b=JavaScriptLoader;b.canLoadItem=function(a){return a.type==createjs.AbstractLoader.JAVASCRIPT},a._formatResult=function(a){var b=a.getTag();return this._preferXHR&&(b.text=a.getResult(!0)),b},createjs.JavaScriptLoader=createjs.promote(JavaScriptLoader,"AbstractLoader")}(),this.createjs=this.createjs||{},function(){"use strict";function JSONLoader(a){this.AbstractLoader_constructor(a,!0,createjs.AbstractLoader.JSON),this.resultFormatter=this._formatResult}var a=createjs.extend(JSONLoader,createjs.AbstractLoader),b=JSONLoader;b.canLoadItem=function(a){return a.type==createjs.AbstractLoader.JSON&&!a._loadAsJSONP},a._formatResult=function(a){var b=null;try{b=createjs.DataUtils.parseJSON(a.getResult(!0))}catch(c){var d=new createjs.ErrorEvent("JSON_FORMAT",null,c);return this._sendError(d),c}return b},createjs.JSONLoader=createjs.promote(JSONLoader,"AbstractLoader")}(),this.createjs=this.createjs||{},function(){"use strict";function JSONPLoader(a){this.AbstractLoader_constructor(a,!1,createjs.AbstractLoader.JSONP),this.setTag(document.createElement("script")),this.getTag().type="text/javascript"}var a=createjs.extend(JSONPLoader,createjs.AbstractLoader),b=JSONPLoader;b.canLoadItem=function(a){return a.type==createjs.AbstractLoader.JSONP||a._loadAsJSONP},a.cancel=function(){this.AbstractLoader_cancel(),this._dispose()},a.load=function(){if(null==this._item.callback)throw new Error("callback is required for loading JSONP requests.");if(null!=window[this._item.callback])throw new Error("JSONP callback '"+this._item.callback+"' already exists on window. You need to specify a different callback or re-name the current one.");window[this._item.callback]=createjs.proxy(this._handleLoad,this),window.document.body.appendChild(this._tag),this._loadTimeout=setTimeout(createjs.proxy(this._handleTimeout,this),this._item.loadTimeout),this._tag.src=this._item.src},a._handleLoad=function(a){this._result=this._rawResult=a,this._sendComplete(),this._dispose()},a._handleTimeout=function(){this._dispose(),this.dispatchEvent(new createjs.ErrorEvent("timeout"))},a._dispose=function(){window.document.body.removeChild(this._tag),delete window[this._item.callback],clearTimeout(this._loadTimeout)},createjs.JSONPLoader=createjs.promote(JSONPLoader,"AbstractLoader")}(),this.createjs=this.createjs||{},function(){"use strict";function ManifestLoader(a){this.AbstractLoader_constructor(a,null,createjs.AbstractLoader.MANIFEST),this.plugins=null,this._manifestQueue=null}var a=createjs.extend(ManifestLoader,createjs.AbstractLoader),b=ManifestLoader;b.MANIFEST_PROGRESS=.25,b.canLoadItem=function(a){return a.type==createjs.AbstractLoader.MANIFEST},a.load=function(){this.AbstractLoader_load()},a._createRequest=function(){var a=this._item.callback;this._request=null!=a?new createjs.JSONPLoader(this._item):new createjs.JSONLoader(this._item)},a.handleEvent=function(a){switch(a.type){case"complete":return this._rawResult=a.target.getResult(!0),this._result=a.target.getResult(),this._sendProgress(b.MANIFEST_PROGRESS),void this._loadManifest(this._result);case"progress":return a.loaded*=b.MANIFEST_PROGRESS,this.progress=a.loaded/a.total,(isNaN(this.progress)||1/0==this.progress)&&(this.progress=0),void this._sendProgress(a)}this.AbstractLoader_handleEvent(a)},a.destroy=function(){this.AbstractLoader_destroy(),this._manifestQueue.close()},a._loadManifest=function(a){if(a&&a.manifest){var b=this._manifestQueue=new createjs.LoadQueue;b.on("fileload",this._handleManifestFileLoad,this),b.on("progress",this._handleManifestProgress,this),b.on("complete",this._handleManifestComplete,this,!0),b.on("error",this._handleManifestError,this,!0);for(var c=0,d=this.plugins.length;d>c;c++)b.installPlugin(this.plugins[c]);b.loadManifest(a)}else this._sendComplete()},a._handleManifestFileLoad=function(a){a.target=null,this.dispatchEvent(a)},a._handleManifestComplete=function(){this._loadedItems=this._manifestQueue.getItems(!0),this._sendComplete()},a._handleManifestProgress=function(a){this.progress=a.progress*(1-b.MANIFEST_PROGRESS)+b.MANIFEST_PROGRESS,this._sendProgress(this.progress)},a._handleManifestError=function(a){var b=new createjs.Event("fileerror");b.item=a.data,this.dispatchEvent(b)},createjs.ManifestLoader=createjs.promote(ManifestLoader,"AbstractLoader")}(),this.createjs=this.createjs||{},function(){"use strict";function SoundLoader(a,b){this.AbstractMediaLoader_constructor(a,b,createjs.AbstractLoader.SOUND),createjs.RequestUtils.isAudioTag(a)?this._tag=a:createjs.RequestUtils.isAudioTag(a.src)?this._tag=a:createjs.RequestUtils.isAudioTag(a.tag)&&(this._tag=createjs.RequestUtils.isAudioTag(a)?a:a.src),null!=this._tag&&(this._preferXHR=!1)}var a=createjs.extend(SoundLoader,createjs.AbstractMediaLoader),b=SoundLoader;b.canLoadItem=function(a){return a.type==createjs.AbstractLoader.SOUND},a._createTag=function(a){var b=document.createElement("audio");return b.autoplay=!1,b.preload="none",b.src=a,b},createjs.SoundLoader=createjs.promote(SoundLoader,"AbstractMediaLoader")}(),this.createjs=this.createjs||{},function(){"use strict";function VideoLoader(a,b){this.AbstractMediaLoader_constructor(a,b,createjs.AbstractLoader.VIDEO),createjs.RequestUtils.isVideoTag(a)||createjs.RequestUtils.isVideoTag(a.src)?(this.setTag(createjs.RequestUtils.isVideoTag(a)?a:a.src),this._preferXHR=!1):this.setTag(this._createTag())}var a=createjs.extend(VideoLoader,createjs.AbstractMediaLoader),b=VideoLoader;a._createTag=function(){return document.createElement("video")},b.canLoadItem=function(a){return a.type==createjs.AbstractLoader.VIDEO},createjs.VideoLoader=createjs.promote(VideoLoader,"AbstractMediaLoader")}(),this.createjs=this.createjs||{},function(){"use strict";function SpriteSheetLoader(a){this.AbstractLoader_constructor(a,null,createjs.AbstractLoader.SPRITESHEET),this._manifestQueue=null}var a=createjs.extend(SpriteSheetLoader,createjs.AbstractLoader),b=SpriteSheetLoader;b.SPRITESHEET_PROGRESS=.25,b.canLoadItem=function(a){return a.type==createjs.AbstractLoader.SPRITESHEET},a.destroy=function(){this.AbstractLoader_destroy,this._manifestQueue.close()},a._createRequest=function(){var a=this._item.callback;this._request=null!=a&&a instanceof Function?new createjs.JSONPLoader(this._item):new createjs.JSONLoader(this._item)},a.handleEvent=function(a){switch(a.type){case"complete":return this._rawResult=a.target.getResult(!0),this._result=a.target.getResult(),this._sendProgress(b.SPRITESHEET_PROGRESS),void this._loadManifest(this._result);case"progress":return a.loaded*=b.SPRITESHEET_PROGRESS,this.progress=a.loaded/a.total,(isNaN(this.progress)||1/0==this.progress)&&(this.progress=0),void this._sendProgress(a)}this.AbstractLoader_handleEvent(a)},a._loadManifest=function(a){if(a&&a.images){var b=this._manifestQueue=new createjs.LoadQueue;b.on("complete",this._handleManifestComplete,this,!0),b.on("fileload",this._handleManifestFileLoad,this),b.on("progress",this._handleManifestProgress,this),b.on("error",this._handleManifestError,this,!0),b.loadManifest(a.images)}},a._handleManifestFileLoad=function(a){var b=a.result;if(null!=b){var c=this.getResult().images,d=c.indexOf(a.item.src);c[d]=b}},a._handleManifestComplete=function(){this._result=new createjs.SpriteSheet(this._result),this._loadedItems=this._manifestQueue.getItems(!0),this._sendComplete()},a._handleManifestProgress=function(a){this.progress=a.progress*(1-b.SPRITESHEET_PROGRESS)+b.SPRITESHEET_PROGRESS,this._sendProgress(this.progress)},a._handleManifestError=function(a){var b=new createjs.Event("fileerror");b.item=a.data,this.dispatchEvent(b)},createjs.SpriteSheetLoader=createjs.promote(SpriteSheetLoader,"AbstractLoader")}(),this.createjs=this.createjs||{},function(){"use strict";function SVGLoader(a,b){this.AbstractLoader_constructor(a,b,createjs.AbstractLoader.SVG),this.resultFormatter=this._formatResult,this._tagSrcAttribute="data",b?this.setTag(document.createElement("svg")):(this.setTag(document.createElement("object")),this.getTag().type="image/svg+xml")}var a=createjs.extend(SVGLoader,createjs.AbstractLoader),b=SVGLoader;b.canLoadItem=function(a){return a.type==createjs.AbstractLoader.SVG},a._formatResult=function(a){var b=createjs.DataUtils.parseXML(a.getResult(!0),"text/xml"),c=a.getTag();return!this._preferXHR&&document.body.contains(c)&&document.body.removeChild(c),null!=b.documentElement?(c.appendChild(b.documentElement),c.style.visibility="visible",c):b},createjs.SVGLoader=createjs.promote(SVGLoader,"AbstractLoader")}(),this.createjs=this.createjs||{},function(){"use strict";function XMLLoader(a){this.AbstractLoader_constructor(a,!0,createjs.AbstractLoader.XML),this.resultFormatter=this._formatResult}var a=createjs.extend(XMLLoader,createjs.AbstractLoader),b=XMLLoader;b.canLoadItem=function(a){return a.type==createjs.AbstractLoader.XML},a._formatResult=function(a){return createjs.DataUtils.parseXML(a.getResult(!0),"text/xml")},createjs.XMLLoader=createjs.promote(XMLLoader,"AbstractLoader")}();
 
 /**
- * @private
  * @license TweenJS
  * Visit http://createjs.com/ for documentation, updates and examples.
  *
@@ -63,387 +60,97 @@ this.createjs=this.createjs||{},createjs.extend=function(a,b){"use strict";funct
  * Reasoning for including the EaselJS, PreloadJS, and TweenJs libraries in the same file is to make loading the
  * scripts in an HTML file simple, while ensuring everything is done in the correct order.
  *
- * @author - Maxim Tiourin
+ * @author Maxim Tiourin <mixmaxtwo@gmail.com>
+ * @namespace gnplib
  */
 var gnplib = {
+    /* Define callbacks for use with documentation */
+    /**
+     * This callback function is passed to other functions when an action needs to occur after a user mouse event fires.
+     * @callback MouseCallback
+     * @param {createjs.MouseEvent} event - The {@link http://www.createjs.com/docs/easeljs/classes/MouseEvent.html createjs.MouseEvent} to pass to the callback
+     * @example
+     * //Create a callback function and pass it to a function that can use it
+     * var myCallback = function(event) {
+     *      //Do stuff, optionally using the passed in event
+     * }
+     * foo(myCallback);
+     */
+
+    /* Define typedefs */
+    /**
+     * A string representing a color
+     * @typedef {String} Color
+     * @example
+     * //Defining a common color by its name
+     * var color = "red"; //Red
+     * @example
+     * //Defining a color by its hex value
+     * var color = "#ff0000"; //Red
+     * @example
+     * //Defining a color by its rgb value
+     * var color = "rgb(255, 0, 0)"; //Red
+     * @example
+     * //Defining a color by its rgba value
+     * var color = "rgba(255, 0, 0, 127)"; //Red at ~50% transparency
+     */
+
+    /* Nested Namespaces */
     /**
      * Math utility functions
+     * @namespace math
+     * @memberof gnplib
      */
     math: {
 
     },
     /**
      * String utility functions
+     * @namespace string
+     * @memberof gnplib
      */
     string: {
 
     },
     /**
-     * User Interface utility functions and classes
+     * User interface related utility functions and classes
+     * @namespace ui
+     * @memberof gnplib
      */
     ui: {
         /**
-         * Contains helper functions for the creation of ui elements, used by functions found in gnplib.ui
-         * [Advanced Use Only]
-         */
-        helper: {
-            /**
-             * Used to create buttons of varying configurations by createButton functions in gnplib.ui
-             * The x and y origin point of the button is at its center
-             * @param {createjs.Stage} stage the easeljs Stage context
-             * @param {createjs.Text} textObj the easeljs Text object to display, or null if no text to display
-             * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} baseImage the normal background image of the button
-             * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} highlightImage the background image of the button when it is highlighted
-             * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} clickImage the background image of the button when it is clicked
-             * @param {Number} width the width of the button
-             * @param {Number} height the height of the button
-             * @param {Function} clickFunc the function that should be executed when the button is
-             * @param {Number} shrinkScale (optional) how much to shrink the button by when it is clicked, given as scalar value
-             * @returns {createjs.Container} the container object that holds all of the button elements
-             */
-            createButtonImage: function(stage, textObj, baseImage, highlightImage, clickImage, width, height, clickFunc, shrinkScale) {
-                //Defaults
-                var defaultXScale = 1.0; //Default xscale of button container
-                var defaultYScale = 1.0; //Default yscale of button container
-                var defaultScaleShrinkAmount = shrinkScale || .10; //How much to change the scale of the button container on mouseclick
-
-                //Init
-                var btn = new createjs.Container(); //Create the container for the button
-                var base = new createjs.Bitmap(baseImage);
-                var highlight = new createjs.Bitmap(highlightImage);
-                var click = new createjs.Bitmap(clickImage);
-                var rollover = false; //Button is initially not rolled over
-                var pressed = false; //Button is initially not pressed
-
-                //Scale bitmaps correctly
-                gnplib.ui.setWidth(base, width);
-                gnplib.ui.setHeight(base, height);
-                gnplib.ui.setWidth(highlight, width);
-                gnplib.ui.setHeight(highlight, height);
-                gnplib.ui.setWidth(click, width);
-                gnplib.ui.setHeight(click, height);
-
-                //Add Children to container and set initial visibility
-                btn.addChild(base);
-                btn.addChild(highlight);
-                btn.addChild(click);
-                if (textObj !== null) {
-                    btn.addChild(textObj);
-                }
-
-                highlight.visible = false;
-                click.visible = false;
-
-                //Set the container's registration point in center, and Position Text in center of container
-                var cwh = width / 2;
-                var chh = height / 2;
-                btn.regX = cwh;
-                btn.regY = chh;
-                if (textObj !== null) {
-                    textObj.textAlign = "center"; //Make the text align horizontally to its center point
-                    textObj.textBaseline = "middle"; //Make the text vertically align to its middle point
-                    textObj.set({x: cwh, y: chh}); //Set the text's center point the center of the container
-                }
-
-                //Create Redraw Function
-                var redraw = function() {
-                    if (pressed) {
-                        //Button is pressed down
-                        base.visible = false;
-                        highlight.visible = false;
-                        click.visible = true;
-                    }
-                    else if (rollover) {
-                        //Button is highlighted but not pressed
-                        base.visible = false;
-                        highlight.visible = true;
-                        click.visible = false;
-                    }
-                    else {
-                        //Button in default state
-                        base.visible = true;
-                        highlight.visible = false;
-                        click.visible = false;
-                    }
-
-                    stage.update();
-                }
-
-                //Draw initial button
-                redraw();
-
-                //Add highlight enable color event
-                btn.addEventListener("rollover", function(event) {
-                    rollover = true;
-                    redraw();
-                });
-
-                //Add highlight disable color event
-                btn.addEventListener("rollout", function(event) {
-                    rollover = false;
-                    redraw();
-                });
-
-                //Add click enable color event
-                btn.addEventListener("mousedown", function(event) {
-                    pressed = true;
-                    btn.scaleX = defaultXScale - defaultScaleShrinkAmount; //Shrink xscale of button container
-                    btn.scaleY = defaultYScale - defaultScaleShrinkAmount; //Shrink yscale of button container
-                    redraw();
-                });
-
-                //Add click disable color event
-                btn.addEventListener("pressup", function(event) {
-                    pressed = false;
-                    btn.scaleX = defaultXScale; //Reset xscale of button container
-                    btn.scaleY = defaultYScale; //Reset yscale of button container
-                    redraw();
-
-                    //Execute the click function if mouse is still rolled over
-                    if (rollover) {
-                        clickFunc(event);
-                    }
-                });
-
-                return btn;
-            },
-            /**
-             * Used to create buttons of varying configurations by createButton functions in gnplib.ui
-             * The x and y origin point of the button is at its center
-             * @param {createjs.Stage} stage the easeljs Stage context
-             * @param {createjs.Text} textObj the easeljs Text object to display, or null if no text to display
-             * @param {String} baseColor the normal background color of the button
-             * @param {String} highlightColor the background color of the button when it is highlighted
-             * @param {String} clickColor the background color of the button when it is clicked
-             * @param {Number} width the width of the button
-             * @param {Number} height the height of the button
-             * @param {Number} radius 0 for normal rectangle, greater than 0 for a rounded rectangle
-             * @param {String} shapeType the type of button shape to create {"circle", "ellipse", "rectangle", "roundrectangle"}
-             * @param {Function} clickFunc the function that should be executed when the button is clicked
-             * @returns {createjs.Container} the container object that holds all of the button elements
-             */
-            createButtonSimple: function(stage, textObj, baseColor, highlightColor, clickColor, width, height, radius, shapeType, clickFunc) {
-                //Defaults
-                var defaultXScale = 1.0; //Default xscale of button container
-                var defaultYScale = 1.0; //Default yscale of button container
-                var defaultScaleShrinkAmount = .10; //How much to change the scale of the button container on mouseclick
-
-                //Init
-                var btn = new createjs.Container(); //Create the container for the button
-                var shape = new createjs.Shape(); //Create the initial shape for the button
-                var g = shape.graphics; //The graphics context for the button shape
-                var rollover = false; //Button is initially not rolled over
-                var pressed = false; //Button is initially not pressed
-                var color = baseColor; //Initial color to draw
-
-                //Add Children to container
-                btn.addChild(shape);
-                if (textObj !== null) {
-                    btn.addChild(textObj);
-                }
-
-                //Set the container's registration point in center, and Position Text in center of container
-                var cwh = width / 2;
-                var chh = height / 2;
-                btn.regX = cwh;
-                btn.regY = chh;
-                if (textObj !== null) {
-                    textObj.textAlign = "center"; //Make the text align horizontally to its center point
-                    textObj.textBaseline = "middle"; //Make the text vertically align to its middle point
-                    textObj.set({x: cwh, y: chh}); //Set the text's center point the center of the container
-                }
-
-                //Create Redraw Function
-                var redraw = function() {
-                    g.clear();
-                    if (shapeType === "circle") {
-                        g.beginFill(color).drawCircle(btn.regX, btn.regY, radius);
-                    }
-                    else if (shapeType === "ellipse") {
-                        g.beginFill(color).drawEllipse(0, 0, width, height);
-                    }
-                    else if (shapeType === "rectangle") {
-                        g.beginFill(color).drawRect(0, 0, width, height);
-                    }
-                    else if (shapeType === "roundrectangle") {
-                        g.beginFill(color).drawRoundRect(0, 0, width, height, radius);
-                    }
-                    stage.update();
-                }
-
-                //Draw initial button
-                redraw();
-
-                //Add highlight enable color event
-                btn.addEventListener("rollover", function(event) {
-                    rollover = true;
-                    color = (pressed) ? (clickColor) : (highlightColor);
-                    redraw();
-                });
-
-                //Add highlight disable color event
-                btn.addEventListener("rollout", function(event) {
-                    rollover = false;
-                    color = (pressed) ? (clickColor) : (baseColor);
-                    redraw();
-                });
-
-                //Add click enable color event
-                btn.addEventListener("mousedown", function(event) {
-                    color = clickColor;
-                    pressed = true;
-                    btn.scaleX = defaultXScale - defaultScaleShrinkAmount; //Shrink xscale of button container
-                    btn.scaleY = defaultYScale - defaultScaleShrinkAmount; //Shrink yscale of button container
-                    redraw();
-                });
-
-                //Add click disable color event
-                btn.addEventListener("pressup", function(event) {
-                    pressed = false;
-                    if (rollover) {
-                        color = highlightColor;
-                    }
-                    else {
-                        color = baseColor;
-                    }
-                    btn.scaleX = defaultXScale; //Reset xscale of button container
-                    btn.scaleY = defaultYScale; //Reset yscale of button container
-                    redraw();
-
-                    //Execute the click function if mouse is still rolled over
-                    if (rollover) {
-                        clickFunc(event);
-                    }
-                });
-
-                return btn;
-            },
-            /**
-             * A Puzzle Piece class that contains useful information about a puzzle piece ui element, used by gnplib.ui.generatePuzzlePiecesFromImage()
-             * to create interactive puzzle pieces. Generally should not be used on its own.
-             * [Advanced Use Only]
-             * @param {createjs.Shape} the Shape Object to create the puzzle piece with
-             * @constructor
-             */
-            PuzzlePiece: function(shapeObject) {
-                var t = this;
-                t.id = "Anonymous Puzzle Piece"; //String id for the piece, can be used for debugging
-                t.shape = shapeObject; //The createjs.Shape object representing this puzzle piece
-                t.doesSnap = false; //Whether or not this puzzle piece snaps to position
-                t.snapX = 0; //The x position to snap to
-                t.snapY = 0; //The y position to snap to
-                t.snapDistance = 0; //The distance at which this piece will snap into place
-                t.stopDragCalcFunc = null; //The function to execute whenever the piece is done being dragged.
-                t.isSnapped = false; //Whether or not the piece is currently snapped in place
-
-                /**
-                 * Checks whether or not the piece can snap into place, updating all snapping state information, and
-                 * returning true if is now snapped, false if not. Requires snapping to be enabled.
-                 * @returns {Boolean} true if piece is currently snapped in place, false if not
-                 */
-                t.checkSnapping = function() {
-                    if (!t.doesSnap) {
-                        //Easy flag case
-                        return false;
-                    }
-                    else if (t.shape.x === t.snapX && t.shape.y === t.snapY) {
-                        //Easy position case
-                        return true;
-                    }
-                    else {
-                        //Find the distance between the current piece position and the original piece position
-                        var distance = Math.sqrt(Math.pow(t.shape.x - t.snapX, 2) + Math.pow(t.shape.y - t.snapY, 2));
-
-                        //If distance is under snap distance, snap the piece
-                        if (distance < t.snapDistance) {
-                            t.shape.x = t.snapX;
-                            t.shape.y = t.snapY;
-
-                            t.isSnapped = true;
-
-                            return true;
-                        }
-                        else {
-                            t.isSnapped = false;
-
-                            return false;
-                        }
-                    }
-                }
-
-                /**
-                 * The function that should execute when this piece is done dragging, to aid in checking for snaps.
-                 * If stopDragCalcFunc is set to something other than null, it will also be executed.
-                 * This is passed to functions like gnplib.ui.addDragAndDropToObject when puzzle pieces are created,
-                 * and is used by functions such as gnplib.ui.generatePuzzlePiecesFromImage to determine when a puzzle is completed.
-                 * [Advanced Use Only]
-                 * @returns {Boolean}
-                 */
-                t.stopDrag = function() {
-                    var check = t.checkSnapping();
-
-                    if (t.stopDragCalcFunc !== null) {
-                        t.stopDragCalcFunc();
-                    }
-
-                    return check;
-                }
-
-                /**
-                 * Sets or Gets the x position of the puzzle piece (the x position of the puzzle piece's shape object)
-                 * If snapping is enabled, setting the x position using this method will also update snapping state information, therefore
-                 * use this when moving finalized puzzle pieces around through code.
-                 * @param {Number} newx (optional) if set, sets the puzzle piece's shape's x coordinate to this value
-                 * @returns {Number} x position of the puzzle piece
-                 */
-                t.x = function(newx) {
-                    var nx = newx || null;
-
-                    if (nx !== null) {
-                        t.shape.x = nx;
-
-                        if (t.doesSnap) {
-                            t.checkSnapping();
-                        }
-                    }
-
-                    return t.shape.x;
-                }
-
-                /**
-                 * Sets or Gets the y position of the puzzle piece (the y position of the puzzle piece's shape object)
-                 * If snapping is enabled, setting the x position using this method will also update snapping state information, therefore
-                 * use this when moving finalized puzzle pieces around through code.
-                 * @param {Number} newy (optional) if set, sets the puzzle piece's shape's y coordinate to this value
-                 * @returns {Number} y position of the puzzle piece
-                 */
-                t.y = function(newy) {
-                    var ny = newy || null;
-
-                    if (ny !== null) {
-                        t.shape.y = ny;
-
-                        if (t.doesSnap) {
-                            t.checkSnapping();
-                        }
-                    }
-
-                    return t.shape.y;
-                }
-            }
-        },
-        /**
-         * Applies drag and drop functionality to the createjs.DisplayObject, which allows the user to drag and drop a DisplayObject
-         * while optionally executing passed functions during the start of a drag, the continuation of a drag, and the end of a drag.
-         * @param {createjs.DisplayObject} displayObject the DisplayObject to apply the drag and drop functionality to
-         * @param {Function} startDragFunc (optional) the function to execute when a drag is initiated on the display object
-         * @param {Function} dragFunc (optional) the function to execute when the display object is dragged, changing its position
-         * @param {Function} stopDragFunc (optional)the function to execute when a dragged display object is dropped
-         * @param {Object} snappingObject (optional) [Advanced use only] an object that has special x() and y() method functions that uniquely set the x and y position
-         *                                 of the display object. If this argument is supplied, the drag and drop functionality will change how it assigns
-         *                                 x and y positions to make use of this snapping functionality. An example of a valid snappingObject is a gnplib.ui.helper.PuzzlePiece.
-         *                                 A Stop drag func should always be supplied and should return true whenever the snapping has modified the x or y position
-         *                                 of the object.
+         * Applies drag and drop functionality to a createjs.DisplayObject,
+         * which allows the user to drag and drop the createjs.DisplayObject while optionally executing callback functions during the
+         * start of a drag, the continuation of a drag, and the end of a drag.
+         * @param {!createjs.DisplayObject} displayObject - The {@link http://www.createjs.com/docs/easeljs/classes/DisplayObject.html createjs.DisplayObject} to apply the drag and drop functionality to
+         * @param {?MouseCallback} [startDragFunc] - The function to execute when a drag is first initiated on the display object
+         * @param {?MouseCallback} [dragFunc] - The function to execute when the display object is dragged, changing its position
+         * @param {?MouseCallback} [stopDragFunc] - The function to execute when a dragged display object is dropped
+         * @param {?Object} [snappingObject] - [Advanced use only] An object that has special x() and y() method functions that set the x and y position
+         *                                 of the display object in a unique way, for example snapping to position. If this object is supplied, the drag
+         *                                 and drop functionality will change how it assigns x and y positions to prevent breaking the special positioning.
+         *                                 An example of a valid snappingObject is a {@link gnplib.ui.PuzzlePiece}. If a snappingObject is supplied, then a stopDragFunc
+         *                                 should also be supplied and should return true after being called if that snappingObject has modified its x or y position
+         *                                 on its own during the callback.
+         * @example
+         * //Adding simple drag and drop functionality to a createjs.DisplayObject
+         * gnplib.ui.addDragAndDropToObject(myDisplayObject);
+         *
+         * @example
+         * //Adding drag and drop functionality to a createjs.DisplayObject with callback functions
+         * var startDrag = function(event) {
+         *     //Do stuff when object has first initiated its drag
+         * }
+         *
+         * var doDrag = function(event) {
+         *     //Do stuff when object has been dragged
+         * }
+         *
+         * var stopDrag = function(event) {
+         *     //Do stuff when object has been dropped
+         * }
+         *
+         * gnplib.ui.addDragAndDropToObject(myDisplayObject, startDrag, doDrag, stopDrag);
          */
         addDragAndDropToObject: function(displayObject, startDragFunc, dragFunc, stopDragFunc, snappingObject) {
             var obj = displayObject;
@@ -554,108 +261,341 @@ var gnplib = {
             });
         },
         /**
-         * Creates and returns a simple easeljs Container object that contains the elements of a circular button.
-         * The x and y origin point of the button is at its center
-         * @param {createjs.Stage} stage the easeljs Stage context
-         * @param {createjs.Text} textObj the easeljs Text object to display
-         * @param {String} baseColor the normal background color of the button
-         * @param {String} highlightColor the background color of the button when it is highlighted
-         * @param {String} clickColor the background color of the button when it is clicked
-         * @param {Number} radius the radius of the circle
-         * @param {Function} clickFunc the function that should be executed when the button is clicked
-         * @returns {createjs.Container} the container object that holds all of the button elements
+         * Used to create a button with a circle shape.
+         * The x and y origin point of the button is at its center.
+         * @param {!createjs.Stage} stage - The current {@link http://www.createjs.com/docs/easeljs/classes/Stage.html createjs.Stage} context
+         * @param {?createjs.Text} textObj - A {@link http://www.createjs.com/docs/easeljs/classes/Text.html createjs.Text} object to display, or null to display no text
+         * @param {!Color} baseColor - The background color of the button in its default state
+         * @param {!Color} highlightColor - The background color of the button when it is highlighted
+         * @param {!Color} clickColor - The background color of the button when it is clicked
+         * @param {!Number} radius - The radius of the circle
+         * @param {!MouseCallback} clickFunc - The function that should be executed when the button is clicked
+         * @returns {createjs.Container} The {@link http://www.createjs.com/docs/easeljs/classes/Container.html createjs.Container} object that holds all of the button elements created by this function
+         * @example
+         * //Create a button circle with red base color, blue highlightColor, green clickColor, and a radius of 50
+         * var button = gnplib.createButtonCircle(myStage, myText, "#ff0000", "#0000ff", "#00ff00", 50, myClickFunc);
          */
         createButtonCircle: function(stage, textObj, baseColor, highlightColor, clickColor, radius, clickFunc) {
-            return gnplib.ui.helper.createButtonSimple(stage, textObj, baseColor, highlightColor, clickColor,
+            return gnplib.ui.createButtonShape(stage, textObj, baseColor, highlightColor, clickColor,
                 radius * 2, radius * 2, radius, "circle", clickFunc);
         },
         /**
-         * Creates and returns a simple easeljs Container object that contains the elements of an elliptical button.
-         * The x and y origin point of the button is at its center
-         * @param {createjs.Stage} stage the easeljs Stage context
-         * @param {createjs.Text} textObj the easeljs Text object to display
-         * @param {String} baseColor the normal background color of the button
-         * @param {String} highlightColor the background color of the button when it is highlighted
-         * @param {String} clickColor the background color of the button when it is clicked
-         * @param {Number} width the width of the button
-         * @param {Number} height the height of the button
-         * @param {Function} clickFunc the function that should be executed when the button is clicked
-         * @returns {createjs.Container} the container object that holds all of the button elements
+         * Used to create a button with an ellipse shape.
+         * The x and y origin point of the button is at its center.
+         * @param {!createjs.Stage} stage - The current {@link http://www.createjs.com/docs/easeljs/classes/Stage.html createjs.Stage} context
+         * @param {?createjs.Text} textObj - A {@link http://www.createjs.com/docs/easeljs/classes/Text.html createjs.Text} object to display, or null to display no text
+         * @param {!Color} baseColor - The background color of the button in its default state
+         * @param {!Color} highlightColor - The background color of the button when it is highlighted
+         * @param {!Color} clickColor - The background color of the button when it is clicked
+         * @param {!Number} width - The width of the button
+         * @param {!Number} height - The height of the button
+         * @param {!MouseCallback} clickFunc - The function that should be executed when the button is clicked
+         * @returns {createjs.Container} The {@link http://www.createjs.com/docs/easeljs/classes/Container.html createjs.Container} object that holds all of the button elements created by this function
+         * @example
+         * //Create a button ellipse with red base color, blue highlightColor, green clickColor, major axis diameter of 100, and minor axis diameter of 50
+         * var button = gnplib.createButtonEllipse(myStage, myText, "#ff0000", "#0000ff", "#00ff00", 100, 50, myClickFunc);
          */
         createButtonEllipse: function(stage, textObj, baseColor, highlightColor, clickColor, width, height, clickFunc) {
-            return gnplib.ui.helper.createButtonSimple(stage, textObj, baseColor, highlightColor, clickColor, width, height,
+            return gnplib.ui.createButtonShape(stage, textObj, baseColor, highlightColor, clickColor, width, height,
                 0, "ellipse", clickFunc);
         },
         /**
-         * Creates and returns a simple easeljs Container object that contains the elements of a button with a background image.
+         * Used to create a complex button with image backgrounds tied to all of its button states.
          * The x and y origin point of the button is at its center
-         * @param {createjs.Stage} stage the easeljs Stage context
-         * @param {createjs.Text} textObj the easeljs Text object to display, or null if no text to display
-         * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} baseImage the normal background image of the button
-         * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} highlightImage the highlighted background image of the button
-         * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} clickImage the clicked background image of the button
-         * @param {Number} width the width of the button
-         * @param {Number} height the height of the button
-         * @param {Function} clickFunc the function that should be executed when the button is clicked
-         * @param {Number} shrinkScale (optional) how much to shrink the button by when it is clicked, given as scalar value
-         * @returns {createjs.Container} the container object that holds all of the button elements
+         * @param {!createjs.Stage} stage - The current {@link http://www.createjs.com/docs/easeljs/classes/Stage.html createjs.Stage} context
+         * @param {?createjs.Text} textObj - A {@link http://www.createjs.com/docs/easeljs/classes/Text.html createjs.Text} object to display, or null to display no text
+         * @param {!(HTMLImageElement | HTMLCanvasElement | HTMLVideoElement)} baseImage - The background image of the button in its default state
+         * @param {!(HTMLImageElement | HTMLCanvasElement | HTMLVideoElement)} highlightImage - The background image of the button when it is highlighted
+         * @param {!(HTMLImageElement | HTMLCanvasElement | HTMLVideoElement)} clickImage - The background image of the button when it is clicked
+         * @param {!Number} width - The width of the button
+         * @param {!Number} height - The height of the button
+         * @param {!MouseCallback} clickFunc - The function that should be executed when the button is clicked
+         * @param {?Number} [shrinkScale=0.10] - How much percent to shrink the button by when it is clicked, given as scalar value
+         * @returns {createjs.Container} The {@link http://www.createjs.com/docs/easeljs/classes/Container.html createjs.Container} object that holds all of the button elements created by this function
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
+         * @see {@link gnplib.ui.createButtonImageSimple} for a simpler version of a button image
          */
-        createButtonImageComplex: function(stage, textObj, baseImage, highlightImage, clickImage, width, height, clickFunc, shrinkScale) {
-            return gnplib.ui.helper.createButtonImage(stage, textObj, baseImage, highlightImage, clickImage, width, height, clickFunc, shrinkScale);
+        createButtonImage: function(stage, textObj, baseImage, highlightImage, clickImage, width, height, clickFunc, shrinkScale) {
+            //Defaults
+            var defaultXScale = 1.0; //Default xscale of button container
+            var defaultYScale = 1.0; //Default yscale of button container
+            var defaultScaleShrinkAmount = shrinkScale || .10; //How much to change the scale of the button container on mouseclick
+
+            //Init
+            var btn = new createjs.Container(); //Create the container for the button
+            var base = new createjs.Bitmap(baseImage);
+            var highlight = new createjs.Bitmap(highlightImage);
+            var click = new createjs.Bitmap(clickImage);
+            var rollover = false; //Button is initially not rolled over
+            var pressed = false; //Button is initially not pressed
+
+            //Scale bitmaps correctly
+            gnplib.ui.setWidth(base, width);
+            gnplib.ui.setHeight(base, height);
+            gnplib.ui.setWidth(highlight, width);
+            gnplib.ui.setHeight(highlight, height);
+            gnplib.ui.setWidth(click, width);
+            gnplib.ui.setHeight(click, height);
+
+            //Add Children to container and set initial visibility
+            btn.addChild(base);
+            btn.addChild(highlight);
+            btn.addChild(click);
+            if (textObj !== null) {
+                btn.addChild(textObj);
+            }
+
+            highlight.visible = false;
+            click.visible = false;
+
+            //Set the container's registration point in center, and Position Text in center of container
+            var cwh = width / 2;
+            var chh = height / 2;
+            btn.regX = cwh;
+            btn.regY = chh;
+            if (textObj !== null) {
+                textObj.textAlign = "center"; //Make the text align horizontally to its center point
+                textObj.textBaseline = "middle"; //Make the text vertically align to its middle point
+                textObj.set({x: cwh, y: chh}); //Set the text's center point the center of the container
+            }
+
+            //Create Redraw Function
+            var redraw = function() {
+                if (pressed) {
+                    //Button is pressed down
+                    base.visible = false;
+                    highlight.visible = false;
+                    click.visible = true;
+                }
+                else if (rollover) {
+                    //Button is highlighted but not pressed
+                    base.visible = false;
+                    highlight.visible = true;
+                    click.visible = false;
+                }
+                else {
+                    //Button in default state
+                    base.visible = true;
+                    highlight.visible = false;
+                    click.visible = false;
+                }
+
+                stage.update();
+            }
+
+            //Draw initial button
+            redraw();
+
+            //Add highlight enable color event
+            btn.addEventListener("rollover", function(event) {
+                rollover = true;
+                redraw();
+            });
+
+            //Add highlight disable color event
+            btn.addEventListener("rollout", function(event) {
+                rollover = false;
+                redraw();
+            });
+
+            //Add click enable color event
+            btn.addEventListener("mousedown", function(event) {
+                pressed = true;
+                btn.scaleX = defaultXScale - defaultScaleShrinkAmount; //Shrink xscale of button container
+                btn.scaleY = defaultYScale - defaultScaleShrinkAmount; //Shrink yscale of button container
+                redraw();
+            });
+
+            //Add click disable color event
+            btn.addEventListener("pressup", function(event) {
+                pressed = false;
+                btn.scaleX = defaultXScale; //Reset xscale of button container
+                btn.scaleY = defaultYScale; //Reset yscale of button container
+                redraw();
+
+                //Execute the click function if mouse is still rolled over
+                if (rollover) {
+                    clickFunc(event);
+                }
+            });
+
+            return btn;
         },
         /**
-         * Creates and returns a simple easeljs Container object that contains the elements of a button with a background image.
+         * Used to create a simple image button with a single image background for all of its states.
          * The x and y origin point of the button is at its center
-         * @param {createjs.Stage} stage the easeljs Stage context
-         * @param {createjs.Text} textObj the easeljs Text object to display, or null if no text to display
-         * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} baseImage the normal background image of the button
-         * @param {Number} width the width of the button
-         * @param {Number} height the height of the button
-         * @param {Function} clickFunc the function that should be executed when the button is clicked
-         * @returns {createjs.Container} the container object that holds all of the button elements
+         * @param {!createjs.Stage} stage - The current {@link http://www.createjs.com/docs/easeljs/classes/Stage.html createjs.Stage} context
+         * @param {?createjs.Text} textObj - A {@link http://www.createjs.com/docs/easeljs/classes/Text.html createjs.Text} object to display, or null to display no text
+         * @param {!(HTMLImageElement | HTMLCanvasElement | HTMLVideoElement)} baseImage - The background image of the button in its default state
+         * @param {!Number} width - The width of the button
+         * @param {!Number} height - The height of the button
+         * @param {!MouseCallback} clickFunc - The function that should be executed when the button is clicked
+         * @returns {createjs.Container} The {@link http://www.createjs.com/docs/easeljs/classes/Container.html createjs.Container} object that holds all of the button elements created by this function
          */
         createButtonImageSimple: function(stage, textObj, baseImage, width, height, clickFunc) {
-            return gnplib.ui.helper.createButtonImage(stage, textObj, baseImage, baseImage, baseImage, width, height, clickFunc);
+            return gnplib.ui.createButtonImage(stage, textObj, baseImage, baseImage, baseImage, width, height, clickFunc);
         },
         /**
-         * Creates and returns a simple easeljs Container object that contains the elements of a rectangular button.
-         * The x and y origin point of the button is at its center
-         * @param {createjs.Stage} stage the easeljs Stage context
-         * @param {createjs.Text} textObj the easeljs Text object to display
-         * @param {String} baseColor the normal background color of the button
-         * @param {String} highlightColor the background color of the button when it is highlighted
-         * @param {String} clickColor the background color of the button when it is clicked
-         * @param {Number} width the width of the button
-         * @param {Number} height the height of the button
-         * @param {Function} clickFunc the function that should be executed when the button is clicked
-         * @returns {createjs.Container} the container object that holds all of the button elements
+         * Used to create a button with a rectangle shape.
+         * The x and y origin point of the button is at its center.
+         * @param {!createjs.Stage} stage - The current {@link http://www.createjs.com/docs/easeljs/classes/Stage.html createjs.Stage} context
+         * @param {?createjs.Text} textObj - A {@link http://www.createjs.com/docs/easeljs/classes/Text.html createjs.Text} object to display, or null to display no text
+         * @param {!Color} baseColor - The background color of the button in its default state
+         * @param {!Color} highlightColor - The background color of the button when it is highlighted
+         * @param {!Color} clickColor - The background color of the button when it is clicked
+         * @param {!Number} width - The width of the button
+         * @param {!Number} height - The height of the button
+         * @param {!MouseCallback} clickFunc - The function that should be executed when the button is clicked
+         * @returns {createjs.Container} The {@link http://www.createjs.com/docs/easeljs/classes/Container.html createjs.Container} object that holds all of the button elements created by this function
+         * @example
+         * //Create a button rectangle with red base color, blue highlightColor, green clickColor, width of 100, and height of 50
+         * var button = gnplib.createButtonRectangle(myStage, myText, "#ff0000", "#0000ff", "#00ff00", 100, 50, myClickFunc);
          */
         createButtonRectangle: function(stage, textObj, baseColor, highlightColor, clickColor, width, height, clickFunc) {
-            return gnplib.ui.helper.createButtonSimple(stage, textObj, baseColor, highlightColor, clickColor, width, height,
+            return gnplib.ui.createButtonShape(stage, textObj, baseColor, highlightColor, clickColor, width, height,
                 0, "rectangle", clickFunc);
         },
         /**
-         * Creates and returns a simple easeljs Container object that contains the elements of a round rectangular button.
-         * The x and y origin point of the button is at its center
-         * @param {createjs.Stage} stage the easeljs Stage context
-         * @param {createjs.Text} textObj the easeljs Text object to display
-         * @param {String} baseColor the normal background color of the button
-         * @param {String} highlightColor the background color of the button when it is highlighted
-         * @param {String} clickColor the background color of the button when it is clicked
-         * @param {Number} width the width of the button
-         * @param {Number} height the height of the button
-         * @param {Number} radius the radius of the rounded corners of the rectangle
-         * @param {Function} clickFunc the function that should be executed when the button is clicked
-         * @returns {createjs.Container} the container object that holds all of the button elements
+         * Used to create a button with a round rectangle shape.
+         * The x and y origin point of the button is at its center.
+         * @param {!createjs.Stage} stage - The current {@link http://www.createjs.com/docs/easeljs/classes/Stage.html createjs.Stage} context
+         * @param {?createjs.Text} textObj - A {@link http://www.createjs.com/docs/easeljs/classes/Text.html createjs.Text} object to display, or null to display no text
+         * @param {!Color} baseColor - The background color of the button in its default state
+         * @param {!Color} highlightColor - The background color of the button when it is highlighted
+         * @param {!Color} clickColor - The background color of the button when it is clicked
+         * @param {!Number} width - The width of the button
+         * @param {!Number} height - The height of the button
+         * @param {!Number} radius - The radius of the corners of the round rectangle. A corner value of 0 would just display a regular rectangle.
+         * @param {!MouseCallback} clickFunc - The function that should be executed when the button is clicked
+         * @returns {createjs.Container} The {@link http://www.createjs.com/docs/easeljs/classes/Container.html createjs.Container} object that holds all of the button elements created by this function
+         * @example
+         * //Create a button round rectangle with red base color, blue highlightColor, green clickColor, width of 100, height of 50, and corner radius of 15
+         * var button = gnplib.createButtonRoundRectangle(myStage, myText, "#ff0000", "#0000ff", "#00ff00", 100, 50, 15, myClickFunc)
          */
         createButtonRoundRectangle: function(stage, textObj, baseColor, highlightColor, clickColor, width, height,
                                              radius, clickFunc) {
-            return gnplib.ui.helper.createButtonSimple(stage, textObj, baseColor, highlightColor, clickColor, width, height,
+            return gnplib.ui.createButtonShape(stage, textObj, baseColor, highlightColor, clickColor, width, height,
                 radius, "roundrectangle", clickFunc);
         },
         /**
+         * [Advanced Use Only] Used to create a button of varying shapes or dimensions within the same function call.
+         * See the additional shape functions provided to easily create specific button shapes using this base function.
+         * The x and y origin point of the button is at its center.
+         * @param {!createjs.Stage} stage - The current {@link http://www.createjs.com/docs/easeljs/classes/Stage.html createjs.Stage} context
+         * @param {?createjs.Text} textObj - A {@link http://www.createjs.com/docs/easeljs/classes/Text.html createjs.Text} object to display, or null to display no text
+         * @param {!Color} baseColor - The background color of the button in its default state
+         * @param {!Color} highlightColor - The background color of the button when it is highlighted
+         * @param {!Color} clickColor - The background color of the button when it is clicked
+         * @param {!Number} width - The width of the button
+         * @param {!Number} height - The height of the button
+         * @param {!Number} radius - The radius of the button. Either used to define the radius of a circle, or to define the corner radius of a rectangle. Use 0 for normal rectangle corners, greater than 0 for rounded rectangle corners
+         * @param {!String} shapeType - The type of button shape to create given as a string: {"circle", "ellipse", "rectangle", "roundrectangle"}
+         * @param {!MouseCallback} clickFunc - The function that should be executed when the button is clicked
+         * @returns {createjs.Container} The {@link http://www.createjs.com/docs/easeljs/classes/Container.html createjs.Container} object that holds all of the button elements created by this function
+         * @see {@link gnplib.ui.createButtonCircle} for easily creating a button with a circle shape
+         * @see {@link gnplib.ui.createButtonEllipse} for easily creating a button with an ellipse shape
+         * @see {@link gnplib.ui.createButtonRectangle} for easily creating a button with a rectangle shape
+         * @see {@link gnplib.ui.createButtonRoundRectangle} for easily creating a button with a round rectangle shape
+         */
+        createButtonShape: function(stage, textObj, baseColor, highlightColor, clickColor, width, height, radius, shapeType, clickFunc) {
+            //Defaults
+            var defaultXScale = 1.0; //Default xscale of button container
+            var defaultYScale = 1.0; //Default yscale of button container
+            var defaultScaleShrinkAmount = .10; //How much to change the scale of the button container on mouseclick
+
+            //Init
+            var btn = new createjs.Container(); //Create the container for the button
+            var shape = new createjs.Shape(); //Create the initial shape for the button
+            var g = shape.graphics; //The graphics context for the button shape
+            var rollover = false; //Button is initially not rolled over
+            var pressed = false; //Button is initially not pressed
+            var color = baseColor; //Initial color to draw
+
+            //Add Children to container
+            btn.addChild(shape);
+            if (textObj !== null) {
+                btn.addChild(textObj);
+            }
+
+            //Set the container's registration point in center, and Position Text in center of container
+            var cwh = width / 2;
+            var chh = height / 2;
+            btn.regX = cwh;
+            btn.regY = chh;
+            if (textObj !== null) {
+                textObj.textAlign = "center"; //Make the text align horizontally to its center point
+                textObj.textBaseline = "middle"; //Make the text vertically align to its middle point
+                textObj.set({x: cwh, y: chh}); //Set the text's center point the center of the container
+            }
+
+            //Create Redraw Function
+            var redraw = function() {
+                g.clear();
+                if (shapeType === "circle") {
+                    g.beginFill(color).drawCircle(btn.regX, btn.regY, radius);
+                }
+                else if (shapeType === "ellipse") {
+                    g.beginFill(color).drawEllipse(0, 0, width, height);
+                }
+                else if (shapeType === "rectangle") {
+                    g.beginFill(color).drawRect(0, 0, width, height);
+                }
+                else if (shapeType === "roundrectangle") {
+                    g.beginFill(color).drawRoundRect(0, 0, width, height, radius);
+                }
+                stage.update();
+            }
+
+            //Draw initial button
+            redraw();
+
+            //Add highlight enable color event
+            btn.addEventListener("rollover", function(event) {
+                rollover = true;
+                color = (pressed) ? (clickColor) : (highlightColor);
+                redraw();
+            });
+
+            //Add highlight disable color event
+            btn.addEventListener("rollout", function(event) {
+                rollover = false;
+                color = (pressed) ? (clickColor) : (baseColor);
+                redraw();
+            });
+
+            //Add click enable color event
+            btn.addEventListener("mousedown", function(event) {
+                color = clickColor;
+                pressed = true;
+                btn.scaleX = defaultXScale - defaultScaleShrinkAmount; //Shrink xscale of button container
+                btn.scaleY = defaultYScale - defaultScaleShrinkAmount; //Shrink yscale of button container
+                redraw();
+            });
+
+            //Add click disable color event
+            btn.addEventListener("pressup", function(event) {
+                pressed = false;
+                if (rollover) {
+                    color = highlightColor;
+                }
+                else {
+                    color = baseColor;
+                }
+                btn.scaleX = defaultXScale; //Reset xscale of button container
+                btn.scaleY = defaultYScale; //Reset yscale of button container
+                redraw();
+
+                //Execute the click function if mouse is still rolled over
+                if (rollover) {
+                    clickFunc(event);
+                }
+            });
+
+            return btn;
+        },
+        /**
          * Generates draggable puzzle piece elements from a given image, then adds them as children to the given stage
-         * and returns a two dimensional array of the pieces, which are represented as gnplib.ui.helper.PuzzlePiece objects.
+         * and returns a two dimensional array of the pieces, which are represented as gnplib.ui.PuzzlePiece objects.
          * @param {createjs.Stage} stage (optional) the stage context to add the puzzle pieces to as children, if stage is null, pieces will not be added as children, and will need to be manually displayed
          * @param {HTMLImageElement | HTMLCanvasElement | HTMLVideoElement} loadedImage the loaded image object to create puzzle pieces from
          * @param {Number} x the x position of where the top left most puzzle piece should be positioned by default
@@ -667,7 +607,7 @@ var gnplib = {
          * @param {Number} borderOutlineAlpha (optional) value on range [0.00, 1.00] that determines the alpha value of the outline border of the puzzle pieces.
          * @param {Boolean} shouldSnapToPosition (optional) whether or not to enable puzzle pieces to snap into their original position when dragged near it;
          * @param {Function} puzzleCompleteFunc (optional) a function to run when all of the puzzle pieces are snapped into position after a puzzle piece has been dragged. Requires snapping to be enabled.
-         * @returns {Array} two dimensional array containing all of the puzzle pieces as gnplib.ui.helper.PuzzlePiece objects,
+         * @returns {Array} two dimensional array containing all of the puzzle pieces as gnplib.ui.PuzzlePiece objects,
          *                  first dimension is rows, second dimension is columns, ex: arrayid[row][column] = puzzle piece at row and column index
          */
         generatePuzzlePiecesFromImage: function(stage, loadedImage, x, y, width, height, columns, rows, borderOutlineAlpha, shouldSnapToPosition, puzzleCompleteFunc) {
@@ -822,7 +762,7 @@ var gnplib = {
             for (r = 0; r < rows; r++) {
                 for (c = 0; c < columns; c++) {
                     //Create initial shape
-                    pieces[r][c] = new gnplib.ui.helper.PuzzlePiece(new createjs.Shape());
+                    pieces[r][c] = new gnplib.ui.PuzzlePiece(new createjs.Shape());
                     var piece = pieces[r][c]; //The puzzle piece
                     var shape = piece.shape; //The shape object of the puzzle piece
                     var g = shape.graphics; //The graphics context of the shape object
@@ -1109,6 +1049,119 @@ var gnplib = {
             });
         },
         /**
+         * [Advanced Use Only] A Puzzle Piece class that contains useful information about a puzzle piece ui element, 
+         * used by gnplib.ui.generatePuzzlePiecesFromImage() to create interactive puzzle pieces. Generally should not 
+         * be used on its own.
+         * @param {createjs.Shape} the Shape Object to create the puzzle piece with
+         * @constructor
+         */
+        PuzzlePiece: function(shapeObject) {
+            var t = this;
+            t.id = "Anonymous Puzzle Piece"; //String id for the piece, can be used for debugging
+            t.shape = shapeObject; //The createjs.Shape object representing this puzzle piece
+            t.doesSnap = false; //Whether or not this puzzle piece snaps to position
+            t.snapX = 0; //The x position to snap to
+            t.snapY = 0; //The y position to snap to
+            t.snapDistance = 0; //The distance at which this piece will snap into place
+            t.stopDragCalcFunc = null; //The function to execute whenever the piece is done being dragged.
+            t.isSnapped = false; //Whether or not the piece is currently snapped in place
+
+            /**
+             * Checks whether or not the piece can snap into place, updating all snapping state information, and
+             * returning true if is now snapped, false if not. Requires snapping to be enabled.
+             * @returns {Boolean} true if piece is currently snapped in place, false if not
+             */
+            t.checkSnapping = function() {
+                if (!t.doesSnap) {
+                    //Easy flag case
+                    return false;
+                }
+                else if (t.shape.x === t.snapX && t.shape.y === t.snapY) {
+                    //Easy position case
+                    return true;
+                }
+                else {
+                    //Find the distance between the current piece position and the original piece position
+                    var distance = Math.sqrt(Math.pow(t.shape.x - t.snapX, 2) + Math.pow(t.shape.y - t.snapY, 2));
+
+                    //If distance is under snap distance, snap the piece
+                    if (distance < t.snapDistance) {
+                        t.shape.x = t.snapX;
+                        t.shape.y = t.snapY;
+
+                        t.isSnapped = true;
+
+                        return true;
+                    }
+                    else {
+                        t.isSnapped = false;
+
+                        return false;
+                    }
+                }
+            }
+
+            /**
+             * The function that should execute when this piece is done dragging, to aid in checking for snaps.
+             * If stopDragCalcFunc is set to something other than null, it will also be executed.
+             * This is passed to functions like gnplib.ui.addDragAndDropToObject when puzzle pieces are created,
+             * and is used by functions such as gnplib.ui.generatePuzzlePiecesFromImage to determine when a puzzle is completed.
+             * [Advanced Use Only]
+             * @returns {Boolean}
+             */
+            t.stopDrag = function() {
+                var check = t.checkSnapping();
+
+                if (t.stopDragCalcFunc !== null) {
+                    t.stopDragCalcFunc();
+                }
+
+                return check;
+            }
+
+            /**
+             * Sets or Gets the x position of the puzzle piece (the x position of the puzzle piece's shape object)
+             * If snapping is enabled, setting the x position using this method will also update snapping state information, therefore
+             * use this when moving finalized puzzle pieces around through code.
+             * @param {Number} newx (optional) if set, sets the puzzle piece's shape's x coordinate to this value
+             * @returns {Number} x position of the puzzle piece
+             */
+            t.x = function(newx) {
+                var nx = newx || null;
+
+                if (nx !== null) {
+                    t.shape.x = nx;
+
+                    if (t.doesSnap) {
+                        t.checkSnapping();
+                    }
+                }
+
+                return t.shape.x;
+            }
+
+            /**
+             * Sets or Gets the y position of the puzzle piece (the y position of the puzzle piece's shape object)
+             * If snapping is enabled, setting the x position using this method will also update snapping state information, therefore
+             * use this when moving finalized puzzle pieces around through code.
+             * @param {Number} newy (optional) if set, sets the puzzle piece's shape's y coordinate to this value
+             * @returns {Number} y position of the puzzle piece
+             */
+            t.y = function(newy) {
+                var ny = newy || null;
+
+                if (ny !== null) {
+                    t.shape.y = ny;
+
+                    if (t.doesSnap) {
+                        t.checkSnapping();
+                    }
+                }
+
+                return t.shape.y;
+            }
+        },
+        /**
          * Takes a height in pixels, and sets the display objects scaleY property to correctly scale to that height.
          * @param {createjs.DisplayObject} displayObj The DisplayObject to set the height of
          * @param {Number} height the pixel height amount to set to
@@ -1131,6 +1184,8 @@ var gnplib = {
     },
     /**
      * Browser window utility functions
+     * @namespace window
+     * @memberof gnplib
      */
     window: {
         /**
