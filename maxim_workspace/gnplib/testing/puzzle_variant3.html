@@ -37,24 +37,6 @@
             var piece = null; //Helper variable for piece in the puzzle
 
             /////////////////////////////////////////////////
-            //Create puzzle helper functions
-            /////////////////////////////////////////////////
-            var addPuzzleToStage = function(puzzle, rows, columns) {
-                for (r = 0; r < rows; r++) {
-                    for (c = 0; c < columns; c++) {
-                        puzzle[r][c].addToStage(stage);
-                    }
-                }
-            }
-            var removePuzzleFromStage = function(puzzle, rows, columns) {
-                for (r = 0; r < rows; r++) {
-                    for (c = 0; c < columns; c++) {
-                        puzzle[r][c].removeFromStage();
-                    }
-                }
-            }
-
-            /////////////////////////////////////////////////
             //Set background color
             /////////////////////////////////////////////////
             var background = new createjs.Shape();
@@ -114,10 +96,10 @@
                     function() {
                         //Do stuff to complete puzzle2
                         //Clear puzzle 2
-                        removePuzzleFromStage(puzzle2, p2rows, p2columns);
+                        gnplib.ui.removePuzzleFromStage(puzzle2, p2rows, p2columns);
 
                         //Add puzzle 3
-                        addPuzzleToStage(puzzle3, p3rows, p3columns);
+                        gnplib.ui.addPuzzleToStage(puzzle3, p3rows, p3columns);
 
                         //Update the stage
                         stage.update();
@@ -144,10 +126,10 @@
                     function() {
                         //Do stuff to complete puzzle1
                         //Clear puzzle 1
-                        removePuzzleFromStage(puzzle1, p1rows, p1columns);
+                        gnplib.ui.removePuzzleFromStage(puzzle1, p1rows, p1columns);
 
                         //Add puzzle 2
-                        addPuzzleToStage(puzzle2, p2rows, p2columns);
+                        gnplib.ui.addPuzzleToStage(puzzle2, p2rows, p2columns);
 
                         //Update the stage
                         stage.update();
@@ -166,7 +148,7 @@
             /////////////////////////////////////////////////
             //Add the pieces of the First Puzzle to the Stage
             /////////////////////////////////////////////////
-            addPuzzleToStage(puzzle1, p1rows, p1columns);
+            gnplib.ui.addPuzzleToStage(puzzle1, p1rows, p1columns);
 
             /////////////////////////////////////////////////
             //Update Initial Stage
