@@ -141,7 +141,7 @@ var gnplib = {
          * @returns {Number} A value n, where n = (high + low - value) / 2
          * @example
          * //If you wanted to center something of width=100 between the x=200 and x=400 positions on the x-axis,
-         * gnplib.math.balance(100, 200, 400) = 250; //You must position that something at x=250 for it to be centered
+         * gnplib.math.center(100, 200, 400) = 250; //You must position that something at x=250 for it to be centered
          * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         center: function(value, low, high) {
@@ -1281,6 +1281,27 @@ var gnplib = {
                 }
 
                 return t.shape.y;
+            }
+
+            /**
+             * Convenience function that adds this puzzle piece's shape object as a child to the given stage context.
+             * @function
+             * @name gnplib.ui.PuzzlePiece#addToStage
+             * @param {!createjs.Stage} stage - The {@link http://www.createjs.com/docs/easeljs/classes/Stage.html createjs.Stage} context to add the puzzle piece's shape object to
+             */
+            t.addToStage = function(stage) {
+                stage.addChild(t.shape);
+            }
+
+            /**
+             * Convenience function that removes this puzzle piece's shape object from its current stage context, if it has one.
+             * @function
+             * @name gnplib.ui.PuzzlePiece#removeFromStage
+             */
+            t.removeFromStage = function() {
+                if (t.shape.stage !== null) {
+                    t.shape.stage.removeChild(t.shape);
+                }
             }
         },
         /**
