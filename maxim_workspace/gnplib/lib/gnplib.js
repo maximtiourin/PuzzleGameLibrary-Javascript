@@ -327,6 +327,20 @@ var gnplib = {
             });
         },
         /**
+         * Convenience function to add all of the {@link gnplib.ui.PuzzlePiece}s of a puzzle to the given {@link http://www.createjs.com/docs/easeljs/classes/Stage.html createjs.Stage} context.
+         * @param {!createjs.Stage} stage - The {@link http://www.createjs.com/docs/easeljs/classes/Stage.html createjs.Stage} context to add the puzzle pieces to
+         * @param {!PuzzlePiece[][]} puzzle - The two dimensional array of {@link gnplib.ui.PuzzlePiece}s to add to the given Stage
+         * @param {!Number} rows - How many rows are in the puzzle two dimensional array
+         * @param {!Number} columns - How many columns are in the puzzle two dimensional array
+         */
+        addPuzzleToStage: function(stage, puzzle, rows, columns) {
+            for (r = 0; r < rows; r++) {
+                for (c = 0; c < columns; c++) {
+                    puzzle[r][c].addToStage(stage);
+                }
+            }
+        },
+        /**
          * Used to create a button with a circle shape.
          * The x and y origin point of the button is at its center.
          * @param {!createjs.Stage} stage - The current {@link http://www.createjs.com/docs/easeljs/classes/Stage.html createjs.Stage} context
@@ -673,15 +687,32 @@ var gnplib = {
          * @param {!Number} y - The y position of where the top left corner of the top left most puzzle piece should be positioned by default
          * @param {!Number} width - The total width of the puzzle, to which the widths of the individual puzzle pieces in a row will sum up to
          * @param {!Number} height - The total height of the puzzle, to which the heights of the individual puzzle pieces in a column will sum up to
-         * @param {!Number} columns - How many columns of puzzle pieces to have in the puzzle
          * @param {!Number} rows - How many rows of puzzle pieces to have in the puzzle
+         * @param {!Number} columns - How many columns of puzzle pieces to have in the puzzle
          * @param {?Number} [borderOutlineAlpha=0.40] - A value on the range [0.00, 1.00] that determines the alpha value of the outline border of the individual puzzle pieces.
          * @param {?Boolean} [shouldSnapToPosition=false] - Whether or not to allow puzzle pieces to snap into their original x and y position when dragged near it.
          * @param {?EmptyCallback} [puzzleCompleteFunc=null] - A function to run when all of the puzzle pieces are snapped into position after a puzzle piece has been dragged. Requires snapping to be enabled.
          * @returns {gnplib.ui.PuzzlePiece[][]} Two dimensional array containing all of the puzzle pieces wrapped as {@link gnplib.ui.PuzzlePiece} objects. First dimension is rows, second dimension is columns, ex: arrayid[row][column] = PuzzlePiece at row and column index
+         * @see {@link gnplib.ui.addPuzzleToStage} to conveniently add a two dimensional array of puzzle pieces to a stage context
+         * @see {@link gnplib.ui.removePuzzleFromStage} to conveniently remove a two dimensional array of puzzle pieces from their current stage context
+         * @example
+         * //Generating a simple 3x3 puzzle without piece snapping or a completion callback function, remember, if myStage is null, the puzzle pieces won't be added to the stage by default!
+         * var myPuzzle = gnplib.ui.generatePuzzlePiecesFromImage(myStage, myImage, 50, 50, 400, 300, 3, 3);
+         * @example
+         * //Generating a 3x3 puzzle which has piece snapping and a completion callback function, remember, if myStage is null, the puzzle pieces won't be added to the stage by default!
+         * var myPuzzle = gnplib.ui.generatePuzzlePiecesFromImage(myStage, myImage, 50, 50, 400, 400, 3, 3, 0.40, true, function() {
+         *              //Do this stuff when my puzzle is fully completed by a user!
+         *              doMyStuff();
+         * });
+         * @example
+         * //How to easily add an entire puzzle to a stage context
+         * gnplib.ui.addPuzzleToStage(stage, myPuzzle, 3, 3);
+         * @example
+         * //How to easily remove an entire puzzle from a stage context
+         * gnplib.ui.removePuzzleFromStage(myPuzzle, 3, 3);
          * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
-        generatePuzzlePiecesFromImage: function(stage, loadedImage, x, y, width, height, columns, rows, borderOutlineAlpha, shouldSnapToPosition, puzzleCompleteFunc) {
+        generatePuzzlePiecesFromImage: function(stage, loadedImage, x, y, width, height, rows, columns, borderOutlineAlpha, shouldSnapToPosition, puzzleCompleteFunc) {
             var puzzleStage = stage || null;
             var borderAlpha = gnplib.math.clamp(borderOutlineAlpha || .4, 0, 1.00); //The alpha value of the border outline of the puzzle pieces
             var doesSnap = shouldSnapToPosition || false; //Whether or not the puzzle pieces should snap into position when dragged.
@@ -1169,6 +1200,17 @@ var gnplib = {
          * @property {Number} snapY - [ADVANCED] The snap y coordinate of where this puzzle piece should snap to
          * @property {Number} snapDistance - [ADVANCED] The distance at which this piece will snap into place
          * @property {Boolean} isSnapped - [READ ONLY] Whether or not the puzzle piece is currently snapped into place.
+         * @see {@link gnplib.ui.generatePuzzlePiecesFromImage} for examples of how to create a puzzle containing puzzle pieces, and add/remove it to/from a stage.
+         * @example
+         * //How to absolutely move a puzzle piece after it has been generated, through code. (Safe to use with puzzle piece snapping enabled)
+         * var piece = puzzle[5][3]; //Select my piece to be the piece of the puzzle at row=5 and column=3
+         * piece.x(400); //Set the piece's x position to 400
+         * piece.y(300); //Set the piece's y position to 300
+         * @example
+         * //How to relatively move (or offset) a puzzle piece after it has been generated, through code. (Safe to use with puzzle piece snapping enabled)
+         * var piece = puzzle[5][3]; //Select my piece to be the piece of the puzzle at row=5 and column=3
+         * piece.x(piece.x() + 50); //Set the piece's x position to it's current x position + 50
+         * piece.y(piece.y() - 50); //Set the piece's y position to it's current y position - 50
          * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         PuzzlePiece: function(shapeObject) {
@@ -1301,6 +1343,19 @@ var gnplib = {
             t.removeFromStage = function() {
                 if (t.shape.stage !== null) {
                     t.shape.stage.removeChild(t.shape);
+                }
+            }
+        },
+        /**
+         * Convenience function to remove all of the {@link gnplib.ui.PuzzlePiece}s of a puzzle from their current {@link http://www.createjs.com/docs/easeljs/classes/Stage.html createjs.Stage} context, if they have one.
+         * @param {!PuzzlePiece[][]} puzzle - The two dimensional array of {@link gnplib.ui.PuzzlePiece}s to remove from their current Stage.
+         * @param {!Number} rows - How many rows are in the puzzle two dimensional array
+         * @param {!Number} columns - How many columns are in the puzzle two dimensional array
+         */
+        removePuzzleFromStage: function(puzzle, rows, columns) {
+            for (r = 0; r < rows; r++) {
+                for (c = 0; c < columns; c++) {
+                    puzzle[r][c].removeFromStage();
                 }
             }
         },
