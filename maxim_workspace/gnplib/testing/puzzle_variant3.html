@@ -37,6 +37,24 @@
             var piece = null; //Helper variable for piece in the puzzle
 
             /////////////////////////////////////////////////
+            //Create puzzle helper functions
+            /////////////////////////////////////////////////
+            var addPuzzleToStage = function(puzzle, rows, columns) {
+                for (r = 0; r < rows; r++) {
+                    for (c = 0; c < columns; c++) {
+                        puzzle[r][c].addToStage(stage);
+                    }
+                }
+            }
+            var removePuzzleFromStage = function(puzzle, rows, columns) {
+                for (r = 0; r < rows; r++) {
+                    for (c = 0; c < columns; c++) {
+                        puzzle[r][c].removeFromStage();
+                    }
+                }
+            }
+
+            /////////////////////////////////////////////////
             //Set background color
             /////////////////////////////////////////////////
             var background = new createjs.Shape();
@@ -96,19 +114,11 @@
                     function() {
                         //Do stuff to complete puzzle2
                         //Clear puzzle 2
-                        for (r = 0; r < p2rows; r++) {
-                            for (c = 0; c < p2columns; c++) {
-                                //Remove puzzle 2 piece at [r][c]
-                                stage.removeChild(puzzle2[r][c].shape);
-                            }
-                        }
+                        removePuzzleFromStage(puzzle2, p2rows, p2columns);
+
                         //Add puzzle 3
-                        for (r = 0; r < p3rows; r++) {
-                            for (c = 0; c < p3columns; c++) {
-                                //Add puzzle 3 piece at [r][c]
-                                stage.addChild(puzzle3[r][c].shape);
-                            }
-                        }
+                        addPuzzleToStage(puzzle3, p3rows, p3columns);
+
                         //Update the stage
                         stage.update();
                     });
@@ -134,19 +144,11 @@
                     function() {
                         //Do stuff to complete puzzle1
                         //Clear puzzle 1
-                        for (r = 0; r < p1rows; r++) {
-                            for (c = 0; c < p1columns; c++) {
-                                //Remove puzzle 1 piece at [r][c]
-                                stage.removeChild(puzzle1[r][c].shape);
-                            }
-                        }
+                        removePuzzleFromStage(puzzle1, p1rows, p1columns);
+
                         //Add puzzle 2
-                        for (r = 0; r < p2rows; r++) {
-                            for (c = 0; c < p2columns; c++) {
-                                //Add puzzle 2 piece at [r][c]
-                                stage.addChild(puzzle2[r][c].shape);
-                            }
-                        }
+                        addPuzzleToStage(puzzle2, p2rows, p2columns);
+
                         //Update the stage
                         stage.update();
                     });
@@ -164,12 +166,7 @@
             /////////////////////////////////////////////////
             //Add the pieces of the First Puzzle to the Stage
             /////////////////////////////////////////////////
-            for (r = 0; r < 3; r++) {
-                for (c = 0; c < 3; c++) {
-                    //Remove puzzle 1 piece at [r][c]
-                    stage.addChild(puzzle1[r][c].shape);
-                }
-            }
+            addPuzzleToStage(puzzle1, p1rows, p1columns);
 
             /////////////////////////////////////////////////
             //Update Initial Stage
