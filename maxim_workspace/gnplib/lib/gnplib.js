@@ -98,7 +98,7 @@ var gnplib = {
      * foo(myCallback);
      */
 
-    /* Define typedefs */
+    /* Define typedefs for use with documentation */
     /**
      * A string representing a CSS color attribute
      * @typedef {String} Color
@@ -332,6 +332,7 @@ var gnplib = {
          * @param {!PuzzlePiece[][]} puzzle - The two dimensional array of {@link gnplib.ui.PuzzlePiece}s to add to the given Stage
          * @param {!Number} rows - How many rows are in the puzzle two dimensional array
          * @param {!Number} columns - How many columns are in the puzzle two dimensional array
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         addPuzzleToStage: function(stage, puzzle, rows, columns) {
             for (r = 0; r < rows; r++) {
@@ -1351,6 +1352,7 @@ var gnplib = {
          * @param {!PuzzlePiece[][]} puzzle - The two dimensional array of {@link gnplib.ui.PuzzlePiece}s to remove from their current Stage.
          * @param {!Number} rows - How many rows are in the puzzle two dimensional array
          * @param {!Number} columns - How many columns are in the puzzle two dimensional array
+         * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         removePuzzleFromStage: function(puzzle, rows, columns) {
             for (r = 0; r < rows; r++) {
