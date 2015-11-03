@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html>
+<style>
+html, body {
+width: 100%;
+height: 100%;
+margin: 0px;
+border: 0;
+overflow: hidden; /*  Disable scrollbars */
+display: block;  /* No floating content on sides */
+}
+</style>
+<head>
+	<title>EaselJS demo: Time based animation</title>
+	<link href="../_shared/demo.css" rel="stylesheet" type="text/css">
+	<script src="http://code.createjs.com/easeljs-0.7.0.min.js"></script>
+	<script>
+		
+		var stage, redCircle, blueCircle;
+
+		function init() {
+			stage = new createjs.Stage("demoCanvas");
+			stage.canvas.width = window.innerWidth;
+			stage.canvas.height = window.innerHeight;
+			
+			redCircle = new createjs.Shape();
+			redCircle.graphics.beginFill("red").drawCircle(stage.canvas.width/7, 0, 40);
+			redCircle.y = 50;
+			stage.addChild(redCircle);
+			
+			blueCircle = new createjs.Shape();
+			blueCircle.graphics.beginFill("blue").drawCircle(stage.canvas.width/2, 0, 40);
+			blueCircle.y = 150;
+			stage.addChild(blueCircle);
+			
+			orangeCircle = new createjs.Shape();
+			orangeCircle.graphics.beginFill("orange").drawCircle(stage.canvas.width/3, 0, 40);
+			orangeCircle.y = 50;
+			stage.addChild(orangeCircle);
+			
+			violetCircle = new createjs.Shape();
+			violetCircle.graphics.beginFill("violet").drawCircle(stage.canvas.width/1.1, 0, 40);
+			violetCircle.y = 50;
+			stage.addChild(violetCircle);
+			
+			purpleCircle = new createjs.Shape();
+			purpleCircle.graphics.beginFill("purple").drawCircle(stage.canvas.width/5, 0, 40);
+			purpleCircle.y = 50;
+			stage.addChild(purpleCircle);
+			
+			yellowCircle = new createjs.Shape();
+			yellowCircle.graphics.beginFill("yellow").drawCircle(stage.canvas.width/6, 0, 40);
+			yellowCircle.y = 50;
+			stage.addChild(yellowCircle);
+			
+			createjs.Ticker.on("tick", tick);
+			createjs.Ticker.setFPS(60);
+		}
+		
+		function tick(event) {
+			redCircle.y = redCircle.y + (event.delta)/10;
+			if (redCircle.y > stage.canvas.height) { redCircle.y = 0; }
+			
+			blueCircle.y = blueCircle.y + (event.delta)/5; 
+			if (blueCircle.y > stage.canvas.height) { blueCircle.y = 0; }
+			
+			orangeCircle.y = orangeCircle.y + (event.delta)/2	;
+			if (orangeCircle.y > stage.canvas.height) { orangeCircle.y = 0; }
+			
+			purpleCircle.y = purpleCircle.y + (event.delta)/2	;
+			if (purpleCircle.y > stage.canvas.height) { purpleCircle.y = 0; }
+			
+			violetCircle.y = violetCircle.y + (event.delta)/3	;
+			if (violetCircle.y > stage.canvas.height) { violetCircle.y = 0; }
+			
+			yellowCircle.y = yellowCircle.y + (event.delta)/1.5	;
+			if (yellowCircle.y > stage.canvas.height) { yellowCircle.y = 0; }
+			
+			stage.update(event);
+		}
+	</script>
+</head>
+<body onload="init();">
+	<canvas id="demoCanvas" width="500" height="200">
+		alternate content
+	</canvas>
+</body>
+</html>
