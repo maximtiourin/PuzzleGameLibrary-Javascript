@@ -67,7 +67,7 @@
             /////////////////////////////////////////////////
             var tbutton3 = gnplib.ui.createButtonCircle(stage, new createjs.Text("URL Button", "bold 14px Arial", "#ff0000"),
                     "#ffea00", "#fff584", "#ffae00", 46, function(event) {
-                        gnplib.window.redirect("http://www.google.com", true);
+                        gnplib.window.redirect("http://www.google.com", false, true);
                     });
             tbutton3.set({x: 70, y: 60});
             stage.addChild(tbutton3);
@@ -77,7 +77,7 @@
             /////////////////////////////////////////////////
             var tbutton4 = gnplib.ui.createButtonEllipse(stage, new createjs.Text("HTTP Button", "bold 14px Arial", "#00ff00"),
                     "#671695", "#733994", "#34025e", 120, 60, function(event) {
-                        gnplib.window.redirect("http://www.google.com", false);
+                        gnplib.window.redirect("http://www.google.com", true, false);
                     });
             tbutton4.set({x: 400, y: 200});
             stage.addChild(tbutton4);
@@ -114,11 +114,11 @@
             stage.addChild(tbutton5);
 
             /////////////////////////////////////////////////
-            //createButtonImageComplex Test
+            //createButtonImage Test
             /////////////////////////////////////////////////
             var tbutton6text = new createjs.Text("Complex Image Button", "bold 14px Arial", "#ffffff");
             tbutton6text.shadow = new createjs.Shadow("#000000", 0, 0, 10);
-            var tbutton6 = gnplib.ui.createButtonImageComplex(stage, tbutton6text,
+            var tbutton6 = gnplib.ui.createButtonImage(stage, tbutton6text,
                     loader.getResult("testimage"), loader.getResult("testimageHighlight"), loader.getResult("testimageClick"), 250, 50, function(event) {
                         //This is where the actions of clicking the button go.
                         //For now, Do Nothing then call update stage (stage needs to be updated anytime an element is changed)
