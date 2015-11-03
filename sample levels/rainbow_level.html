@@ -18,7 +18,9 @@ display: block;  /* No floating content on sides */
 	<script src="http://code.createjs.com/easeljs-0.7.0.min.js"></script>
 	<script>
 		
-		var stage, redCircle, blueCircle;
+		var stage;
+		var redPause = false, bluePause = false, orangePause = false, violetPause = false, 
+			purplePause = false, yellowPause = false, greenPause = false;
 
 		function init() {
 			stage = new createjs.Stage("demoCanvas");
@@ -26,38 +28,45 @@ display: block;  /* No floating content on sides */
 			stage.canvas.height = window.innerHeight;
 			
 			redCircle = new createjs.Shape();
-			redCircle.graphics.beginFill("red").drawCircle(stage.canvas.width/20, 0, 40);
+			redCircle.graphics.beginFill("red").drawCircle(stage.canvas.width/20, 0, stage.canvas.height/25);
 			redCircle.y = 50;
+			redCircle.addEventListener("click", function(event) { redPause = !redPause; })
 			stage.addChild(redCircle);
 			
 			blueCircle = new createjs.Shape();
-			blueCircle.graphics.beginFill("blue").drawCircle(stage.canvas.width/1.225, 0, 40);
+			blueCircle.graphics.beginFill("blue").drawCircle(stage.canvas.width/1.225, 0, stage.canvas.height/25);
 			blueCircle.y = 150;
+			blueCircle.addEventListener("click", function(event) { bluePause = !bluePause; })
 			stage.addChild(blueCircle);
 			
 			orangeCircle = new createjs.Shape();
-			orangeCircle.graphics.beginFill("orange").drawCircle(stage.canvas.width/1.5, 0, 40);
+			orangeCircle.graphics.beginFill("orange").drawCircle(stage.canvas.width/1.5, 0, stage.canvas.height/25);
 			orangeCircle.y = 50;
+			orangeCircle.addEventListener("click", function(event) { orangePause = !orangePause; })
 			stage.addChild(orangeCircle);
 			
 			violetCircle = new createjs.Shape();
-			violetCircle.graphics.beginFill("violet").drawCircle(stage.canvas.width/1.05, 0, 40);
+			violetCircle.graphics.beginFill("violet").drawCircle(stage.canvas.width/1.05, 0, stage.canvas.height/25);
 			violetCircle.y = 50;
+			violetCircle.addEventListener("click", function(event) { violetPause = !violetPause; })
 			stage.addChild(violetCircle);
 			
 			purpleCircle = new createjs.Shape();
-			purpleCircle.graphics.beginFill("purple").drawCircle(stage.canvas.width/2.85, 0, 40);
+			purpleCircle.graphics.beginFill("purple").drawCircle(stage.canvas.width/2.85, 0, stage.canvas.height/25);
 			purpleCircle.y = 50;
+			purpleCircle.addEventListener("click", function(event) { purplePause = !purplePause; })
 			stage.addChild(purpleCircle);
 			
 			yellowCircle = new createjs.Shape();
-			yellowCircle.graphics.beginFill("yellow").drawCircle(stage.canvas.width/1.95, 0, 40);
+			yellowCircle.graphics.beginFill("yellow").drawCircle(stage.canvas.width/1.95, 0, stage.canvas.height/25);
 			yellowCircle.y = 50;
+			yellowCircle.addEventListener("click", function(event) { yellowPause = !yellowPause; })
 			stage.addChild(yellowCircle);
 			
 			greenCircle = new createjs.Shape();
-			greenCircle.graphics.beginFill("green").drawCircle(stage.canvas.width/5, 0, 40);
+			greenCircle.graphics.beginFill("green").drawCircle(stage.canvas.width/5, 0, stage.canvas.height/25);
 			greenCircle.y = 50;
+			greenCircle.addEventListener("click", function(event) { greenPause = !greenPause; })
 			stage.addChild(greenCircle);
 			
 			createjs.Ticker.on("tick", tick);
@@ -65,30 +74,51 @@ display: block;  /* No floating content on sides */
 		}
 		
 		function tick(event) {
-		
-			redCircle.y = redCircle.y + (event.delta)/10;
-			if (redCircle.y > stage.canvas.height) { redCircle.y = 0; }
+			// big ugly loops
+			// forgive me.
 			
-			blueCircle.y = blueCircle.y + (event.delta)/5; 
-			if (blueCircle.y > stage.canvas.height) { blueCircle.y = 0; }
+			if(!redPause){
+				redCircle.y = redCircle.y + (event.delta)/10;
+				if (redCircle.y > stage.canvas.height) { redCircle.y = 0; }
+			}
 			
-			orangeCircle.y = orangeCircle.y + (event.delta)/2	;
-			if (orangeCircle.y > stage.canvas.height) { orangeCircle.y = 0; }
+			if(!bluePause){
+				blueCircle.y = blueCircle.y + (event.delta)/5; 
+				if (blueCircle.y > stage.canvas.height) { blueCircle.y = 0; }
+			}
 			
-			purpleCircle.y = purpleCircle.y + (event.delta)/2	;
-			if (purpleCircle.y > stage.canvas.height) { purpleCircle.y = 0; }
+			if(!orangePause){
+				orangeCircle.y = orangeCircle.y + (event.delta)/2	;
+				if (orangeCircle.y > stage.canvas.height) { orangeCircle.y = 0; }
+			}
 			
-			violetCircle.y = violetCircle.y + (event.delta)/3	;
-			if (violetCircle.y > stage.canvas.height) { violetCircle.y = 0; }
+			if(!purplePause){
+				purpleCircle.y = purpleCircle.y + (event.delta)/2	;
+				if (purpleCircle.y > stage.canvas.height) { purpleCircle.y = 0; }
+			}
 			
-			yellowCircle.y = yellowCircle.y + (event.delta)/1.5	;
-			if (yellowCircle.y > stage.canvas.height) { yellowCircle.y = 0; }
+			if(!violetPause){
+				violetCircle.y = violetCircle.y + (event.delta)/3	;
+				if (violetCircle.y > stage.canvas.height) { violetCircle.y = 0; }
+			}
 			
-			greenCircle.y = greenCircle.y + (event.delta)/5	;
-			if (greenCircle.y > stage.canvas.height) { greenCircle.y = 0; }
+			if(!yellowPause){
+				yellowCircle.y = yellowCircle.y + (event.delta)/3	;
+				if (yellowCircle.y > stage.canvas.height) { yellowCircle.y = 0; }
+			}
+			
+			if(!greenPause){
+				greenCircle.y = greenCircle.y + (event.delta)/5	;
+				if (greenCircle.y > stage.canvas.height) { greenCircle.y = 0; }
+			}
 			
 			stage.update(event);
 		}
+		
+		function checkAlign(){
+		
+		}
+		
 	</script>
 </head>
 <body onload="init();">
