@@ -134,11 +134,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.49497475"
-     inkscape:cx="630.17025"
-     inkscape:cy="1221.1576"
+     inkscape:zoom="0.35"
+     inkscape:cx="410.6196"
+     inkscape:cy="1046.6972"
      inkscape:document-units="px"
-     inkscape:current-layer="layer6"
+     inkscape:current-layer="layer4"
      showgrid="false"
      borderlayer="true"
      inkscape:window-width="1920"
@@ -229,6 +229,17 @@
          id="path6378"
          inkscape:connector-curvature="0" />
     </g>
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Impact;-inkscape-font-specification:Impact"
+       x="950.64819"
+       y="497.05997"
+       id="text3181"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3183"
+         x="950.64819"
+         y="497.05997">color/font changes?</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"
@@ -278,13 +289,13 @@
     <text
        xml:space="preserve"
        style="font-size:36px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Impact;-inkscape-font-specification:Impact"
-       x="1004.2857"
+       x="1067.1428"
        y="1989.0101"
        id="text3992"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3994"
-         x="1004.2857"
+         x="1067.1428"
          y="1989.0101">our faces here</tspan></text>
   </g>
   <g
@@ -323,6 +334,49 @@
        style="fill:#aaf0d1;fill-opacity:1;stroke:#ff634d;stroke-width:51.74562073;stroke-linecap:butt;stroke-miterlimit:2;stroke-opacity:1;stroke-dasharray:25.872811, 25.872811;stroke-dashoffset:0"
        id="path3063-7-9"
        d="m 37.0625,-151.5 0,1937.3125 1415.875,0 0,-1937.3125 -1415.875,0 z" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer9"
+     inkscape:label="mid text"
+     style="display:inline">
+    <text
+       xml:space="preserve"
+       style="font-size:72px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Impact;-inkscape-font-specification:Impact"
+       x="412.98779"
+       y="1011.3567"
+       id="text4481"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4483"
+         x="412.98779"
+         y="1011.3567">content goes here</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Impact;-inkscape-font-specification:Impact"
+       x="244.86002"
+       y="759.21313"
+       id="text3173"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3175"
+         x="244.86002"
+         y="759.21313">ninja star</tspan><tspan
+         sodipodi:role="line"
+         x="244.86002"
+         y="804.21313"
+         id="tspan3185" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Impact;-inkscape-font-specification:Impact"
+       x="1129.3505"
+       y="1312.7648"
+       id="text3177"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3179"
+         x="1129.3505"
+         y="1312.7648" /></text>
   </g>
   <g
      inkscape:groupmode="layer"
@@ -1010,44 +1064,5 @@
          inkscape:connector-curvature="0"
          style="fill:#ffffff;fill-rule:nonzero" />
     </g>
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer9"
-     inkscape:label="mid text"
-     style="display:inline">
-    <text
-       xml:space="preserve"
-       style="font-size:72px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Impact;-inkscape-font-specification:Impact"
-       x="289.74918"
-       y="906.30084"
-       id="text4481"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan4483"
-         x="289.74918"
-         y="906.30084">content goes here</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:36px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Impact;-inkscape-font-specification:Impact"
-       x="301.42856"
-       y="739.01007"
-       id="text3173"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan3175"
-         x="301.42856"
-         y="739.01007">ninja stars?</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:36px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Impact;-inkscape-font-specification:Impact"
-       x="1129.3505"
-       y="1312.7648"
-       id="text3177"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan3179"
-         x="1129.3505"
-         y="1312.7648" /></text>
   </g>
 </svg>
