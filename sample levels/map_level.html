@@ -1,0 +1,55 @@
+<html>
+<head>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript">
+var floorLat = 37.3311;
+var ceilingLat = 37.338;
+var floorLong = -121.8841;
+var ceilingLong = -121.8791;
+
+window.onload = function () {
+    var mapOptions = {
+        center: new google.maps.LatLng(37.331, -121.885),
+        zoom: 5,
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    var map = new google.maps.Map(document.getElementById("dvMap"), mapOptions);
+ 
+    //Attach click event handler to the map.
+    google.maps.event.addListener(map, 'click', function (e) {
+ 
+        //Determine the location where the user has clicked.
+        var location = e.latLng;
+ 
+        //Create a marker and place it on the map.
+        var marker = new google.maps.Marker({
+            position: location,
+            map: map
+        });
+		
+		var clue = "";
+
+	
+	
+	if(location.lat() > floorLat && location.lat() < ceilingLat){
+		alert("HI");
+		if(location.lng() > floorLong && location.lng() < ceilingLong){
+			alert("HI2");
+		}
+	}
+        //Attach click event handler to the marker.
+        google.maps.event.addListener(marker, "click", function (e) {
+            var infoWindow = new google.maps.InfoWindow({
+                content: 'Latitude: ' + location.lat() + '<br />Longitude: ' + location.lng() 
+            });
+            infoWindow.open(map, marker);
+        });
+    });
+};
+</script>
+</head>
+<body>
+ <div id="dvMap" style="width: 1900px; height: 1000px">
+ </div>
+</body>
+</html>

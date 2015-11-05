@@ -26,10 +26,12 @@ display: block;  /* No floating content on sides */
 			
 			var square = new createjs.Shape();
 			square.graphics.beginFill("mediumseagreen").drawRect(0, 0, sH/5, sH/5);
+			square.on("click", function(){alert("hello");});
 			stage.addChild(square);
 			
-			square.graphics.beginFill("salmon").drawRect(0, sH/5, sH/5, sH/5);
-			stage.addChild(square);
+			var square2 = new createjs.Shape();
+			square2.graphics.beginFill("salmon").drawRect(0, sH/5, sH/5, sH/5);
+			stage.addChild(square2);
 			
 			square.graphics.beginFill("pink").drawRect(0, sH/2.5, sH/5, sH/5);
 			stage.addChild(square);
@@ -124,6 +126,11 @@ display: block;  /* No floating content on sides */
 			square.graphics.beginFill("gainsboro").drawRect(sW-(sH/5), sH/1.25, sH/5, sH/5);
 			stage.addChild(square);
 		
+			stage.update();
+		}
+		
+		function swapColors(evt) {
+			alert(this.toString());
 			stage.update();
 		}
 		
