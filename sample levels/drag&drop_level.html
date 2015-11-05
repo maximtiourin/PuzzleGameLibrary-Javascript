@@ -29,7 +29,7 @@ display: block;  /* No floating content on sides */
 			// Creates the first hidden button (decoy)
 			var background = new createjs.Shape();
 			background.name = "background";
-			background.graphics.beginFill("red").drawRoundRect(0, 0, 150, 60, 10);
+			background.graphics.beginFill("darkseagreen").drawRoundRect(0, 0, 150, 60, 10);
 			
 			var label2 = new createjs.Text("Click Me!", "24px Calibri", "#FFFFFF");
 			label2.name = "label2";
@@ -58,7 +58,7 @@ display: block;  /* No floating content on sides */
 			
 			var background2 = new createjs.Shape();
 			background2.name = "background2";
-			background2.graphics.beginFill("red").drawRoundRect(0, 0, 150, 60, 10);
+			background2.graphics.beginFill("darkseagreen").drawRoundRect(0, 0, 150, 60, 10);
 			
 			var button2 = new createjs.Container();
 			button2.name = "btn";
@@ -77,15 +77,11 @@ display: block;  /* No floating content on sides */
 			
 			// Makes the draggable background that covers the buttons.
 			var rect = new createjs.Shape();
-			rect.graphics.beginFill("red").drawRect(-100, -100, window.innerWidth*2, window.innerHeight*2);
-			
-			var label = new createjs.Text("hello world", "bold 14px Arial", "#FFFFFF");
-			label.textAlign = "center";
-			label.y = -7;
+			rect.graphics.beginFill("lightseagreen").drawRect(-100, -100, window.innerWidth*2, window.innerHeight*2);
 			
 			var dragger = new createjs.Container();
 			dragger.x = dragger.y = 50;
-			dragger.addChild(rect, label);
+			dragger.addChild(rect);
 			stage.addChild(dragger);
 			
 			dragger.on("pressmove",function(evt) {
@@ -111,6 +107,7 @@ display: block;  /* No floating content on sides */
 	</script>
 </head>
 <body onload="init();">
+<body bgcolor="lightseagreen">
 	<canvas id="demoCanvas" width="300" height="300">
 	</canvas>
 </body>
