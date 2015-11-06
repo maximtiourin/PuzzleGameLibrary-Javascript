@@ -40,6 +40,7 @@
 
             var clueMarker = new google.maps.Marker({
                 position: clueCoords,
+				animation: google.maps.Animation.DROP,
                 map: map
             });
             clueMarker.setMap(map);
@@ -58,6 +59,7 @@
                 //Create a marker and place it on the map.
                 var marker = new google.maps.Marker({
                     position: location,
+					animation: google.maps.Animation.DROP,
                     map: map
                 });
                 // checks to see if the marker is within bounds
