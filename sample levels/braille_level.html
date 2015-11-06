@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<style>
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        margin: 0px;
+        border: 0;
+        overflow: hidden;
+        /*  Disable scrollbars */
+        
+        display: block;
+        /* No floating content on sides */
+    }
+</style>
+
+<head>
+
+    <body style="background-color:lightseagreen">
+        <title>Hello World!</title>
+        <script src="http://code.createjs.com/easeljs-0.7.0.min.js"></script>
+        <script>
+            var stage;
+            var sW = window.innerWidth;
+            var sH = window.innerHeight;
+            var clue = "clue: you made it this far! BRailliant!";
+
+            function init() {
+                stage = new createjs.Stage("demoCanvas");
+                stage.canvas.width = sW;
+                stage.canvas.height = sH;
+                var rad = sW / 20;
+
+                var square = new createjs.Shape();
+                square.graphics.beginFill("salmon").drawCircle(sW / 10, sH / 6.5, rad);
+                stage.addChild(square);
+
+                square.graphics.beginFill("salmon").drawCircle(sW / 10, sH / 2, rad);
+                stage.addChild(square);
+
+                square.graphics.beginFill("salmon").drawCircle(sW / 10, sH / 1.2, rad);
+                stage.addChild(square);
+                //////////
+
+                square.graphics.beginFill("salmon").drawCircle(sW / 4, sH / 6.5, rad);
+                stage.addChild(square);
+
+                square.graphics.beginFill("salmon").drawCircle(sW / 4, sH / 2, rad);
+                stage.addChild(square);
+
+                square.graphics.beginFill("salmon").drawCircle(sW / 4, sH / 1.2, rad);
+                stage.addChild(square);
+
+                ////////////
+
+                square.graphics.beginFill("salmon").drawCircle(sW / 1.34, sH / 6.5, rad);
+                stage.addChild(square);
+
+                square.graphics.beginFill("salmon").drawCircle(sW / 1.34, sH / 2, rad);
+                stage.addChild(square);
+
+                square.graphics.beginFill("salmon").drawCircle(sW / 1.34, sH / 1.2, rad);
+                stage.addChild(square);
+
+                /////////////
+
+                square.graphics.beginFill("salmon").drawCircle(sW / 1.115, sH / 6.5, rad);
+                stage.addChild(square);
+
+                square.graphics.beginFill("salmon").drawCircle(sW / 1.115, sH / 2, rad);
+                stage.addChild(square);
+
+                square.graphics.beginFill("salmon").drawCircle(sW / 1.115, sH / 1.2, rad);
+                stage.addChild(square);
+
+                ////////////////
+
+                square.graphics.beginFill("salmon").drawCircle(sW / 2, sH / 2, rad);
+
+                var label = new createjs.Text("test", "bold 14px Arial", "#FFFFFF");
+                label.textAlign = "center";
+                var cont = new createjs.Container();
+                //cont.x = sqaure.width;
+                //cont.y = square.height;
+                cont.addChild(square, label);
+                stage.addChild(cont);
+
+                //square.addChild(label);
+                //stage.addChild(square);
+
+                stage.update();
+            }
+
+            function swapColors(square) {
+                alert(square.x + " " + square.y + " " + square.width);
+                square.graphics.beginFill("blue").drawRect(square.x, square.y, square.width, square.height).endFill();
+                stage.update();
+            }
+        </script>
+</head>
+
+<body onload="init();">
+    <canvas id="demoCanvas" width="500" height="200">
+        alternate content
+    </canvas>
+</body>
+
+</html>
