@@ -22,80 +22,90 @@
         <script src="http://code.createjs.com/easeljs-0.7.0.min.js"></script>
         <script>
             var stage;
+            var clue = "clue: you made it this far! BRailliant!";
             var sW = window.innerWidth;
             var sH = window.innerHeight;
-            var clue = "clue: you made it this far! BRailliant!";
+            var rad = sW / 20;
+            var bools = new Array(true, true, true, true, true, true, true, true, true, true, true, true);
+            var answer = new Array(true, true, false, false, false, false, true, true, true, false, true, false);
+            var label;
+			var midCircle;
+
 
             function init() {
                 stage = new createjs.Stage("demoCanvas");
                 stage.canvas.width = sW;
                 stage.canvas.height = sH;
-                var rad = sW / 20;
+				
+                var c1 = createShape(sW / 10, sH / 6.5, rad, 1);
+                var c2 = createShape(sW / 10, sH / 2, rad, 2);
+                var c3 = createShape(sW / 10, sH / 1.2, rad, 3);
 
-                var square = new createjs.Shape();
-                square.graphics.beginFill("salmon").drawCircle(sW / 10, sH / 6.5, rad);
-                stage.addChild(square);
+                var c4 = createShape(sW / 4, sH / 6.5, rad, 4);
+                var c5 = createShape(sW / 4, sH / 2, rad, 5);
+                var c6 = createShape(sW / 4, sH / 1.2, rad, 6);
 
-                square.graphics.beginFill("salmon").drawCircle(sW / 10, sH / 2, rad);
-                stage.addChild(square);
+                var c7 = createShape(sW / 1.34, sH / 6.5, rad, 7);
+                var c8 = createShape(sW / 1.34, sH / 2, rad, 8);
+                var c9 = createShape(sW / 1.34, sH / 1.2, rad, 9);
 
-                square.graphics.beginFill("salmon").drawCircle(sW / 10, sH / 1.2, rad);
-                stage.addChild(square);
-                //////////
+                var c10 = createShape(sW / 1.115, sH / 6.5, rad, 10);
+                var c11 = createShape(sW / 1.115, sH / 2, rad, 11);
+                var c12 = createShape(sW / 1.115, sH / 1.2, rad, 12);
 
-                square.graphics.beginFill("salmon").drawCircle(sW / 4, sH / 6.5, rad);
-                stage.addChild(square);
+                midCircle = new createjs.Shape();
+                midCircle.graphics.beginFill("salmon").drawCircle(sW / 2, sH / 2, rad);
 
-                square.graphics.beginFill("salmon").drawCircle(sW / 4, sH / 2, rad);
-                stage.addChild(square);
-
-                square.graphics.beginFill("salmon").drawCircle(sW / 4, sH / 1.2, rad);
-                stage.addChild(square);
-
-                ////////////
-
-                square.graphics.beginFill("salmon").drawCircle(sW / 1.34, sH / 6.5, rad);
-                stage.addChild(square);
-
-                square.graphics.beginFill("salmon").drawCircle(sW / 1.34, sH / 2, rad);
-                stage.addChild(square);
-
-                square.graphics.beginFill("salmon").drawCircle(sW / 1.34, sH / 1.2, rad);
-                stage.addChild(square);
-
-                /////////////
-
-                square.graphics.beginFill("salmon").drawCircle(sW / 1.115, sH / 6.5, rad);
-                stage.addChild(square);
-
-                square.graphics.beginFill("salmon").drawCircle(sW / 1.115, sH / 2, rad);
-                stage.addChild(square);
-
-                square.graphics.beginFill("salmon").drawCircle(sW / 1.115, sH / 1.2, rad);
-                stage.addChild(square);
-
-                ////////////////
-
-                square.graphics.beginFill("salmon").drawCircle(sW / 2, sH / 2, rad);
-
-                var label = new createjs.Text("test", "bold 14px Arial", "#FFFFFF");
+                label = new createjs.Text("?", "Bold 155px Calibri", "#FFFFFF");
                 label.textAlign = "center";
-                var cont = new createjs.Container();
-                //cont.x = sqaure.width;
-                //cont.y = square.height;
-                cont.addChild(square, label);
-                stage.addChild(cont);
+                label.textBaseline = "middle";
+                label.x = sW / 2;
+                label.y = sH / 2;
 
-                //square.addChild(label);
-                //stage.addChild(square);
+                var dragger = new createjs.Container();
+                dragger.addChild(midCircle, label);
+                stage.addChild(dragger);
 
                 stage.update();
             }
 
-            function swapColors(square) {
-                alert(square.x + " " + square.y + " " + square.width);
-                square.graphics.beginFill("blue").drawRect(square.x, square.y, square.width, square.height).endFill();
+            function createShape(sW, sH, rad, b) {
+                var circle = new createjs.Shape();
+
+                circle.graphics.beginFill("salmon").drawCircle(sW, sH, rad);
+                circle.on("click", function() {
+                    swapColors(circle, sW, sH, rad, b);
+                });
+                stage.addChild(circle);
+                return circle;
+            }
+
+            function swapColors(circle, sW, sH, rad, b) {
+                if (bools[b - 1]) {
+                    circle.graphics.clear().beginFill("gainsboro").drawCircle(sW, sH, rad).endFill();
+                } else {
+                    circle.graphics.clear().beginFill("salmon").drawCircle(sW, sH, rad).endFill();
+                }
+                bools[b - 1] = !bools[b - 1];
                 stage.update();
+                checkAnswer();
+
+                // only allow the user to click once
+                /* if (bools[b - 1]) {
+                    circle.graphics.clear().beginFill("gainsboro").drawCircle(sW, sH, rad).endFill();
+					 bools[b - 1] = !bools[b - 1];
+                }               
+                stage.update(); */
+            }
+
+            function checkAnswer() {
+                var b1 = bools.toString();
+                var b2 = answer.toString();
+
+                if (b1 == b2) {
+                    label.text = "!";
+                    stage.update();
+                }
             }
         </script>
 </head>
