@@ -22,21 +22,21 @@
         <script src="http://code.createjs.com/easeljs-0.7.0.min.js"></script>
         <script>
             var stage;
-            var clue = "clue: you made it this far! BRailliant!";
+            var clueText = "you made it this far! BRailliant!";
             var sW = window.innerWidth;
             var sH = window.innerHeight;
             var rad = sW / 20;
             var bools = new Array(true, true, true, true, true, true, true, true, true, true, true, true);
             var answer = new Array(true, true, false, false, false, false, true, true, true, false, true, false);
             var label;
-			var midCircle;
-
+            var midCircle;
+			var clueShow = true;
 
             function init() {
                 stage = new createjs.Stage("demoCanvas");
                 stage.canvas.width = sW;
                 stage.canvas.height = sH;
-				
+
                 var c1 = createShape(sW / 10, sH / 6.5, rad, 1);
                 var c2 = createShape(sW / 10, sH / 2, rad, 2);
                 var c3 = createShape(sW / 10, sH / 1.2, rad, 3);
@@ -53,6 +53,14 @@
                 var c11 = createShape(sW / 1.115, sH / 2, rad, 11);
                 var c12 = createShape(sW / 1.115, sH / 1.2, rad, 12);
 
+               
+                clue = new createjs.Text("", "Bold 35px Calibri", "#FFFFFF");
+                clue.x = sW / 2;
+                clue.y = sH / 3;
+                clue.textAlign = "center";
+                clue.textBaseline = "middle";
+                stage.addChild(clue);
+
                 midCircle = new createjs.Shape();
                 midCircle.graphics.beginFill("salmon").drawCircle(sW / 2, sH / 2, rad);
 
@@ -62,11 +70,25 @@
                 label.x = sW / 2;
                 label.y = sH / 2;
 
+                midCircle.on("click", function() {
+                    if (clueShow) {
+                        clue.text = clueText;
+                    } else {
+                        clue.text = "";
+                    }
+                    clueShow = !clueShow;
+                    stage.update();
+                });
+
                 var dragger = new createjs.Container();
                 dragger.addChild(midCircle, label);
                 stage.addChild(dragger);
 
                 stage.update();
+            }
+
+            function handleClue() {
+
             }
 
             function createShape(sW, sH, rad, b) {
@@ -104,6 +126,7 @@
 
                 if (b1 == b2) {
                     label.text = "!";
+					clueText = "Are you really blind?";
                     stage.update();
                 }
             }
