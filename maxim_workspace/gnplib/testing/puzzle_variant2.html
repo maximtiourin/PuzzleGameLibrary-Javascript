@@ -54,6 +54,23 @@
             pHint.centerOnPoint(400, 300);
 
             /////////////////////////////////////////////////
+            //Hint Box that gives clue to solving puzzle with Hint Button
+            /////////////////////////////////////////////////
+            var hintbox = new gnplib.ui.HintBox(stage, 230);
+            hintbox.textColor = "#ffffff";
+            hintbox.textFont = "16px Arial";
+            hintbox.bgColor = "#5d8ec5";
+            hintbox.cornerRadius = 15;
+            hintbox.setText("This one is a real brain teaser!");
+            hintbox.centerOnPoint(400, 300);
+            var hintbutton = gnplib.ui.createButtonRoundRectangle(stage, new createjs.Text("Show Hint", "bold 16px Arial", "#ffffff"),
+                    "#403093", "#5e558e", "#22194d", 100, 44, 8, function(event) {
+                        hintbox.showDialog(true);
+                    });
+            hintbutton.set({x: 70, y: 560});
+            stage.addChild(hintbutton);
+
+            /////////////////////////////////////////////////
             //Create Brain Button that "solves" the puzzle
             /////////////////////////////////////////////////
             var brain = gnplib.ui.createButtonImage(stage, null,
@@ -67,6 +84,10 @@
             //Create Undraggable Bottom of skull
             /////////////////////////////////////////////////
             var skullBot = new createjs.Bitmap(loader.getResult("skullBot"));
+            skullBot.addEventListener("click", function() {
+                //Add click listener to bottom of skull to consume a click so that the brain can't be clicked underneath it
+                stage.redraw();
+            });
             skullBot.set({x: 233, y: 53});
             stage.addChild(skullBot);
 
