@@ -1287,13 +1287,19 @@ var gnplib = {
              * @function
              * @name gnplib.ui.PuzzlePiece#x
              * @param {?Number} [newx] - If supplied, sets the puzzle piece's shape's x coordinate to this value, then performs a snapping check if snapping is enabled
+             * @param {?Boolean} [moveToFront] - If supplied and true, moves the puzzle piece to the front of the stage's depth, displaying it above all other objects.
              * @returns {Number} The current x position of the puzzle piece
              */
-            t.x = function(newx) {
+            t.x = function(newx, moveToFront) {
                 var nx = newx || null;
 
                 if (nx !== null) {
                     t.shape.x = nx;
+
+                    //Make sure the piece appears above all others after moving by swapping it to be the last child in the stage's object list
+                    if (moveToFront !== null && moveToFront !== false && t.shape.stage !== null) {
+                        t.shape.stage.setChildIndex(t.shape, t.shape.stage.numChildren - 1);
+                    }
 
                     if (t.doesSnap) {
                         t.checkSnapping();
@@ -1310,13 +1316,19 @@ var gnplib = {
              * @function
              * @name gnplib.ui.PuzzlePiece#y
              * @param {?Number} [newy] - If supplied, sets the puzzle piece's shape's y coordinate to this value, then performs a snapping check if snapping is enabled
+             * @param {?Boolean} [moveToFront] - If supplied and true, moves the puzzle piece to the front of the stage's depth, displaying it above all other objects.
              * @returns {Number} The current y position of the puzzle piece
              */
-            t.y = function(newy) {
+            t.y = function(newy, moveToFront) {
                 var ny = newy || null;
 
                 if (ny !== null) {
                     t.shape.y = ny;
+
+                    //Make sure the piece appears above all others after moving by swapping it to be the last child in the stage's object list
+                    if (moveToFront !== null && moveToFront !== false && t.shape.stage !== null) {
+                        t.shape.stage.setChildIndex(t.shape, t.shape.stage.numChildren - 1);
+                    }
 
                     if (t.doesSnap) {
                         t.checkSnapping();
