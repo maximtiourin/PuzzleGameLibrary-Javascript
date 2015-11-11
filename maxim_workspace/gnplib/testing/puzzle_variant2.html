@@ -86,7 +86,7 @@
             var skullBot = new createjs.Bitmap(loader.getResult("skullBot"));
             skullBot.addEventListener("click", function() {
                 //Add click listener to bottom of skull to consume a click so that the brain can't be clicked underneath it
-                stage.redraw();
+                stage.update();
             });
             skullBot.set({x: 233, y: 53});
             stage.addChild(skullBot);
