@@ -43,6 +43,13 @@
             stage.addChild(background);
 
             /////////////////////////////////////////////////
+            //Display Puzzle Number
+            /////////////////////////////////////////////////
+            var puzzlenumber = new createjs.Text("02", "bold 36px Arial", "white");
+            puzzlenumber.set({x: 15, y: 15});
+            stage.addChild(puzzlenumber);
+
+            /////////////////////////////////////////////////
             //Create Hint Box that is used to convey the puzzle has been "solved"
             /////////////////////////////////////////////////
             var pHint = new gnplib.ui.HintBox(stage, 200);

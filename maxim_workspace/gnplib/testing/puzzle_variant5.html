@@ -39,7 +39,7 @@
 
         window.onload = function() {
             /////////////////////////////////////////////////
-            //Create puzzle helper variables
+            //Create puzzle helper variables, puzzle can be tweaked to suit many needs by altering these values.
             /////////////////////////////////////////////////
             var iconQuestionMark = "assets/images/lilquestion.png"; //The path to the question mark image used for displaying the clue marker
             var iconHotter = "assets/images/lilflame.png"; //The path to the 'hotter' image used for displaying the 'getting hotter' marker
@@ -71,6 +71,18 @@
                 mapTypeId: google.maps.MapTypeId.ROADMAP
             };
             var map = new google.maps.Map(document.getElementById("dvMap"), mapOptions);
+
+            /////////////////////////////////////////////////
+            //Display Puzzle Number
+            /////////////////////////////////////////////////
+            var puzzleNumber = document.createElement('h1');
+            puzzleNumber.style.color = 'white';
+            puzzleNumber.innerHTML = '05';
+            puzzleNumber.style.fontSize = "36px";
+            var container = document.createElement('div');
+            container.style.paddingLeft = "25px";
+            container.appendChild(puzzleNumber);
+            map.controls[google.maps.ControlPosition.TOP_LEFT].push(container);
 
             /////////////////////////////////////////////////
             //Create initial marker that acts as a clue to help complete the puzzle

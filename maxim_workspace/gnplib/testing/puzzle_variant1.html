@@ -38,6 +38,13 @@
             stage.addChild(bgimage);
 
             /////////////////////////////////////////////////
+            //Display Puzzle Number
+            /////////////////////////////////////////////////
+            var puzzlenumber = new createjs.Text("01", "bold 36px Arial", "white");
+            puzzlenumber.set({x: 15, y: 15});
+            stage.addChild(puzzlenumber);
+
+            /////////////////////////////////////////////////
             //Create test image to move fast across the screen
             /////////////////////////////////////////////////
             var timage = new createjs.Bitmap(loader.getResult("testimage2"));
