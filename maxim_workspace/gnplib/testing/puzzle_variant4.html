@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Puzzle 4 Variant</title>
+    <link rel="stylesheet" type="text/css" href="tempstyle.css">
+    <script type="text/javascript" src="../lib/gnplib.js" defer></script>
+    <script>
+        var stage; //The canvas stage
+        var loader; //The asset loader
+
+        function init() {
+            //Create Stage
+            stage = new createjs.Stage("gameCanvas");
+            stage.mouseMoveOutside = true; //Allow the mouse to be dragged outside of the canvas during mouse events
+            createjs.Ticker.framerate = 30; //Set the tick rate of the stage to a target of 30 times per second
+            stage.enableMouseOver(20); //Enables mouse over events for the stage at a rate of 20 times per second
+
+            //Create asset manifest and load queue
+            var manifest = [
+                {src: "assets/images/gnpscreencap01.png", id: "imagestill"}
+            ];
+
+            loader = new createjs.LoadQueue(true);
+            loader.on("complete", loaded);
+            loader.loadManifest(manifest, true);
+        }
+
+        function loaded() {
+            /////////////////////////////////////////////////
+            //Create puzzle helper variables
+            /////////////////////////////////////////////////
+
+
+            /////////////////////////////////////////////////
+            //Set background color
+            /////////////////////////////////////////////////
+            var background = new createjs.Shape();
+            background.graphics.beginFill("#715d76").drawRect(0, 0, 800, 600);
+            stage.addChild(background);
+
+            /////////////////////////////////////////////////
+            //Hint Box that gives clue to solving puzzle with Hint Button
+            /////////////////////////////////////////////////
+            var hintbox = new gnplib.ui.HintBox(stage, 230);
+            hintbox.textColor = "#ffffff";
+            hintbox.textFont = "16px Arial";
+            hintbox.bgColor = "#5d8ec5";
+            hintbox.cornerRadius = 15;
+            hintbox.setText("That image still looks like it's from the video! Try entering your solution into the url bar to find the next puzzle!");
+            hintbox.centerOnPoint(400, 300);
+            var hintbutton = gnplib.ui.createButtonRoundRectangle(stage, new createjs.Text("Show Hint", "bold 16px Arial", "#ffffff"),
+                    "#403093", "#5e558e", "#22194d", 100, 44, 8, function(event) {
+                        hintbox.showDialog(true);
+                    });
+            hintbutton.set({x: 70, y: 560});
+            stage.addChild(hintbutton);
+
+            /////////////////////////////////////////////////
+            //Create Puzzle Image
+            /////////////////////////////////////////////////
+            var image = new createjs.Bitmap(loader.getResult("imagestill"));
+            gnplib.ui.setWidth(image, 350);
+            gnplib.ui.setHeight(image, 180);
+            image.set({x: gnplib.math.center(350, 0, 800), y: gnplib.math.center(180, 0, 400)});
+            stage.addChild(image);
+
+            /////////////////////////////////////////////////
+            //Create Puzzle Text
+            /////////////////////////////////////////////////
+            var text = new createjs.Text("The world became engulfed in _____", "24px Arial", "white");
+            var w = text.getMeasuredWidth();
+            var h = text.getMeasuredHeight();
+            text.set({x: gnplib.math.center(w, 0, 800), y: gnplib.math.center(h, 0, 100)});
+            stage.addChild(text);
+
+            /////////////////////////////////////////////////
+            //Create Puzzle Button
+            /////////////////////////////////////////////////
+            var text2 = new createjs.Text("Watch the Video!", "bold 14px Arial", "white");
+            var button = gnplib.ui.createButtonRoundRectangle(stage, text2, "#fc0047", "#ff779d", "#4a0015", 180, 40, 15, function() {
+                    //Open a new window/tab with the video to watch
+                    gnplib.window.redirect("http://greenninja.org/videos/?video=PlT-LXm3MX4&PHPSESSID=f75fff0720650bfef0b46aabfb36028c", true);
+            });
+            button.set({x: 400, y: 350});
+            stage.addChild(button);
+
+            /////////////////////////////////////////////////
+            //Update Initial Stage
+            /////////////////////////////////////////////////
+            stage.update();
+        }
+    </script>
+</head>
+<body onload="init();">
+    <div id="canvas-container">
+        <canvas id="gameCanvas" width="800" height="600">Your browser does not support the HTML5 "Canvas" Element.</canvas>
+    </div>
+</body>
+</html>
