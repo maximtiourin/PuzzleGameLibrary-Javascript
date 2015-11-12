@@ -89,7 +89,8 @@
             var puzzle3 = gnplib.ui.generatePuzzlePiecesFromImage(null, loader.getResult("testimage"), hx, hy, hwidth, hheight, p3rows, p3columns, p3borderAlpha, true,
                     function() {
                         //Do stuff to complete puzzle3
-                        pHint.showDialog(true);
+                        //pHint.showDialog(true);
+                        gnplib.window.redirect("puzzle_variant4.html");
                     });
 
             //Move piece at row 0, column 2 to a new location

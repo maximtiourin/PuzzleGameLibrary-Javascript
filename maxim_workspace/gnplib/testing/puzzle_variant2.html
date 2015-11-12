@@ -75,7 +75,8 @@
             /////////////////////////////////////////////////
             var brain = gnplib.ui.createButtonImage(stage, null,
                     loader.getResult("brain"), loader.getResult("brainHighlight"), loader.getResult("brainClick"), 226, 173, function(event) {
-                        pHint.showDialog(true);
+                        //pHint.showDialog(true);
+                        gnplib.window.redirect("puzzle_variant3.html");
                     });
             brain.set({x: 398, y: 158});
             stage.addChild(brain);
