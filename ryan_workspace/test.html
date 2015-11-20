@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+<title>Easel Test2</title>
+  <head>
+    <script src="lib/GNPlib.js"></script>
+    <script> 
+    	var canvas;
+    	var stage;
+
+
+      function init() 
+      {
+      	//<script src="https://code.createjs.com/easeljs-0.8.0.min.js">
+      	canvas = document.getElementById("canvas");
+        stage = new createjs.Stage(canvas);
+
+
+        //drawing circle
+        var circle = new createjs.Shape();
+        circle.graphics.beginFill("DeepSkyBlue").drawCircle(0, 0, 50);
+        circle.x = 100;
+        circle.y = 100;
+        stage.addChild(circle);
+
+
+        //putting a text
+        var text = new createjs.Text("Hello World", "20px Arial", "#000000");
+		text.y = 20;
+		text.textBaseline = "alphabetic";
+		stage.addChild(text);
+		stage.update();
+
+
+        var ha = new displayImageOn(stage, "gnp.jpg", canvas.width/2 - image.width/2,canvas.height/2 - image.height/2);
+        }
+
+
+
+
+    </script>
+  </head>
+  <body onload="init();">
+    <canvas id="canvas" width="700" height="500" style="background-color:lightgrey"></canvas>
+  </body>
+</html>
