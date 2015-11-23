@@ -41,6 +41,7 @@
             /////////////////////////////////////////////////
             //Create puzzle helper variables, puzzle can be tweaked to suit many needs by altering these values.
             /////////////////////////////////////////////////
+            var nextPuzzle = "puzzle_variant6.html";
             var iconQuestionMark = "assets/images/lilquestion.png"; //The path to the question mark image used for displaying the clue marker
             var iconHotter = "assets/images/lilflame.png"; //The path to the 'hotter' image used for displaying the 'getting hotter' marker
             var iconColder = "assets/images/lilsnowflake.png"; //The path to the 'colder' image used for displaying the 'getting colder' marker
@@ -48,7 +49,7 @@
             var textClue = "<center><b><font size = 4>Hello there!</b><br>I wonder if anyone can <i>pinpoint</i><br>where the Green Ninja lives?<br><font size = 1> Hint: It's not the Pacific Ocean.";
             var textHotter = "Hotter!"; //Text to display for the info window for the 'getting hotter' marker
             var textColder = "Colder!"; //Text to display for the info window for the 'getting colder' marker
-            var textSolved = "Bingo!"; //Text to display for the info window for the 'correct location' marker
+            var textSolved = "<center>You Found It!</center><br><center>Navigating to the next Puzzle in a few seconds...</center>"; //Text to display for the info window for the 'correct location' marker
             var floorLat = 37.3325; //The low latitude point of the SJSU campus
             var ceilingLat = 37.338; //The high latitude point of the SJSU campus
             var floorLong = -121.8841; //The low longitude point of the SJSU campus
@@ -146,6 +147,11 @@
                         });
 
                         solved = true;
+
+                        //Wait some time, then navigate to the next puzzle!
+                        setTimeout(function() {
+                            window.location.href = nextPuzzle;
+                        }, 6000);
                     }
                 }
 
@@ -159,13 +165,20 @@
                     });
                 }
 
+                //Create Info Window
+                var infoWindow = new google.maps.InfoWindow({
+                    content: clue
+                });
+
                 //Attach click event handler to the marker that was placed, to display an info window on click.
                 google.maps.event.addListener(marker, "click", function(e) {
-                    var infoWindow = new google.maps.InfoWindow({
-                        content: clue
-                    });
                     infoWindow.open(map, marker);
                 });
+
+                //If solved, open the infoWindow automatically!
+                if (solved) {
+                    infoWindow.open(map, marker);
+                }
 
                 //Remove the previously placed marker
                 if (prevMarker !== null) {
