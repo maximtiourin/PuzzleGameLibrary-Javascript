@@ -150,6 +150,7 @@
             lockdialimage.scaleY = .6;
 
             //Helper variables
+            var NEXT_PUZZLE = "puzzle_variant7.html";
             var TICKS = 100; //Total ticks in the lock dial
             var COMBO1 = 15; //First Turn counterclockwise past 0 to 15
             var COMBO2 = 65; //Second Turn clockwise past 0 to 65
@@ -234,6 +235,18 @@
                         odelta = 0;
                         console.log("unlocked")
                         input.text = "OPEN";
+
+                        handleComplete = function() {
+                            //Completed the puzzle, navigate to next
+                            gnplib.window.redirect(NEXT_PUZZLE, false, true);
+                        }
+
+                        var transition = new createjs.Shape();
+                        transition.graphics.beginFill("#000000").drawRect(0, 0, 800, 600);
+                        transition.alpha = 0;
+                        stage.addChild(transition);
+
+                        createjs.Tween.get(transition).wait(500).to({alpha: 1}, 1000).wait(500).call(handleComplete);
                     }
                 }
                 else if (combo == 1 && odelta >= TICKBREAK) {
