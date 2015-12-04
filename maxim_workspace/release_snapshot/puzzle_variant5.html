@@ -1,0 +1,198 @@
+<html>
+<style>
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        margin: 0px;
+        border: 0;
+        overflow: hidden;
+        display: block;
+    }
+</style>
+
+<head>
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script type="text/javascript">
+        /////////////////////////////////////////////////
+        // Function for determining the great-circle distance between two latitude/longitude points on the earth
+        // Distance is returned in meters.
+        /////////////////////////////////////////////////
+        function haversine(lat1, lng1, lat2, lng2) {
+            toRadians = function(n) {
+                return (n * Math.PI) / 180.0;
+            }
+
+            var R = 6371000; //Earth's radius in meters
+            var rlat1 = toRadians(lat1);
+            var rlat2 = toRadians(lat2);
+            var dlat =  toRadians(lat2 - lat1);
+            var dlng = toRadians(lng2 - lng1);
+
+            var a = Math.sin(dlat / 2) * Math.sin(dlat / 2) +
+                            Math.cos(rlat1) * Math.cos(rlat2) *
+                                    Math.sin(dlng / 2) * Math.sin(dlng / 2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            return R * c;
+        }
+
+        window.onload = function() {
+            /////////////////////////////////////////////////
+            //Create puzzle helper variables, puzzle can be tweaked to suit many needs by altering these values.
+            /////////////////////////////////////////////////
+            var nextPuzzle = "puzzle_variant6.html";
+            var iconQuestionMark = "assets/images/lilquestion.png"; //The path to the question mark image used for displaying the clue marker
+            var iconHotter = "assets/images/lilflame.png"; //The path to the 'hotter' image used for displaying the 'getting hotter' marker
+            var iconColder = "assets/images/lilsnowflake.png"; //The path to the 'colder' image used for displaying the 'getting colder' marker
+            var iconNinja = "assets/images/lilninja.png"; //The path to the 'ninja' image used for displaying the 'correct location' marker
+            var textClue = "<center><b><font size = 4>Hello there!</b><br>I wonder if anyone can <i>pinpoint</i><br>where the Green Ninja lives?<br><font size = 1> Hint: It's not the Pacific Ocean.";
+            var textHotter = "Hotter!"; //Text to display for the info window for the 'getting hotter' marker
+            var textColder = "Colder!"; //Text to display for the info window for the 'getting colder' marker
+            var textSolved = "<center>You Found It!</center><br><center>Navigating to the next Puzzle in a few seconds...</center>"; //Text to display for the info window for the 'correct location' marker
+            var floorLat = 37.3325; //The low latitude point of the SJSU campus
+            var ceilingLat = 37.338; //The high latitude point of the SJSU campus
+            var floorLong = -121.8841; //The low longitude point of the SJSU campus
+            var ceilingLong = -121.8791; //The high longitude point of the SJSU campus
+            var centerLat = 37.33517530888132; //The center latitude of the SJSU campus
+            var centerLng = -121.88135594129562; //The center longitude of the SJSU campus
+            var clueLat = 49; //The latitude of the initial clue marker for the puzzle
+            var clueLng = -153; //The longitude of the initial clue marker for the puzzle
+            var prevDistance = haversine(centerLat, centerLng, clueLat, clueLng); //The previous distance from the placed marker to the center of the SJSU campus
+            var prevMarker = null; //The last marker that was placed. Used to clean up markers.
+
+            /////////////////////////////////////////////////
+            //Create the Google Maps Object
+            /////////////////////////////////////////////////
+            var mapOptions = {
+                center: new google.maps.LatLng(clueLat, clueLng),
+                zoom: 5,
+                streetViewControl: false,
+                mapTypeControl: false,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            var map = new google.maps.Map(document.getElementById("dvMap"), mapOptions);
+
+            /////////////////////////////////////////////////
+            //Display Puzzle Number
+            /////////////////////////////////////////////////
+            var puzzleNumber = document.createElement('h1');
+            puzzleNumber.style.color = 'white';
+            puzzleNumber.innerHTML = '05';
+            puzzleNumber.style.fontSize = "36px";
+            var container = document.createElement('div');
+            container.style.paddingLeft = "25px";
+            container.appendChild(puzzleNumber);
+            map.controls[google.maps.ControlPosition.TOP_LEFT].push(container);
+
+            /////////////////////////////////////////////////
+            //Create initial marker that acts as a clue to help complete the puzzle
+            /////////////////////////////////////////////////
+            var clueCoords = {
+                lat: clueLat,
+                lng: clueLng
+            };
+            var clueMarker = new google.maps.Marker({
+                position: clueCoords,
+				animation: google.maps.Animation.DROP,
+                map: map,
+                icon: iconQuestionMark
+            });
+            google.maps.event.addListener(clueMarker, "click", function(e) {
+                var clueWindow = new google.maps.InfoWindow({
+                    content: textClue
+                });
+                clueWindow.open(map, clueMarker);
+            });
+            clueMarker.setMap(map);
+
+            /////////////////////////////////////////////////
+            //Attach click event handler to the map, to allow placing markers
+            /////////////////////////////////////////////////
+            google.maps.event.addListener(map, 'click', function(e) {
+                //Helper variables
+                var iconpath = "";
+                var marker = null;
+                var solved = false;
+                var clue = "";
+
+                //Determine the location where the user has clicked.
+                var location = e.latLng;
+
+                //Determine the current distance from the center of the SJSU campus, and use it to determine hotter/colder information
+                var currentDistance = haversine(centerLat, centerLng, location.lat(), location.lng());
+                if (currentDistance < prevDistance) {
+                    clue = textHotter;
+                    iconpath = iconHotter;
+                }
+                else {
+                    clue = textColder;
+                    iconpath = iconColder;
+                }
+                prevDistance = currentDistance;
+
+
+                // Checks to see if the marker is within bounds of the SJSU campus
+                if (location.lat() > floorLat && location.lat() < ceilingLat) {
+                    if (location.lng() > floorLong && location.lng() < ceilingLong) {
+                        // the user has placed the marker correctly
+                        clue = textSolved;
+
+                        //Create a marker and place it on the map.
+                        marker = new google.maps.Marker({
+                            position: location,
+                            animation: google.maps.Animation.DROP,
+                            map: map,
+                            icon: iconNinja
+                        });
+
+                        solved = true;
+
+                        //Wait some time, then navigate to the next puzzle!
+                        setTimeout(function() {
+                            window.location.href = nextPuzzle;
+                        }, 6000);
+                    }
+                }
+
+                //If the marker wasn't in bounds, drop a hotter/colder marker to help the user.
+                if (!solved) {
+                    marker = new google.maps.Marker({
+                        position: location,
+                        animation: google.maps.Animation.DROP,
+                        map: map,
+                        icon: iconpath
+                    });
+                }
+
+                //Create Info Window
+                var infoWindow = new google.maps.InfoWindow({
+                    content: clue
+                });
+
+                //Attach click event handler to the marker that was placed, to display an info window on click.
+                google.maps.event.addListener(marker, "click", function(e) {
+                    infoWindow.open(map, marker);
+                });
+
+                //If solved, open the infoWindow automatically!
+                if (solved) {
+                    infoWindow.open(map, marker);
+                }
+
+                //Remove the previously placed marker
+                if (prevMarker !== null) {
+                    prevMarker.setMap(null);
+                }
+                prevMarker = marker;
+            });
+        };
+    </script>
+</head>
+
+<body>
+    <div id="dvMap" style="width: 100%; height: 100%">
+    </div>
+</body>
+
+</html>

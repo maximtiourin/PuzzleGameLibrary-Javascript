@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Puzzle 8 Variant</title>
+    <link rel="stylesheet" type="text/css" href="tempstyle.css">
+    <script type="text/javascript" src="../lib/gnplib-min.js" defer></script>
+    <script>
+        var stage; //The canvas stage
+        var loader; //The asset loader
+
+        function init() {
+            //Create Stage
+            stage = new createjs.Stage("gameCanvas");
+            stage.mouseMoveOutside = true; //Allow the mouse to be dragged outside of the canvas during mouse events
+            createjs.Ticker.framerate = 30; //Set the tick rate of the stage to a target of 30 times per second
+            stage.enableMouseOver(20); //Enables mouse over events for the stage at a rate of 20 times per second
+
+            loaded();
+        }
+
+        function loaded() {
+            var NEXT_PUZZLE = "puzzle_variant9.html";
+
+            /////////////////////////////////////////////////
+            //Set background color
+            /////////////////////////////////////////////////
+            var background = new createjs.Shape();
+            background.graphics.beginFill("#ffbc3a").drawRect(0, 0, 800, 600);
+            stage.addChild(background);
+
+            /////////////////////////////////////////////////
+            //Display Puzzle Number
+            /////////////////////////////////////////////////
+            var puzzlenumber = new createjs.Text("08", "bold 36px Arial", "white");
+            puzzlenumber.set({x: 15, y: 15});
+            stage.addChild(puzzlenumber);
+
+            /////////////////////////////////////////////////
+            //Hint Box that gives clue to solving puzzle with Hint Button
+            /////////////////////////////////////////////////
+            var hintbox = new gnplib.ui.HintBox(stage, 230);
+            hintbox.textColor = "#ffffff";
+            hintbox.textFont = "16px Arial";
+            hintbox.bgColor = "#5d8ec5";
+            hintbox.cornerRadius = 15;
+            hintbox.setText("Click the tubes to transfer volumes of water. The solution is stored in the largest tube!");
+            hintbox.centerOnPoint(400, 300);
+            var hintbutton = gnplib.ui.createButtonRoundRectangle(stage, new createjs.Text("Show Hint", "bold 16px Arial", "#ffffff"),
+                    "#403093", "#5e558e", "#22194d", 100, 44, 8, function(event) {
+                        hintbox.showDialog(true);
+                    });
+            hintbutton.set({x: 70, y: 560});
+            stage.addChild(hintbutton);
+
+            /////////////////////////////////////////////////
+            // Ryan's Water Volume  mini-game modified code
+            /////////////////////////////////////////////////
+            var canvas = stage.canvas;
+            var tubes;
+            var max_vol;
+            var answer;
+            var vol_to_pixel_ratio=0.3;
+            var first_tube=null;
+            var is_first=true;
+
+            //[Max1, Max2, Max3, Initial1, Initial2, Initial13, Solution]
+            var question_pool=[
+                [300,500,800,0,0,800,400],     //#0  !!
+                [300,600,800,0,600,600,400],   //#1
+                [500,700,1100,500,700,0,800],  //#2  !!
+                [300,800,1000,0,0,1000,400],   //#3  !!
+                [300,500,900,0,0,900,700]      //#4
+            ];
+            //question #, starts with 0.
+            var question_number=2;
+
+            click_tube = function(event) {
+                var target = tubes[event.target.id];
+                if(is_first && target.scaleY!=0)
+                {
+                    first_tube=target;
+                    is_first=false;
+                }
+                else if (target==first_tube )
+                {
+                    //this effective work as a cancel
+                    first_tube.alpha=1;
+                    stage.update();
+                    first_tube=null;
+                    is_first=true;
+                }
+                else if  ( target.scaleY!=1)
+                {
+                    var max1 = max_vol[first_tube.id];
+                    var max2 = max_vol[target.id];
+                    var temp_vol= first_tube.scaleY*max1 + target.scaleY*max2;
+                    //calculation
+                    first_tube.scaleY= (temp_vol>=max2)? (temp_vol-max2)/max1:0;
+                    target.scaleY=(temp_vol>=max2)? 1:temp_vol/max2;
+                    first_tube.alpha=1;
+                    stage.update();
+                    check_answer(first_tube,target);
+                    first_tube=null;
+                    is_first=true;
+                }
+            }
+
+            check_answer = function(tube1, tube2) {
+                var current1 = tube1.scaleY * max_vol[tube1.id];
+                var current2 = tube2.scaleY * max_vol[tube2.id];
+
+                if(current1==answer || current2==answer)
+                {
+                    //Puzzle Completed, wait a bit then navigate to next puzzle
+                    var hintbox = new gnplib.ui.HintBox(stage, 320);
+                    hintbox.textColor = "#ffffff";
+                    hintbox.textFont = "32px Arial";
+                    hintbox.bgColor = "#ff1200";
+                    hintbox.cornerRadius = 15;
+                    hintbox.setText("You did it! Nice job!");
+                    hintbox.centerOnPoint(400, 75);
+                    hintbox.showDialog(true);
+
+                    handleComplete = function() {
+                        //Navigate to next puzzle here
+                        gnplib.window.redirect(NEXT_PUZZLE, false, true);
+                        stage.update();
+                    }
+
+                    createjs.Tween.get(hintbox.box).to({x: 200, y: 150}, 500, createjs.Ease.cubicInOut).wait(2000).call(handleComplete);
+                }
+            }
+
+            handleTick = function(event) {
+                if (first_tube)
+                {
+                    if(first_tube.alpha==1)
+                        first_tube.alpha=0.3;
+                    else
+                        first_tube.alpha=1;
+                    stage.update();
+                }
+            }
+            createjs.Ticker.addEventListener("tick", handleTick);
+
+            tubes=[];
+            var question=question_pool[question_number];
+            max_vol=[question[0],question[1],question[2]];
+            answer=question[6];
+            var current_vol=[question[3],question[4],question[5]];
+
+            for (var i=0;i< 3; i++)
+            {
+                var area=new createjs.Rectangle(canvas.width*(i*3+1)/10,canvas.height*4/5, 100, -max_vol[i]*vol_to_pixel_ratio );
+
+                //water
+                var water = new createjs.Shape();
+                water.graphics.beginFill("lightblue").drawRoundRect(0, 0, area.width, area.height,0);
+                water.scaleY=current_vol[i]/max_vol[i];
+                //tube background
+                var tube = new createjs.Shape();
+                tube.graphics.beginFill("white").drawRoundRect(0, 0, area.width, area.height,0);
+                tube.addEventListener("click",click_tube);
+                tube.id = water.id = i;
+                //outline of the tubes
+                var shape = new createjs.Shape();
+                shape.graphics.beginStroke("black").moveTo(area.width, 0).lineTo(area.width, area.height).lineTo(0, area.height).lineTo(0, 0).lineTo(area.width, 0);
+                water.x = tube.x = shape.x = area.x;
+                water.y = tube.y = shape.y = area.y;
+
+                //labels of volume
+                var text = new createjs.Text(max_vol[i]+"ml");
+                text.x= area.x + 35;
+                text.y = area.y + 5;
+                stage.addChild(tube);
+                stage.addChild(water);
+                stage.addChild(shape);
+                stage.addChild(text);
+                tubes.push(water);
+
+                //marks on the tube, each mark represent 100ml
+                for(var j=100; j<max_vol[i]; j=j+100)
+                {
+                    var mark = new createjs.Shape();
+                    mark.graphics.beginStroke("black").moveTo(0, 0).lineTo(20, 0);
+                    mark.x = area.x;
+                    mark.y = area.y-j*vol_to_pixel_ratio;
+                    stage.addChild(mark);
+                }
+            }
+            var requirement = new createjs.Text("Can I have "+answer+"ml?", "20px Arial");
+            requirement.x= canvas.width/2 - requirement.getBounds().width/2;
+            requirement.y = canvas.height/10 - requirement.getBounds().height/2;
+            stage.addChild(requirement);
+
+
+            /////////////////////////////////////////////////
+            //Update Initial Stage
+            /////////////////////////////////////////////////
+            //Since we have tween animations, stage needs to be updated every frame, instead of ui event driven updates
+            createjs.Ticker.addEventListener("tick", stage);
+            stage.update();
+        }
+    </script>
+</head>
+<body onload="init();">
+    <div id="canvas-container">
+        <canvas id="gameCanvas" width="800" height="600">Your browser does not support the HTML5 "Canvas" Element.</canvas>
+    </div>
+</body>
+</html>

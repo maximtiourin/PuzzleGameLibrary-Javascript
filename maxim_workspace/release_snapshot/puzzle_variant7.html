@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Puzzle 7 Variant</title>
+    <link rel="stylesheet" type="text/css" href="tempstyle.css">
+    <script type="text/javascript" src="lib/gnplib-min.js" defer></script>
+    <script>
+        var stage; //The canvas stage
+        var loader; //The asset loader
+
+        function init() {
+            //Create Stage
+            stage = new createjs.Stage("gameCanvas");
+            stage.mouseMoveOutside = true; //Allow the mouse to be dragged outside of the canvas during mouse events
+            createjs.Ticker.framerate = 30; //Set the tick rate of the stage to a target of 30 times per second
+            stage.enableMouseOver(20); //Enables mouse over events for the stage at a rate of 20 times per second
+
+            loaded();
+        }
+
+        function loaded() {
+            var NEXT_PUZZLE = "puzzle_variant8.html";
+
+            /////////////////////////////////////////////////
+            //Set background color
+            /////////////////////////////////////////////////
+            var background = new createjs.Shape();
+            background.graphics.beginFill("#597a56").drawRect(0, 0, 800, 600);
+            stage.addChild(background);
+
+            /////////////////////////////////////////////////
+            //Display Puzzle Number
+            /////////////////////////////////////////////////
+            var puzzlenumber = new createjs.Text("07", "bold 36px Arial", "white");
+            puzzlenumber.set({x: 15, y: 15});
+            stage.addChild(puzzlenumber);
+
+            /////////////////////////////////////////////////
+            //Hint Box that gives clue to solving puzzle with Hint Button
+            /////////////////////////////////////////////////
+            var hintbox = new gnplib.ui.HintBox(stage, 230);
+            hintbox.textColor = "#ffffff";
+            hintbox.textFont = "16px Arial";
+            hintbox.bgColor = "#5d8ec5";
+            hintbox.cornerRadius = 15;
+            hintbox.setText("Click the circles to hop them over. Try to get them to the opposite side!");
+            hintbox.centerOnPoint(400, 300);
+            var hintbutton = gnplib.ui.createButtonRoundRectangle(stage, new createjs.Text("Show Hint", "bold 16px Arial", "#ffffff"),
+                    "#403093", "#5e558e", "#22194d", 100, 44, 8, function(event) {
+                        hintbox.showDialog(true);
+                    });
+            hintbutton.set({x: 70, y: 560});
+            stage.addChild(hintbutton);
+
+            /////////////////////////////////////////////////
+            // Ryan's Frog mini-game modified code
+            /////////////////////////////////////////////////
+            var canvas;
+            var size=30;
+            var number_of_frog=4;
+            var x_location=[];
+            var is_occupied=[];
+            var frogs=[];
+
+            canvas = stage.canvas;
+
+            green_frog = function(event) {
+                var frog = event.target;
+                if(is_occupied[frog.id+1]==false)
+                {
+                    is_occupied[frog.id]=false;
+                    is_occupied[frog.id+1]=true;
+
+                    //Frog animations
+                    createjs.Tween.get(frog).to({x: x_location[frog.id + 1]}, 250);
+                    createjs.Tween.get(frog).to({y: frog.y - 100}, 125, createjs.Ease.cubicOut).to({y: frog.y}, 125, createjs.Ease.cubicIn);
+
+                    frog.id=frog.id+1;
+                }
+                else if (is_occupied[frog.id+2]==false)
+                {
+                    is_occupied[frog.id]=false;
+                    is_occupied[frog.id+2]=true;
+
+                    //Frog animations
+                    createjs.Tween.get(frog).to({x: x_location[frog.id + 2]}, 250);
+                    createjs.Tween.get(frog).to({y: frog.y - 100}, 125, createjs.Ease.cubicOut).to({y: frog.y}, 125, createjs.Ease.cubicIn);
+
+                    frog.id=frog.id+2;
+                }
+//            update_text();
+                frog.parent.addChild(frog);
+                stage.update();
+                check_win();
+            }
+
+            pink_frog = function(event) {
+                var frog = event.target;
+                if(is_occupied[frog.id-1]==false)
+                {
+                    is_occupied[frog.id]=false;
+                    is_occupied[frog.id-1]=true;
+
+                    //Frog animations
+                    createjs.Tween.get(frog).to({x: x_location[frog.id - 1]}, 250);
+                    createjs.Tween.get(frog).to({y: frog.y - 100}, 125, createjs.Ease.cubicOut).to({y: frog.y}, 125, createjs.Ease.cubicIn);
+
+                    frog.id=frog.id-1;
+                }
+                else if (is_occupied[frog.id-2]==false)
+                {
+                    is_occupied[frog.id]=false;
+                    is_occupied[frog.id-2]=true;
+
+                    //Frog animations
+                    createjs.Tween.get(frog).to({x: x_location[frog.id - 2]}, 250);
+                    createjs.Tween.get(frog).to({y: frog.y - 100}, 125, createjs.Ease.cubicOut).to({y: frog.y}, 125, createjs.Ease.cubicIn);
+
+                    frog.id=frog.id-2;
+                }
+//            update_text();
+                frog.parent.addChild(frog);
+                stage.update();
+                check_win();
+            }
+
+            check_win = function () {
+                var done=0;
+                for (var i=0;i<frogs.length;i++)
+                {
+                    if (i<number_of_frog/2 && frogs[i].id>number_of_frog/2)
+                        done=done+1;
+                    else if (frogs[i].id<number_of_frog/2)
+                        done=done+1;
+                }
+
+                if (done==number_of_frog)
+                {
+                    //Puzzle Completed, wait a bit then navigate to next puzzle
+                    var hintbox = new gnplib.ui.HintBox(stage, 320);
+                    hintbox.textColor = "#ffffff";
+                    hintbox.textFont = "32px Arial";
+                    hintbox.bgColor = "#ff6f36";
+                    hintbox.cornerRadius = 15;
+                    hintbox.setText("You did it! Nice job!");
+                    hintbox.centerOnPoint(400, 75);
+                    hintbox.showDialog(true);
+
+                    handleComplete = function() {
+                        //Navigate to next puzzle here
+                        gnplib.window.redirect(NEXT_PUZZLE, false, true);
+                        stage.update();
+                    }
+
+                    createjs.Tween.get(hintbox.box).to({x: 400}, 500, createjs.Ease.cubicInOut).wait(2000).call(handleComplete);
+                }
+            }
+
+            for (var i=0;i<number_of_frog+1;i++ )
+            {
+                temp_x=canvas.width*i/(number_of_frog+1);
+                x_location.push(temp_x);
+
+
+                //stones
+                var stone = new createjs.Shape();
+                stone.graphics.beginFill("DeepSkyBlue").drawCircle(canvas.width/(number_of_frog*2+2),0, size);
+                stone.x= temp_x;
+                stone.y = canvas.height*3/5;
+                stage.addChild(stone);
+
+                //frogs
+                if (i!=number_of_frog/2)
+                {
+                    var frog = new createjs.Shape();
+                    frogs.push(frog);
+                    var color;
+                    if(i<number_of_frog/2)
+                    {
+                        color="LightGreen"
+                        frog.addEventListener("click",green_frog);
+                        frog.name="green";
+                    }
+                    else if (i>number_of_frog/2)
+                    {
+                        color="Pink"
+                        frog.addEventListener("click",pink_frog);
+                        frog.name="pink";
+                    }
+                    frog.graphics.beginFill(color).drawCircle(canvas.width/(number_of_frog*2+2),0, size);
+                    //id stores current location
+                    frog.id=i;
+                    is_occupied[i]=true;
+                    frog.x= temp_x;
+                    frog.y = canvas.height*3/5 - size;
+                    stage.addChild(frog);
+                }
+                else
+                {
+                    is_occupied[i]=false;
+                }
+            }
+
+            /////////////////////////////////////////////////
+            //Fade in transition
+            /////////////////////////////////////////////////
+            var transition = new createjs.Shape();
+            transition.graphics.beginFill("#000000").drawRect(0, 0, 800, 600);
+            stage.addChild(transition);
+
+            createjs.Tween.get(transition).wait(500).to({alpha: 0}, 1000);
+
+            /////////////////////////////////////////////////
+            //Update Initial Stage
+            /////////////////////////////////////////////////
+            //Since we have tween animations, stage needs to be updated every frame, instead of ui event driven updates
+            createjs.Ticker.addEventListener("tick", stage);
+            stage.update();
+        }
+    </script>
+</head>
+<body onload="init();">
+    <div id="canvas-container">
+        <canvas id="gameCanvas" width="800" height="600">Your browser does not support the HTML5 "Canvas" Element.</canvas>
+    </div>
+</body>
+</html>
