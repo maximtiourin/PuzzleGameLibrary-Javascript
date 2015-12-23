@@ -165,7 +165,7 @@ var gnplib = {
          * @author Maxim Tiourin <mixmaxtwo@gmail.com>
          */
         clamp: function(value, low, high) {
-            return Math.min(high, Math.max(0, value));
+            return Math.min(high, Math.max(low, value));
         }
     },
     /**
