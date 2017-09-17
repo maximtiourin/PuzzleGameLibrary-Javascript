@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tester 2</title>
+    <link rel="stylesheet" type="text/css" href="tempstyle.css">
+    <script type="text/javascript" src="../lib/gnplib-min.js" defer></script>
+    <script>
+        var stage; //The canvas stage
+        var loader; //The asset loader
+
+        function init() {
+            //Create Stage
+            stage = new createjs.Stage("gameCanvas");
+            stage.mouseMoveOutside = true; //Allow the mouse to be dragged outside of the canvas during mouse events
+            createjs.Ticker.framerate = 30; //Set the tick rate of the stage to a target of 30 times per second
+            stage.enableMouseOver(20); //Enables mouse over events for the stage at a rate of 20 times per second
+
+            //Create asset manifest and load queue
+            var manifest = [
+                {src: "assets/images/testimage.jpg", id: "testimage"}
+            ];
+
+            loader = new createjs.LoadQueue(true);
+            loader.on("complete", loaded);
+            loader.loadManifest(manifest, true);
+        }
+
+        function loaded() {
+            /////////////////////////////////////////////////
+            //Puzzle Automatic Generation tests
+            /////////////////////////////////////////////////
+            var timage = loader.getResult("testimage"); //A test image that the puzzles can use as their graphic
+
+            /* Test Puzzle Completion */
+            //Create hint box that shows when the puzzle is complete
+            var pHint = new gnplib.ui.HintBox(stage, 200);
+            pHint.textColor = "#ffffff";
+            pHint.textFont = "14px Arial";
+            pHint.bgColor = "rgb(0, 127, 186)";
+            pHint.cornerRadius = 15;
+            pHint.setText("You completed the puzzle! This is an example of things happening when the puzzle is correctly completed!");
+            pHint.centerOnPoint(400, 300);
+            //Create black background that helps to visualize the puzzle completion area
+            var pBg = new createjs.Shape();
+            var bgoff = 2; //How many pixels to offset the bg, to create a border effect
+            pBg.graphics.beginFill("black").drawRect(25 - bgoff, 25 - bgoff, 255 + (bgoff * 2), 257 + (bgoff * 2));
+            stage.addChild(pBg);
+            //Generate the puzzle pieces
+            var puzzlePieces1 = gnplib.ui.generatePuzzlePiecesFromImage(stage, timage, 25, 25, 255, 257, 4, 4, .40, true, function() {
+                pHint.showDialog(true);
+            });
+            //Set the testing piece to the bottom right piece of puzzlePieces1
+            var tPiece = puzzlePieces1[3][3]; //Puzzle piece located in the 4th row and 4th column of puzzlePieces1
+            tPiece.x(tPiece.x() + 50); //Must use piece.x() method to manually translate pieces, because it updates snapping state information when appropriate
+            tPiece.y(tPiece.y() + 50); //Must use piece.y() method to manually translate pieces, because it updates snapping state information when appropriate
+
+            /* Test Additional Puzzle Snapping/No Snapping, Dimensions and Scaling */
+            var puzzlePieces2 = gnplib.ui.generatePuzzlePiecesFromImage(stage, timage, 375, 340, 400, 240, 3, 3, 1, true); //Snapping, border alpha at 1
+            var puzzlePieces3 = gnplib.ui.generatePuzzlePiecesFromImage(stage, timage, 375, 10, 400, 300, 8, 8, .28); //No Snapping, border alpha at .28
+            var puzzlePieces4 = gnplib.ui.generatePuzzlePiecesFromImage(stage, timage, 25, 320, 255, 257, 14, 14, .24, true); //Snapping, border alpha at .24
+
+            /////////////////////////////////////////////////
+            //Update Initial Stage
+            /////////////////////////////////////////////////
+            stage.update();
+        }
+    </script>
+</head>
+<body onload="init();">
+<div id="canvas-container">
+    <canvas id="gameCanvas" width="800" height="600">Your browser does not support the HTML5 "Canvas" Element.</canvas>
+</div>
+</body>
+</html>

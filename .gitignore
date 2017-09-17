@@ -1,0 +1,7 @@
+*.doc
+*.docx
+*.pdf
+*.svg
+ryan_workspace/
+edwin_workspace/
+.idea/

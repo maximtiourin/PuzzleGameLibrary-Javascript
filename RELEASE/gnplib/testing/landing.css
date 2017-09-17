@@ -1,0 +1,50 @@
+body {
+    background-color: #ffffff;
+    background-image: url("assets/images/background_city.png");
+    background-repeat: repeat-x;
+    horiz-align: center;
+}
+#header {
+    position: absolute;
+    left: 50%;
+    margin-left: -295px;
+}
+#enter {
+    position: absolute;
+    width: 500px;
+    height: 100px;
+    top: 50%;
+    left: 50%;
+    margin-left: -175px;
+    margin-top: -14px;
+    font-size: 36px;
+    text-shadow: 1px 1px #000000;
+}
+#footer {
+    position: absolute;
+    width: 350px;
+    height: 400px;
+    text-wrap: normal;
+    top: 75%;
+    left: 50%;
+    margin-left: -175px;
+    margin-top: -14px;
+    font-size: 12px;
+    color: #001d03;
+}
+
+a:link {
+    color: #005f09;
+}
+
+a:visited {
+    color: #005f09;
+}
+
+a:hover {
+    color: #84ff8a;
+}
+
+a:link {
+    color: #ffa200;
+}

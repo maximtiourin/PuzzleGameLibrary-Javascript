@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Puzzle 3 Variant</title>
+    <link rel="stylesheet" type="text/css" href="tempstyle.css">
+    <script type="text/javascript" src="lib/gnplib-min.js" defer></script>
+    <script>
+        var stage; //The canvas stage
+        var loader; //The asset loader
+
+        function init() {
+            //Create Stage
+            stage = new createjs.Stage("gameCanvas");
+            stage.mouseMoveOutside = true; //Allow the mouse to be dragged outside of the canvas during mouse events
+            createjs.Ticker.framerate = 30; //Set the tick rate of the stage to a target of 30 times per second
+            stage.enableMouseOver(20); //Enables mouse over events for the stage at a rate of 20 times per second
+
+            //Create asset manifest and load queue
+            var manifest = [
+                {src: "assets/images/testimage.jpg", id: "testimage"}
+            ];
+
+            loader = new createjs.LoadQueue(true);
+            loader.on("complete", loaded);
+            loader.loadManifest(manifest, true);
+        }
+
+        function loaded() {
+            /////////////////////////////////////////////////
+            //Create puzzle helper variables
+            /////////////////////////////////////////////////
+            var hx = 272.5; // x coordinate of puzzle origin
+            var hy = 171.5; // y coordinate of puzzle origin
+            var hwidth = 255; // width of the puzzles
+            var hheight = 257; // height of the puzzles
+            var piece = null; //Helper variable for piece in the puzzle
+
+            /////////////////////////////////////////////////
+            //Set background color
+            /////////////////////////////////////////////////
+            var background = new createjs.Shape();
+            background.graphics.beginFill("#625b7c").drawRect(0, 0, 800, 600);
+            stage.addChild(background);
+
+            /////////////////////////////////////////////////
+            //Display Puzzle Number
+            /////////////////////////////////////////////////
+            var puzzlenumber = new createjs.Text("03", "bold 36px Arial", "white");
+            puzzlenumber.set({x: 15, y: 15});
+            stage.addChild(puzzlenumber);
+
+            /////////////////////////////////////////////////
+            //Create Hint Box that is used to convey the puzzle has been "solved"
+            /////////////////////////////////////////////////
+            var pHint = new gnplib.ui.HintBox(stage, 200);
+            pHint.textColor = "#ffffff";
+            pHint.textFont = "14px Arial";
+            pHint.bgColor = "rgb(0, 127, 186)";
+            pHint.cornerRadius = 15;
+            pHint.setText("You completed the puzzle! This is an example of things happening when the puzzle is correctly completed!");
+            pHint.centerOnPoint(400, 80);
+
+            /////////////////////////////////////////////////
+            //Hint Box that gives clue to solving puzzle with Hint Button
+            /////////////////////////////////////////////////
+            var hintbox = new gnplib.ui.HintBox(stage, 230);
+            hintbox.textColor = "#ffffff";
+            hintbox.textFont = "16px Arial";
+            hintbox.bgColor = "#5d8ec5";
+            hintbox.cornerRadius = 15;
+            hintbox.setText("Complete the puzzles!");
+            hintbox.centerOnPoint(400, 300);
+            var hintbutton = gnplib.ui.createButtonRoundRectangle(stage, new createjs.Text("Show Hint", "bold 16px Arial", "#ffffff"),
+                    "#403093", "#5e558e", "#22194d", 100, 44, 8, function(event) {
+                        hintbox.showDialog(true);
+                    });
+            hintbutton.set({x: 70, y: 560});
+            stage.addChild(hintbutton);
+
+            /////////////////////////////////////////////////
+            //Create Puzzle Backdrop that helps to visualize the puzzle completion area
+            /////////////////////////////////////////////////
+            var backdrop = new createjs.Shape();
+            var bgoff = 2; //How many pixels to offset the bg, to create a border effect
+            backdrop.graphics.beginFill("black").drawRect(hx - bgoff, hy - bgoff, hwidth + (bgoff * 2), hheight + (bgoff * 2));
+            stage.addChild(backdrop);
+
+            /////////////////////////////////////////////////
+            //Create Third 7 x 7 Puzzle
+            /////////////////////////////////////////////////
+            var p3rows = 7;
+            var p3columns = 7;
+            var p3borderAlpha = 0.4; //The border alpha of the puzzle pieces on the range [0.00, 1.00] where 0.00 is invisible, and 1.00 is fully visible.
+
+            var puzzle3 = gnplib.ui.generatePuzzlePiecesFromImage(null, loader.getResult("testimage"), hx, hy, hwidth, hheight, p3rows, p3columns, p3borderAlpha, true,
+                    function() {
+                        //Do stuff to complete puzzle3
+                        //pHint.showDialog(true);
+                        gnplib.window.redirect("puzzle_variant4.html");
+                    });
+
+            //Move piece at row 0, column 2 to a new location
+            piece = puzzle3[0][2];
+            piece.x(piece.x() + 50);
+            piece.y(piece.y() - 40);
+
+            //Move piece at row 2, column 0 to a new location
+            piece = puzzle3[2][0];
+            piece.x(piece.x() - 50);
+            piece.y(piece.y() + 50);
+
+            /////////////////////////////////////////////////
+            //Create Second 5 x 5 Puzzle
+            /////////////////////////////////////////////////
+            var p2rows = 5;
+            var p2columns = 5;
+            var p2borderAlpha = 0.5; //The border alpha of the puzzle pieces on the range [0.00, 1.00] where 0.00 is invisible, and 1.00 is fully visible.
+
+            var puzzle2 = gnplib.ui.generatePuzzlePiecesFromImage(null, loader.getResult("testimage"), hx, hy, hwidth, hheight, p2rows, p2columns, p2borderAlpha, true,
+                    function() {
+                        //Do stuff to complete puzzle2
+                        //Clear puzzle 2
+                        gnplib.ui.removePuzzleFromStage(puzzle2, p2rows, p2columns);
+
+                        //Add puzzle 3
+                        gnplib.ui.addPuzzleToStage(stage, puzzle3, p3rows, p3columns);
+
+                        //Update the stage
+                        stage.update();
+                    });
+
+            //Move piece at row 0, column 2 to a new location
+            piece = puzzle2[0][2];
+            piece.x(piece.x() + 50);
+            piece.y(piece.y() - 40);
+
+            //Move piece at row 2, column 0 to a new location
+            piece = puzzle2[2][0];
+            piece.x(piece.x() - 50);
+            piece.y(piece.y() + 50);
+
+            /////////////////////////////////////////////////
+            //Create First 3 x 3 Puzzle
+            /////////////////////////////////////////////////
+            var p1rows = 3;
+            var p1columns = 3;
+            var p1borderAlpha = 0.6; //The border alpha of the puzzle pieces on the range [0.00, 1.00] where 0.00 is invisible, and 1.00 is fully visible.
+
+            var puzzle1 = gnplib.ui.generatePuzzlePiecesFromImage(null, loader.getResult("testimage"), hx, hy, hwidth, hheight, p1rows, p1columns, p1borderAlpha, true,
+                    function() {
+                        //Do stuff to complete puzzle1
+                        //Clear puzzle 1
+                        gnplib.ui.removePuzzleFromStage(puzzle1, p1rows, p1columns);
+
+                        //Add puzzle 2
+                        gnplib.ui.addPuzzleToStage(stage, puzzle2, p2rows, p2columns);
+
+                        //Update the stage
+                        stage.update();
+                    });
+
+            //Move piece at row 0, column 2 to a new location
+            piece = puzzle1[0][2];
+            piece.x(piece.x() + 50);
+            piece.y(piece.y() - 40);
+
+            //Move piece at row 2, column 0 to a new location
+            piece = puzzle1[2][0];
+            piece.x(piece.x() - 50);
+            piece.y(piece.y() + 50);
+
+            /////////////////////////////////////////////////
+            //Add the pieces of the First Puzzle to the Stage
+            /////////////////////////////////////////////////
+            gnplib.ui.addPuzzleToStage(stage, puzzle1, p1rows, p1columns);
+
+            /////////////////////////////////////////////////
+            //Update Initial Stage
+            /////////////////////////////////////////////////
+            stage.update();
+        }
+    </script>
+</head>
+<body onload="init();">
+    <div id="canvas-container">
+        <canvas id="gameCanvas" width="800" height="600">Your browser does not support the HTML5 "Canvas" Element.</canvas>
+    </div>
+</body>
+</html>

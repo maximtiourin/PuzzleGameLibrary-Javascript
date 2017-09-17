@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Puzzle 6 Variant</title>
+    <link rel="stylesheet" type="text/css" href="tempstyle.css">
+    <script type="text/javascript" src="../lib/gnplib-min.js" defer></script>
+    <script>
+        var stage; //The canvas stage
+        var loader; //The asset loader
+
+        function init() {
+            //Create Stage
+            stage = new createjs.Stage("gameCanvas");
+            stage.mouseMoveOutside = true; //Allow the mouse to be dragged outside of the canvas during mouse events
+            createjs.Ticker.framerate = 30; //Set the tick rate of the stage to a target of 30 times per second
+            stage.enableMouseOver(20); //Enables mouse over events for the stage at a rate of 20 times per second
+
+            //Create asset manifest and load queue
+            var manifest = [
+                {src: "assets/images/safe.png", id: "safe"},
+                {src: "assets/images/testlockimage.png", id: "lock"},
+                {src: "assets/images/note-combination.png", id: "note"},
+                {src: "assets/images/safe-arrow-down.png", id: "arrow"}
+            ];
+
+            loader = new createjs.LoadQueue(true);
+            loader.on("complete", loaded);
+            loader.loadManifest(manifest, true);
+        }
+
+        function loaded() {
+            /////////////////////////////////////////////////
+            //Create puzzle helper variables
+            /////////////////////////////////////////////////
+
+            /////////////////////////////////////////////////
+            //Set background color
+            /////////////////////////////////////////////////
+            var background = new createjs.Shape();
+            background.graphics.beginFill("#151515").drawRect(0, 0, 800, 600);
+            stage.addChild(background);
+
+            /////////////////////////////////////////////////
+            //Display Puzzle Number
+            /////////////////////////////////////////////////
+            var puzzlenumber = new createjs.Text("06", "bold 36px Arial", "white");
+            puzzlenumber.set({x: 15, y: 15});
+            stage.addChild(puzzlenumber);
+
+            /////////////////////////////////////////////////
+            //Hint Box that gives clue to solving puzzle with Hint Button
+            /////////////////////////////////////////////////
+            var hintbox = new gnplib.ui.HintBox(stage, 250);
+            hintbox.textColor = "#ffffff";
+            hintbox.textFont = "16px Arial";
+            hintbox.bgColor = "#5d8ec5";
+            hintbox.cornerRadius = 15;
+            hintbox.setText("That looks like a safe! Hmm, what could the combination be?");
+            hintbox.centerOnPoint(400, 300);
+            var hintbutton = gnplib.ui.createButtonRoundRectangle(stage, new createjs.Text("Show Hint", "bold 16px Arial", "#ffffff"),
+                    "#403093", "#5e558e", "#22194d", 100, 44, 8, function(event) {
+                        hintbox.showDialog(true);
+                    });
+            hintbutton.set({x: 70, y: 560});
+            stage.addChild(hintbutton);
+
+            /////////////////////////////////////////////////
+            //Create the post-it note beneath the safe with the combination on it
+            /////////////////////////////////////////////////
+            var note = new createjs.Bitmap(loader.getResult("note"));
+            gnplib.ui.setWidth(note, 305);
+            gnplib.ui.setHeight(note, 300);
+            note.set({x: 230, y: 270});
+            gnplib.ui.addDragAndDropToObject(note);
+            stage.addChild(note);
+
+            /////////////////////////////////////////////////
+            //Create the safe background image
+            /////////////////////////////////////////////////
+            var safe = new createjs.Bitmap(loader.getResult("safe"));
+            safe.addEventListener("click", function() {
+                //Consume a click so note can not be dragged from below while mouse is over the safe
+                stage.update();
+            });
+            gnplib.ui.setWidth(safe, 400);
+            gnplib.ui.setHeight(safe, 400);
+            safe.set({x: gnplib.math.center(400, 0, 800), y: gnplib.math.center(400, 0, 600)});
+            stage.addChild(safe);
+
+            /////////////////////////////////////////////////
+            //Create the safe input value background
+            /////////////////////////////////////////////////
+            var safeinputbg = new createjs.Shape();
+            safeinputbg.graphics.beginFill("black").drawRect(0, 0, 140, 50);
+            safeinputbg.set({x: gnplib.math.center(140, 0, 800), y: gnplib.math.center(50, 0, 600) - 115});
+            stage.addChild(safeinputbg);
+
+            /////////////////////////////////////////////////
+            //Create the safe input value background COMBO1 outline
+            /////////////////////////////////////////////////
+            var combo1outline = new createjs.Shape();
+            combo1outline.graphics.beginStroke("#00ff00").drawRect(0, 0, 136, 46);
+            combo1outline.set({x: gnplib.math.center(136, 0, 800), y: gnplib.math.center(46, 0, 600) - 115});
+            combo1outline.visible = false;
+            stage.addChild(combo1outline);
+
+            /////////////////////////////////////////////////
+            //Create the safe input value background COMBO2 outline
+            /////////////////////////////////////////////////
+            var combo2outline = new createjs.Shape();
+            combo2outline.graphics.beginStroke("#00ff00").drawRect(0, 0, 130, 40);
+            combo2outline.set({x: gnplib.math.center(130, 0, 800), y: gnplib.math.center(40, 0, 600) - 115});
+            combo2outline.visible = false;
+            stage.addChild(combo2outline);
+
+            /////////////////////////////////////////////////
+            //Create the safe input value background COMBO3 outline
+            /////////////////////////////////////////////////
+            var combo3outline = new createjs.Shape();
+            combo3outline.graphics.beginStroke("#00ff00").drawRect(0, 0, 124, 34);
+            combo3outline.set({x: gnplib.math.center(124, 0, 800), y: gnplib.math.center(34, 0, 600) - 115});
+            combo3outline.visible = false;
+            stage.addChild(combo3outline);
+
+            /////////////////////////////////////////////////
+            //Create the safe input value background INCORRECT outline
+            /////////////////////////////////////////////////
+            var incorrectoutline = new createjs.Shape();
+            incorrectoutline.graphics.setStrokeStyle(4).beginStroke("#ff0000").drawRect(0, 0, 136, 46);
+            incorrectoutline.set({x: gnplib.math.center(136, 0, 800), y: gnplib.math.center(46, 0, 600) - 115});
+            incorrectoutline.alpha = 0;
+            stage.addChild(incorrectoutline);
+
+            /////////////////////////////////////////////////
+            //Create the safe input value text
+            /////////////////////////////////////////////////
+            var input = new createjs.Text("0", "bold 40px Lucida Console", "#00ff00");
+            var sw = input.getMetrics().width;
+            var sh = input.getMetrics().height;
+            input.set({x: gnplib.math.center(sw, 0, 800) + (sw / 2), y: gnplib.math.center(sh, 0, 600) - 118});
+            input.textAlign = "center";
+            stage.addChild(input);
+
+            /////////////////////////////////////////////////
+            //Create the realistic Lock Dial for the safe
+            /////////////////////////////////////////////////
+            var lockdialimage = new createjs.Bitmap(loader.getResult("lock"));
+            lockdialimage.scaleX = .6;
+            lockdialimage.scaleY = .6;
+
+            //Helper variables
+            var NEXT_PUZZLE = "puzzle_variant7.html";
+            var TICKS = 100; //Total ticks in the lock dial
+            var COMBO1 = 15; //First Turn counterclockwise past 0 to 15
+            var COMBO2 = 65; //Second Turn clockwise past 0 to 65
+            var COMBO3 = 43; //Third Turn counterclockwise past 0 to 43
+            var combo = 0; //store what part of the combination the user is currently on
+            var prevtick = 0; //store what the last tick was
+            var dir = 0; //store the current direction since 0 was last passed
+            var prevdir = 0; //store the previous direction
+            var TICKBREAK = 5; //how many ticks past the correct combination number invalidate the combination.
+            var odelta = 0; //The overall change in ticks since last reset
+
+            //Resets the combo outline visibility
+            var resetOutlines = function() {
+                combo1outline.visible = false;
+                combo2outline.visible = false;
+                combo3outline.visible = false;
+
+                //Animate incorrect outline
+                incorrectoutline.alpha = 1;
+                createjs.Tween.get(incorrectoutline).wait(500).to({alpha: 0}, 1000);
+            }
+
+            //Create lock dial
+            var lockdial = new gnplib.ui.LockDial(stage, lockdialimage, TICKS, function(tick) {
+                /*
+                 * Handle the changes in value for the dial
+                 */
+                //Helper Variables
+                var delta = (prevtick == 0 && tick == TICKS - 1) ? (-(TICKS - 1)) : (tick - prevtick); //The change since last tick
+                var ndelta = (delta == 0) ? (0) : (delta / Math.abs(delta)); //The normalized change since last tick [-1, 1], used to determine moment to moment direction
+
+                //Change odelta
+                odelta += ndelta;
+
+                //Change input text to current tick value
+                if (combo != 3) {
+                    input.text = tick;
+                }
+
+                //Determine dir and combo status when passing 0
+                if (prevtick == 0) {
+                    //determine new overall direction by negating ndelta, direction for the new value is counterclockwise is -1 and clockwise is 1
+                    prevdir = dir;
+                    dir = -ndelta;
+                    console.log("new dir is " + dir);
+
+                    //check for breaking combos
+                    if (combo == 1 && dir == -1 && prevdir <= 0) {
+                        console.log("combo 1 reset to 0");
+                        resetOutlines();
+                        combo = 0;
+                    }
+                    else if (combo == 2 && dir == 1 && prevdir >= 0) {
+                        console.log("combo 2 reset to 0");
+                        resetOutlines();
+                        combo = 0;
+                    }
+                }
+
+                //Non-zero combination checking
+                if (combo == 0 && tick == COMBO1) {
+                    if (dir == -1) {
+                        console.log("combo 1 entered");
+                        combo1outline.visible = true;
+                        odelta = 0;
+                        combo = 1;
+                    }
+                }
+                else if (combo == 1 && tick == COMBO2) {
+                    if (dir == 1) {
+                        console.log("combo 2 entered");
+                        combo2outline.visible = true;
+                        odelta = 0;
+                        combo = 2;
+                    }
+                }
+                else if (combo == 2 && tick == COMBO3) {
+                    if (dir == -1) {
+                        console.log("combo 3 entered");
+                        combo3outline.visible = true;
+                        combo = 3;
+                        odelta = 0;
+                        console.log("unlocked")
+                        input.text = "OPEN";
+
+                        handleComplete = function() {
+                            //Completed the puzzle, navigate to next
+                            gnplib.window.redirect(NEXT_PUZZLE, false, true);
+                        }
+
+                        var transition = new createjs.Shape();
+                        transition.graphics.beginFill("#000000").drawRect(0, 0, 800, 600);
+                        transition.alpha = 0;
+                        stage.addChild(transition);
+
+                        createjs.Tween.get(transition).wait(500).to({alpha: 1}, 1000).wait(500).call(handleComplete);
+                    }
+                }
+                else if (combo == 1 && odelta >= TICKBREAK) {
+                    if (dir == -1) {
+                        console.log("combo 1 reset to 0 tickbreak");
+                        resetOutlines();
+                        prevdir = -dir;
+                        dir = 0;
+                        combo = 0;
+                    }
+                }
+                else if (combo == 2 && odelta <= -TICKBREAK) {
+                        console.log("combo 2 reset to 0 tickbreak");
+                        resetOutlines();
+                        prevdir = -dir;
+                        dir = 0;
+                        combo = 0;
+                }
+
+                //Update prevtick and refresh stage
+                prevtick = tick;
+                stage.update();
+            });
+
+            lockdial.lock.set({x: 400, y: 350});
+            stage.addChild(lockdial.lock);
+
+            /////////////////////////////////////////////////
+            //Create the safe arrow overlay image
+            /////////////////////////////////////////////////
+            var arrow = new createjs.Bitmap(loader.getResult("arrow"));
+            arrow.set({x: gnplib.math.center(44, 0, 800), y: gnplib.math.center(26, 0, 600) - 55});
+            stage.addChild(arrow);
+
+            /////////////////////////////////////////////////
+            //Update Initial Stage
+            /////////////////////////////////////////////////
+            //Since we have tween animations, stage needs to be updated every frame, instead of just ui event driven updates
+            createjs.Ticker.addEventListener("tick", stage);
+            stage.update();
+        }
+    </script>
+</head>
+<body onload="init();">
+    <div id="canvas-container">
+        <canvas id="gameCanvas" width="800" height="600">Your browser does not support the HTML5 "Canvas" Element.</canvas>
+    </div>
+</body>
+</html>

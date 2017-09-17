@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Puzzle 9 Variant</title>
+    <link rel="stylesheet" type="text/css" href="tempstyle.css">
+    <script type="text/javascript" src="lib/gnplib-min.js" defer></script>
+    <script>
+        var stage; //The canvas stage
+        var loader; //The asset loader
+
+        function init() {
+            //Create Stage
+            stage = new createjs.Stage("gameCanvas");
+            stage.mouseMoveOutside = true; //Allow the mouse to be dragged outside of the canvas during mouse events
+            createjs.Ticker.framerate = 30; //Set the tick rate of the stage to a target of 30 times per second
+            stage.enableMouseOver(20); //Enables mouse over events for the stage at a rate of 20 times per second
+
+            //Create asset manifest and load queue
+            var manifest = [
+                {src: "assets/images/3.png", id: "3"},
+                {src: "assets/images/5.png", id: "5"},
+                {src: "assets/images/7.png", id: "7"},
+                {src: "assets/images/9.png", id: "9"}
+            ];
+
+            loader = new createjs.LoadQueue(true);
+            loader.on("complete", loaded);
+            loader.loadManifest(manifest, true);
+        }
+
+        function loaded() {
+            /////////////////////////////////////////////////
+            //Set background color
+            /////////////////////////////////////////////////
+            var background = new createjs.Shape();
+            background.graphics.beginFill("#715d76").drawRect(0, 0, 800, 600);
+            stage.addChild(background);
+
+            /////////////////////////////////////////////////
+            //Display Puzzle Number
+            /////////////////////////////////////////////////
+            var puzzlenumber = new createjs.Text("09", "bold 36px Arial", "white");
+            puzzlenumber.set({x: 15, y: 15});
+            stage.addChild(puzzlenumber);
+
+            /////////////////////////////////////////////////
+            //Hint Box that gives clue to solving puzzle with Hint Button
+            /////////////////////////////////////////////////
+            var hintbox = new gnplib.ui.HintBox(stage, 230);
+            hintbox.textColor = "#ffffff";
+            hintbox.textFont = "16px Arial";
+            hintbox.bgColor = "#5d8ec5";
+            hintbox.cornerRadius = 15;
+            hintbox.setText("\"Top before bottom, left before right\" \nEnter the answer into the url!");
+            hintbox.centerOnPoint(400, 300);
+            var hintbutton = gnplib.ui.createButtonRoundRectangle(stage, new createjs.Text("Show Hint", "bold 16px Arial", "#ffffff"),
+                    "#403093", "#5e558e", "#22194d", 100, 44, 8, function(event) {
+                        hintbox.showDialog(true);
+                    });
+            hintbutton.set({x: 70, y: 560});
+            stage.addChild(hintbutton);
+
+            /////////////////////////////////////////////////
+            //Ryan's Blur move modified code
+            /////////////////////////////////////////////////
+            var canvas = stage.canvas;
+            var answer;
+            var image;
+            var circle_size=50;
+            var dragging_smoothness = 0.3;
+            var blur_factor = 2;
+            var use_image=true;
+
+            answer = [
+                new createjs.Rectangle(canvas.width*2/10+circle_size, canvas.height*2/10+circle_size, 2*circle_size, 2*circle_size),
+                new createjs.Rectangle(canvas.width*2/10+circle_size, canvas.height*6/10+circle_size, 2*circle_size, 2*circle_size),
+                new createjs.Rectangle(canvas.width*6/10+circle_size, canvas.height*2/10+circle_size, 2*circle_size, 2*circle_size),
+                new createjs.Rectangle(canvas.width*6/10+circle_size, canvas.height*6/10+circle_size, 2*circle_size, 2*circle_size)
+            ];
+            var answer_area = new createjs.Shape();
+            for(var i=0;i<answer.length; i++)
+            {
+                answer_area.graphics.beginFill("lightgrey").drawRoundRect(answer[i].x-circle_size,answer[i].y-circle_size,answer[i].width,answer[i].width,0);
+            }
+            stage.addChild(answer_area);
+
+
+            circle_move = function(event)
+            {
+                var circle = event.target;
+                circle.y = circle.y + (stage.mouseY - circle.y) * dragging_smoothness;
+                circle.x = circle.x + (stage.mouseX - circle.x) * dragging_smoothness;
+                circle.parent.addChild(circle);
+                cal_blur(circle);
+                stage.update();
+            }
+
+            cal_blur = function(circle)
+            {
+                var blurFilter= circle.filters[0];
+                blurFilter.blurX = Math.abs(answer[circle.id].x - circle.x) / blur_factor;
+                blurFilter.blurY = Math.abs(answer[circle.id].y - circle.y) / blur_factor;
+                var bounds = blurFilter.getBounds();
+                if(!use_image)
+                    circle.cache(-circle_size+bounds.x, -circle_size+bounds.y, 2*circle_size+bounds.width, 2*circle_size+bounds.height);
+                else
+                    circle.cache(0,0,canvas.width, canvas.height);
+            }
+
+
+            var bitmap;
+            imgs = [loader.getResult("3"), loader.getResult("7"), loader.getResult("5"), loader.getResult("9")];
+            image=[];
+            for (var i=0;i<imgs.length; i++)
+            {
+                bitmap = new createjs.Bitmap(imgs[i]);
+                stage.addChild(bitmap);
+                bitmap.id=i;
+                bitmap.x = canvas.width * Math.random();
+                bitmap.y = canvas.height * Math.random();
+                bitmap.regX = bitmap.image.width / 2;
+                bitmap.regY = bitmap.image.height / 2;
+                bitmap.scaleX= circle_size*2/bitmap.image.width;
+                bitmap.scaleY= circle_size*2/bitmap.image.height;
+                bitmap.addEventListener("pressmove", circle_move);
+                image.push(bitmap);
+
+
+                var  blurFilter = new createjs.BlurFilter(0, 0, 1);
+                bitmap.filters = [blurFilter];
+                bitmap.cache(0,0,canvas.width, canvas.height);
+                cal_blur(bitmap);
+            }
+
+
+            /////////////////////////////////////////////////
+            //Update Initial Stage
+            /////////////////////////////////////////////////
+            stage.update();
+        }
+    </script>
+</head>
+<body onload="init();">
+    <div id="canvas-container">
+        <canvas id="gameCanvas" width="800" height="600">Your browser does not support the HTML5 "Canvas" Element.</canvas>
+    </div>
+</body>
+</html>

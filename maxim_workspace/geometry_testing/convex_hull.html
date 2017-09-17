@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    html, body {
+        width: 100%;
+        height: 100%;
+        margin: 0px;
+        border: 0;
+        overflow: hidden; /*  Disable scrollbars */
+        display: block;  /* No floating content on sides */
+    }
+</style>
+<head>
+    <meta charset="UTF-8">
+    <title>Convex Hull</title>
+    <script type="text/javascript" src="../gnplib/lib/gnplib.js" defer></script>
+    <script type="text/javascript" src="poly2tri/dist/poly2tri.min.js" defer></script>
+    <script>
+        var stage; //The canvas stage
+        var loader; //The asset loader
+
+        var Vertex = function(x, y) {
+            this.x = x;
+            this.y = y;
+
+            this.equals = function(other) {
+                return ((this.x === other.x) && (this.y === other.y));
+            };
+
+            this.toString = function() {
+                return "(" + this.x + ", " + this.y + ")";
+            };
+        };
+
+        var Vector = function(x, y) {
+            this.x = x;
+            this.y = y;
+
+            this.magnitude = function() {
+                return Math.sqrt((this.x * this.x) + (this.y * this.y));
+            };
+
+            this.unit = function() {
+                var m = this.magnitude();
+                return new Vector(this.x / m, this.y / m);
+            };
+
+            this.angleRadians = function() {
+                return Math.atan2(this.y, this.x);
+            }
+        };
+
+        var Set = function() {
+            this.elements = [];
+
+            this.push = function(e) {
+                for (i = 0; i < this.size(); i++) {
+                    var s = this.elements[i];
+                    if (s.equals(e)) {
+                        return false;
+                    }
+                }
+
+                this.elements.push(e);
+                return true;
+            };
+
+            this.pop = function() {
+                return this.elements.pop();
+            };
+
+            this.shift = function() {
+                return this.elements.shift();
+            };
+
+            this.indexOf = function(e) {
+                for (i = 0; i < this.size(); i++) {
+                    var s = this.elements[i];
+                    if (s.equals(e)) {
+                        return i;
+                    }
+                }
+
+                return -1;
+            };
+
+            this.lastIndexOf = function (e) {
+                for (i = this.size() - 1; i > 0; i--) {
+                    var s = this.elements[i];
+                    if (s.equals(e)) {
+                        return i;
+                    }
+                }
+
+                return -1;
+            };
+
+            this.remove = function(e) {
+                var c = [];
+                var b = false;
+
+                for (i = 0; i < this.size(); i++) {
+                    var s = this.elements[i];
+
+                    if (!s.equals(e)) {
+                        c.push(s);
+                    }
+                    else {
+                        b = true;
+                    }
+                }
+
+                this.elements = c;
+
+                return b;
+            };
+
+            this.get = function(i) {
+                return this.elements[i];
+            };
+
+            this.clone = function() {
+                var c = new Set();
+                for (i = 0; i < this.size(); i++) {
+                    c.push(this.elements[i]);
+                }
+                return c;
+            };
+
+            this.size = function() {
+                return this.elements.length;
+            };
+
+            this.head = function() {
+                if (this.size() > 0) {
+                    return this.elements[0];
+                }
+                else {
+                    return null;
+                }
+            };
+
+            this.tail = function() {
+                var a = this.clone();
+                a.shift();
+                return a;
+            };
+
+            this.last = function() {
+                if (this.size() > 0) {
+                    return this.elements[this.elements.length - 1];
+                }
+                else {
+                    return null;
+                }
+            };
+
+            this.sort = function(func) {
+                this.elements.sort(func);
+            };
+
+            this.clear = function() {
+                this.elements = [];
+            };
+
+            this.toString = function() {
+                var s = "{";
+                for (i = 0; i < this.size(); i++) {
+                    s = s + this.elements[i].toString();
+                }
+                var s = s + "}";
+                return s;
+            };
+        };
+
+        var radiansToDegrees = function(r) {
+            return (r * 180) / Math.PI;
+        };
+
+        /*
+         * Flips the y-axis to give the angle in standard coordinate system
+         */
+        var standardAngleBetweenVerticesInRadians = function(v1, v2) {
+            var v = new Vector(v2.x - v1.x, -v2.y - -v1.y);
+            return v.angleRadians();
+        };
+
+        /**
+         * Sorts greatest y to lowest y, but visually from the lowest looking point to the highest looking point
+         */
+        var sortVerticesLowestToHighest = function(vertices) {
+            var set = vertices.clone();
+            set.sort(function(a, b) {
+                return b.y - a.y;
+            });
+            return set;
+        };
+
+        function init() {
+            //Create Stage
+            stage = new createjs.Stage("gameCanvas");
+            stage.mouseMoveOutside = true; //Allow the mouse to be dragged outside of the canvas during mouse events
+            createjs.Ticker.framerate = 30; //Set the tick rate of the stage to a target of 30 times per second
+            stage.enableMouseOver(20); //Enables mouse over events for the stage at a rate of 20 times per second
+            stage.canvas.width = window.innerWidth;
+            stage.canvas.height = window.innerHeight;
+
+            //Create asset manifest and load queue
+            loaded();
+        }
+
+        function loaded() {
+            var vertices = new Set();
+            var hullVertices = new Set();
+            var interVertices = new Set();
+            var vshape = new createjs.Shape();
+            var hull = new createjs.Shape();
+            var triLShape = new createjs.Shape();
+
+            var updateVertices = function() {
+                const r = 3;
+
+                vshape.graphics.clear();
+
+                //Internal Vertices
+                for (i = 0; i < interVertices.size(); i++) {
+                    var v = interVertices.get(i);
+                    vshape.graphics.beginFill("red").drawCircle(v.x, v.y, r);
+                }
+
+                //Hull Edge Vertices
+                for (i = 0; i < hullVertices.size(); i++) {
+                    var v = hullVertices.get(i);
+                    vshape.graphics.beginFill("blue").drawCircle(v.x, v.y, r);
+                }
+
+                vshape.graphics.endFill();
+            };
+
+            var recalcHull = function() {
+                hull.graphics.clear();
+                hullVertices.clear();
+                interVertices = vertices.clone();
+                if (vertices.size() > 1) {
+                    hull.graphics.setStrokeStyle(2).beginStroke("black");
+
+                    //Set all important variables
+                    var sorted = sortVerticesLowestToHighest(vertices);
+                    var lowest = sorted.head();
+                    var highest = sorted.last();
+                    var curr = lowest;
+                    var remaining = sorted.tail();
+
+                    /*
+                     * Begin defining the two sides of the hull
+                     */
+                    hull.graphics.moveTo(curr.x, curr.y);
+                    hullVertices.push(curr);
+                    //right side of hull
+                    while (!curr.equals(highest)) {
+                        var minAngle = 2 * Math.PI;
+                        var min = null;
+
+                        for (i = 0; i < remaining.size(); i++) {
+                            var e = remaining.get(i);
+                            if (!e.equals(curr)) {
+                                var angle = standardAngleBetweenVerticesInRadians(curr, e);
+                                while (angle < 0) {
+                                    angle = angle + (2 * Math.PI);
+                                }
+
+                                if (angle < minAngle) {
+                                    minAngle = angle;
+                                    min = e;
+                                }
+                            }
+                        }
+
+                        if (min !== null) {
+                            remaining.remove(min);
+
+                            //Draw line and set curr
+                            hull.graphics.lineTo(min.x, min.y);
+                            hullVertices.push(min);
+                            interVertices.remove(min);
+
+                            curr = min;
+                        }
+                    }
+                    //left side of hull
+                    if (vertices.size() > 2) {
+                        remaining.push(lowest);
+                        while (!curr.equals(lowest)) {
+                            var minAngle = 2 * Math.PI;
+                            var min = null;
+
+                            for (i = 0; i < remaining.size(); i++) {
+                                var e = remaining.get(i);
+                                if (!e.equals(curr)) {
+                                    var angle = standardAngleBetweenVerticesInRadians(curr, e) - Math.PI;
+                                    while (angle < 0) {
+                                        angle = angle + (2 * Math.PI);
+                                    }
+
+                                    if (angle < minAngle) {
+                                        minAngle = angle;
+                                        min = e;
+                                    }
+                                }
+                            }
+
+                            if (min !== null) {
+                                remaining.remove(min);
+
+                                //Draw line and set curr
+                                hull.graphics.lineTo(min.x, min.y);
+                                hullVertices.push(min);
+                                interVertices.remove(min);
+
+                                curr = min;
+                            }
+                        }
+                    }
+
+                    hull.graphics.endStroke();
+                }
+            };
+
+            var triangulate = function() {
+                const r = 3;
+
+                triLShape.graphics.clear();
+
+                if (vertices.size() > 3) {
+                    var hullPoints = [];
+                    for (i = 0; i < hullVertices.size(); i++) {
+                        var e = hullVertices.get(i);
+                        hullPoints.push(new poly2tri.Point(e.x, e.y));
+                    }
+
+                    var sweep = new poly2tri.SweepContext(hullPoints);
+
+                    sweep.triangulate();
+
+                    var triangles = sweep.getTriangles();
+
+                    triangles.forEach(function (t) {
+                        var init = true;
+                        var start = null;
+                        t.getPoints().forEach(function (p) {
+                            if (init) {
+                                start = p;
+
+                                triLShape.graphics.beginStroke("rgb(150, 150, 150)");
+                                triLShape.graphics.moveTo(p.x, p.y);
+
+                                init = false;
+                            }
+                            else {
+                                triLShape.graphics.lineTo(p.x, p.y);
+                            }
+                        });
+                        triLShape.graphics.lineTo(start.x, start.y);
+                        triLShape.graphics.endStroke();
+                    });
+                }
+            };
+
+            var background = new createjs.Shape();
+            background.graphics.beginFill("#ffffff").drawRect(0, 0, stage.canvas.width, stage.canvas.height);
+            background.addEventListener("click", function(e) {
+                var v = new Vertex(e.stageX, e.stageY);
+                vertices.push(v);
+                recalcHull();
+                updateVertices();
+                triangulate();
+                stage.update();
+            });
+            stage.addChild(background);
+            stage.addChild(triLShape);
+            stage.addChild(hull);
+            stage.addChild(vshape);
+
+            /////////////////////////////////////////////////
+            //Update Initial Stage
+            /////////////////////////////////////////////////
+            stage.update();
+        }
+    </script>
+</head>
+<body onload="init();">
+    <div id="canvas-container">
+        <canvas id="gameCanvas">Your browser does not support the HTML5 "Canvas" Element.</canvas>
+    </div>
+</body>
+</html>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>window - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="gnplib.ui.HintBox.html">HintBox</a><ul class='methods'><li data-type='method'><a href="gnplib.ui.HintBox.html#centerOnPoint">centerOnPoint</a></li><li data-type='method'><a href="gnplib.ui.HintBox.html#setText">setText</a></li><li data-type='method'><a href="gnplib.ui.HintBox.html#showDialog">showDialog</a></li></ul></li><li><a href="gnplib.ui.LockDial.html">LockDial</a></li><li><a href="gnplib.ui.PuzzlePiece.html">PuzzlePiece</a><ul class='methods'><li data-type='method'><a href="gnplib.ui.PuzzlePiece.html#addToStage">addToStage</a></li><li data-type='method'><a href="gnplib.ui.PuzzlePiece.html#checkSnapping">checkSnapping</a></li><li data-type='method'><a href="gnplib.ui.PuzzlePiece.html#removeFromStage">removeFromStage</a></li><li data-type='method'><a href="gnplib.ui.PuzzlePiece.html#x">x</a></li><li data-type='method'><a href="gnplib.ui.PuzzlePiece.html#y">y</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="gnplib.html">gnplib</a></li><li><a href="gnplib.math.html">math</a><ul class='methods'><li data-type='method'><a href="gnplib.math.html#.center">center</a></li><li data-type='method'><a href="gnplib.math.html#.clamp">clamp</a></li></ul></li><li><a href="gnplib.string.html">string</a></li><li><a href="gnplib.ui.html">ui</a><ul class='methods'><li data-type='method'><a href="gnplib.ui.html#.addDragAndDropToObject">addDragAndDropToObject</a></li><li data-type='method'><a href="gnplib.ui.html#.addPuzzleToStage">addPuzzleToStage</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonCircle">createButtonCircle</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonEllipse">createButtonEllipse</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonImage">createButtonImage</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonImageSimple">createButtonImageSimple</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonRectangle">createButtonRectangle</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonRoundRectangle">createButtonRoundRectangle</a></li><li data-type='method'><a href="gnplib.ui.html#.createButtonShape">createButtonShape</a></li><li data-type='method'><a href="gnplib.ui.html#.generatePuzzlePiecesFromImage">generatePuzzlePiecesFromImage</a></li><li data-type='method'><a href="gnplib.ui.html#.getHeight">getHeight</a></li><li data-type='method'><a href="gnplib.ui.html#.getWidth">getWidth</a></li><li data-type='method'><a href="gnplib.ui.html#.removePuzzleFromStage">removePuzzleFromStage</a></li><li data-type='method'><a href="gnplib.ui.html#.setHeight">setHeight</a></li><li data-type='method'><a href="gnplib.ui.html#.setWidth">setWidth</a></li></ul></li><li><a href="gnplib.window.html">window</a><ul class='methods'><li data-type='method'><a href="gnplib.window.html#.redirect">redirect</a></li></ul></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">window</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="gnplib.html">gnplib</a>.</span>
+        
+        window
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Browser window utility functions</div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="gnplib.js.html">gnplib.js</a>, <a href="gnplib.js.html#line1387">line 1387</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id=".redirect"><span class="type-signature">(static) </span>redirect<span class="signature">(url<span class="signature-attributes">non-null</span>, openNewWindow<span class="signature-attributes">opt, nullable</span>, isLink<span class="signature-attributes">opt, nullable</span>)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Opens a link to the given url, either in the current window, or a new window/tab. The redirectioncan allow browser history to be written by simulating a user clicking a link, or prevent history from being written by using an http redirect.<br><br>Absolute redirect ex: "http://www.myurl.com/test.html"<br>Relative redirect in current directory ex: "/test2.html"<br>Relative redirect in directory one level above ex: "../test3.html"<br>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>url</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">The absolute or relative url string to redirect to</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>openNewWindow</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                    &lt;nullable><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last">Whether or not to open a new window/tab when redirecting</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>isLink</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+                    &lt;nullable><br>
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last">A value that is true to simulate the user clicking on a link and storing browser history, or false to simulate an http redirect and store no browser history.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li><a href="mailto:mixmaxtwo@gmail.com">Maxim Tiourin</a></li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="gnplib.js.html">gnplib.js</a>, <a href="gnplib.js.html#line1407">line 1407</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    True when the redirection was simulated as a user clicking a link, false when it was simulated as an http redirect.
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.3</a> on Sun Nov 01 2015 06:19:39 GMT-0800 (Pacific Standard Time) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
